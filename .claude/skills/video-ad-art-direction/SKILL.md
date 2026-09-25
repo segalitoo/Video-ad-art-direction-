@@ -15,9 +15,16 @@ The full stage descriptions are in `workflow/stages.md`. Read it once per sessio
 3. **The lock is versioned.** Any token change raises `meta.version`. Say which version a prompt came from.
 4. **Keyframe first.** Animate only a keyframe the art director kept. Skip this only in `motion-graphics` mode.
 5. **Log everything.** Every generation gets a row in the project's `iteration-log.csv`: prompt ref, tool, model, lock version, verdict (kept / rejected / fix) and the reason.
-6. **Ask before spending.** Before any paid generation, state the tool, the number of generations and the estimated cost (check the Higgsfield `balance` if it is connected), and wait for a yes.
+6. **Ask before spending.** Before any paid generation, state the tool, the model, the number of generations and the quoted cost, and wait for an explicit yes. Every run, including reruns. Weave quotes the exact cost when called without `acknowledgedCost`; Higgsfield takes `get_cost: true`.
 7. **Two cycles, then ship or kill.** At stage 10, count the cycles. After the second, recommend ship or kill; do not start a third without the owner saying so.
 8. **Specs can be out of date.** Values marked `verify: true` in `platforms/specs.yml` or `adapters/tools.yml` are not official. Say so for real client work.
+
+## Tools: Figma Weave and Higgsfield
+
+Both run inside Claude. Split by strength, set in `adapters/tools.yml`:
+- **Figma Weave** is the main engine: keyframes and motion, with many models behind one connector, and saved Weave workflows the art director can open and adjust visually.
+- **Higgsfield** does what Weave does not: reframe and outpaint to other ratios, Marketing Studio, the virality predictor, TikTok publishing.
+- If one has no credits, use the other and say so.
 
 ## Start
 
@@ -38,12 +45,15 @@ Modes: `3d-stylized`, `live-action`, `ugc`, `motion-graphics` (see `lock/modes/`
 **03 Storyboard.** Write `storyboard.yml`: beats, durations, subject (the [SHOT] slot), action, camera move, supers, sound, variants. Quote every line in `variants`. Run `assemble.py --check` and fix every FAIL. Explain each WARN.
 → Gate: creative lead.
 
-**04 Keyframes.** Run `assemble.py <storyboard> -o prompts.md`. Generate the hero shot first: 8 to 12 candidates. When the hero is kept, set `hero.reference` in the lock and attach it to every `hero: true` shot.
-- Higgsfield connected and the user chose it: `models_explore` (action `recommend`) → `generate_image_batch` → `jobs_wait` → `show_generation_by_ids`. Save kept frames to `keyframes/`.
+**04 Keyframes.** Run `assemble.py <storyboard> -o prompts.md` and show its **Budget** table first; that is the spend being approved. Generate the `H0` hero reference first: 8 to 12 candidates. When the hero is kept, set `hero.reference` in the lock and attach it to every `hero: true` shot.
+- Figma Weave (the default engine): `weave_find_model` for the model named in `adapters/tools.yml` → `weave_run_model` without `acknowledgedCost` to get the quote → ask Approve/Cancel with a structured question → run with the quoted cost → `weave_get_model_run_output` → download with the curl command it returns into `keyframes/`. Drafts on Nano Banana 2, finals on Nano Banana Pro.
+- Higgsfield: check `balance` first. `models_explore` (action `recommend`) → `generate_image_batch` → `jobs_wait` → `show_generation_by_ids`.
 - Another tool: give the user the prompt block for that tool from `prompts.md`, and log what they report back.
+- Show every candidate side by side, with its number, before asking for a pick.
 → Gate: art director picks 1 per shot.
 
 **05 Motion.** For each kept keyframe, use the `-M` motion prompt for the chosen tool. The keyframe is the start frame. The prompt says only what moves.
+- Figma Weave: Kling Video for most shots, Veo 3.1 image-to-video for hero shots or native sound. The kept keyframe is the `image` / first-frame input; the lock's negatives go in `negative_prompt`. Same quote → approve → run loop as stage 4.
 - Higgsfield: `generate_video_batch` with the kept frame as the start image, then `jobs_wait`.
 - Judge each candidate for on-model hero, morphing, physics and continuity with the shots around it. Log the verdicts.
 → Gate: art director picks 1 per shot.

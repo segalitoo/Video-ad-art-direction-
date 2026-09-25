@@ -6,7 +6,8 @@ ad:
   length_s: 15
   master_aspect: "9:16"
   platforms: [tiktok, meta_vertical, youtube_shorts, meta_feed]
-  tools: [higgsfield, nano-banana, midjourney, google-flow-veo, kling, runway]
+  tools: [figma-weave, higgsfield, midjourney, kling, runway]
+  candidates: {keyframe: 8, motion: 3}
 
 shots:
   - id: S01

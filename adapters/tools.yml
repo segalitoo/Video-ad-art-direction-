@@ -19,6 +19,11 @@
 
 last_checked: 2026-09-25
 
+# Which tool does what (decided 2026-09-25):
+#   figma-weave  main engine: keyframes, motion, saved workflows the art director can open
+#   higgsfield   reframe/outpaint, Marketing Studio, virality predictor, TikTok publishing
+# Both run inside Claude. Either can do the whole job; the split is by strength.
+
 tools:
 
   generic:
@@ -34,11 +39,38 @@ tools:
     motion_prompt: true
     runs_in_claude: true
     notes: >
-      Connected to Claude as an MCP server. Ask for a model recommendation
+      Connected to Claude as an MCP server. Best for what Weave does not do:
+      reframe and outpaint to 4:5 / 1:1, Marketing Studio product ads, the virality
+      predictor, and TikTok publishing. Check `balance` first; a free plan cannot generate. Ask for a model recommendation
       (models_explore, action recommend) per shot. Keyframe with generate_image,
       then generate_video with the kept keyframe as the start frame.
       Use reframe or outpaint for 4:5 and 1:1 derivatives, upscale_video last.
       Use generate_video_batch for the 8-12 candidates, jobs_wait, then review.
+
+  figma-weave:
+    role: image+video
+    negative_image: inline     # Nano Banana has no negative field
+    negative_video: field      # Veo and Kling in Weave take a negative_prompt
+    aspect: ui
+    motion_prompt: true
+    runs_in_claude: true
+    clip_s: [5, 10]
+    cost_unit: Weave credits
+    models:                    # quotes from weave_find_model; ids can change, look them up again
+      image:       {name: Nano Banana Pro, id: af5a6789-c7af-4c46-9a42-70222654e55b, credits: 11}
+      image_draft: {name: Nano Banana 2, id: bebebed5-50c1-4701-98b3-86929db21585, credits: 6}
+      video:       {name: Kling Video 2.5 Turbo Pro, id: wnfmbl8VwUCfX2a1XcdfDlone, credits: 35}
+      video_hero:  {name: Veo 3.1 image-to-video, id: fg6e8647-d90a-4bad-a845-69fdc102a14j, credits: 90}
+    verify: true
+    notes: >
+      Figma Weave, connected to Claude through the Figma MCP server. Two ways in:
+      weave_find_model + weave_run_model runs one model directly; weave_run_tool runs a
+      saved Weave workflow. Build the lock as a saved workflow (prompt nodes from the
+      tokens, the hero image as a reference node) so the art director can open and
+      tweak it visually in Weave. Every run quotes its cost first and needs an explicit
+      approval. Download outputs with the curl command the output call returns.
+      Use Nano Banana 2 for drafts, Nano Banana Pro for finals, Kling for most motion,
+      Veo 3.1 for the hero shots and native sound.
 
   nano-banana:
     role: image

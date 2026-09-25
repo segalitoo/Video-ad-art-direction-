@@ -68,10 +68,10 @@ One still per shot, generated from the assembled prompt. Pick 1 of 8 to 12.
 
 | | |
 |---|---|
-| **Output** | One kept keyframe per shot in `keyframes/`, the hero reference first |
+| **Output** | The hero reference (`H0`) first, then one kept keyframe per shot in `keyframes/` |
 | **Human gate** | The art director curates the batch. Never the first output. |
-| **Tools** | Higgsfield, Nano Banana (Google Flow or Gemini), Midjourney, Photoshop for paint-over |
-| **Automated** | Batch generation, background removal, the log entry |
+| **Tools** | Figma Weave (Nano Banana 2 drafts, Nano Banana Pro finals), Higgsfield, Midjourney, Photoshop for paint-over |
+| **Automated** | Budget for the round (`assemble.py`), batch generation, background removal, the log entry |
 | **Stays manual** | Selection, paint-over, retouching to the lock |
 | **Bottleneck** | Consistency across shots. The hero reference is approved first and attached to every hero shot. |
 
@@ -82,7 +82,7 @@ Image-to-video from each kept keyframe. The prompt describes only what moves.
 |---|---|
 | **Output** | One kept clip per shot in `clips/` |
 | **Human gate** | The art director picks per shot and checks against the lock and the previous cut. |
-| **Tools** | Higgsfield, Veo (Google Flow), Kling, Runway, Midjourney video |
+| **Tools** | Figma Weave (Kling, Veo 3.1), Higgsfield, Runway, Midjourney video |
 | **Automated** | Clip batches, upscale, the log entry |
 | **Stays manual** | Selection, judging physics and on-model motion |
 | **Bottleneck** | Cost and morphing. Keyframes gate motion, so only approved frames get animated. |

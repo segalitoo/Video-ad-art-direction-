@@ -127,6 +127,23 @@ def keyframe_prompt(shot, lock, frame_words):
     return ". ".join(p.strip().rstrip(".") for p in parts) + "."
 
 
+def hero_prompt(lock):
+    """The hero reference: the product alone on a clean ground, approved before any shot.
+
+    Every hero shot attaches this image, which is what keeps the product
+    on-model from shot to shot and from tool to tool.
+    """
+    t = lock["tokens"]
+    parts = [
+        t["STYLE"],
+        f"[HERO: {lock['hero']['description']}]",
+        t["FORM"], t["LIGHT"], t["GRADE"], t["TECH"],
+        "product reference shot, centred, whole product in frame, three-quarter view, "
+        "clean neutral soft-gradient background for easy cutout",
+    ]
+    return ". ".join(p.strip().rstrip(".") for p in parts) + "."
+
+
 def motion_prompt(shot, lock):
     t = lock["tokens"]
     action = shot.get("action") or "subtle ambient motion"
@@ -147,7 +164,8 @@ def for_tool(prompt, tool, negatives, aspect, motion=False):
     Motion prompts skip the aspect ratio: image-to-video takes it from the start frame.
     """
     extra = []
-    neg_mode = tool.get("negative", "inline")
+    kind = "video" if motion else "image"
+    neg_mode = tool.get(f"negative_{kind}", tool.get("negative", "inline"))
     if negatives and neg_mode == "inline":
         prompt += " Keep it clean: no " + ", no ".join(negatives) + "."
     elif negatives and neg_mode == "field":
@@ -177,6 +195,50 @@ def render_group(label, results):
         out += [f"**{label} · {' · '.join(names)}**", "", "```", text, "```"]
         out += [f"- {e}" for e in extra] + [""]
     return out
+
+
+DEFAULT_CANDIDATES = {"keyframe": 8, "motion": 3}
+
+
+def budget(board, lock, tools, tool_names):
+    """Credits for one full round of stage 4 and 5, per tool that lists its models.
+
+    Shown before the stage 4 gate, so the spend is approved before it happens.
+    """
+    cands = {**DEFAULT_CANDIDATES, **(board["ad"].get("candidates") or {})}
+    shots = [s for s in board["shots"] if s.get("generate", True)]
+    hero = 1 if any(s.get("hero") for s in shots) else 0
+    rows = []
+    for name in tool_names:
+        models = tools[name].get("models") or {}
+        img, vid = models.get("image"), models.get("video")
+        if not (img or vid):
+            continue
+        key_n = (len(shots) + hero) * cands["keyframe"]
+        mot_n = len(shots) * cands["motion"] if lock["_mode"].get("keyframe_first") else 0
+        key_c = key_n * img["credits"] if img else None
+        mot_c = mot_n * vid["credits"] if vid else None
+        total = (key_c or 0) + (mot_c or 0)
+        rows.append(
+            f"| {name} | {key_n} × {img['name']} ≈ {key_c:g} | " if img else f"| {name} | n/a | "
+        )
+        rows[-1] += (f"{mot_n} × {vid['name']} ≈ {mot_c:g} | " if vid else "n/a | ")
+        rows[-1] += f"**{total:g}** {tools[name].get('cost_unit', 'credits')} |"
+    if not rows:
+        return []
+    return [
+        "## Budget · one round of stages 4 and 5",
+        "",
+        f"{len(shots)} generated shots{' + the hero reference' if hero else ''}, "
+        f"{cands['keyframe']} keyframe candidates each, {cands['motion']} motion candidates per kept frame. "
+        "Prices are the quotes at `last_checked` in `adapters/tools.yml`; the tool quotes the real cost "
+        "before each run, and nothing runs without approval.",
+        "",
+        "| Tool | Keyframes | Motion | Total |",
+        "|---|---|---|---|",
+        *rows,
+        "",
+    ]
 
 
 def build(board, lock, specs, tools, tool_names):
@@ -209,6 +271,15 @@ def build(board, lock, specs, tools, tool_names):
     else:
         out += ["**Order:** this mode builds layouts by hand. Generated prompts below are for "
                 "textures and backgrounds only.", ""]
+
+    out += budget(board, lock, tools, tool_names)
+
+    if any(s.get("hero") and s.get("generate", True) for s in board["shots"]):
+        hero = hero_prompt(lock)
+        out += ["## H0 · hero reference · first", "",
+                "Generate and approve this before any shot. The kept image becomes `hero.reference` "
+                "in the lock and is attached to every hero shot.", ""]
+        out += render_group("H0-K · hero", [(n, *for_tool(hero, tools[n], negatives, aspect)) for n in image_tools])
 
     for shot in board["shots"]:
         out += [f"## {shot['id']} · {shot.get('beat', '')} · {shot.get('duration_s', '?')}s", ""]

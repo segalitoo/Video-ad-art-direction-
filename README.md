@@ -7,7 +7,9 @@ It extends the [Bingo Bay AI production workflow](https://segalitoo.github.io/ra
 
 **Platforms:** TikTok · Instagram/Facebook Reels and Stories · YouTube Shorts · Meta feed · LinkedIn
 **Looks:** 3D stylized · live action · UGC · motion graphics
-**Tools:** any. One master prompt, adapted for Higgsfield (inside Claude), Nano Banana, Midjourney, Veo in Google Flow, Kling, Runway, Suno, ElevenLabs. You can add more.
+**Tools:** any. One master prompt, adapted for Figma Weave and Higgsfield (both inside Claude), Nano Banana, Midjourney, Veo in Google Flow, Kling, Runway, Suno, ElevenLabs. You can add more.
+
+**Inside Claude, two engines split by strength.** Figma Weave runs keyframes and motion (Nano Banana, Kling, Veo and more behind one connector) and keeps the lock as a saved workflow the art director can open. Higgsfield reframes to other ratios, runs Marketing Studio, predicts virality and publishes to TikTok. Every paid run is quoted and approved first; `assemble.py` prints the budget for a full round before stage 4.
 
 ## How it works
 
@@ -57,7 +59,8 @@ bash scripts/selftest.sh                                         # test everythi
 | `adapters/tools.yml` | How each tool wants its prompt (negatives, aspect, clip length) |
 | `templates/` | Brief, storyboard, copy matrix, QA checklist, iteration log |
 | `scripts/` | Scaffold, assemble, matrix, spec check, self-test |
-| `examples/sunpeel/` | The pilot: a fictional zero-sugar citrus soda, run through stages 1 to 3 |
+| `examples/sunpeel/` | The pilot: a fictional zero-sugar citrus soda |
+| `docs/brief-generator.html` | Intake form that writes the brief, lock and storyboard |
 | `docs/plan.html` | The plan as a page, in the portfolio design system |
 
 ## Honest limits
