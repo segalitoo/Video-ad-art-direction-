@@ -60,8 +60,8 @@ bash scripts/selftest.sh                                         # test everythi
 | `templates/` | Brief, storyboard, copy matrix, QA checklist, iteration log |
 | `scripts/` | Scaffold, assemble, matrix, spec check, self-test |
 | `examples/sunpeel/` | The pilot: a fictional zero-sugar citrus soda |
-| `docs/brief-generator.html` | Intake form that writes the brief, lock and storyboard |
-| `docs/plan.html` | The plan as a page, in the portfolio design system |
+| `docs/brief-generator.html` | Intake form that writes the brief, lock and storyboard ([live](https://claude.ai/artifact/DvdWpJVGGaiz4g3wWVT6h6)) |
+| `docs/plan.html` | The plan as a page, in the portfolio design system ([live](https://claude.ai/artifact/HQm6PR8irg3vVe4BnLf99o)) |
 
 ## Honest limits
 

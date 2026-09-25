@@ -272,7 +272,7 @@ footer { margin-top: 88px; padding-top: 20px; border-top: 1px solid var(--hair);
       <div><b>10 stages, 3 phases</b><span>Define, produce, ship</span></div>
       <div><b>4 style modes</b><span>One line in the lock switches the look</span></div>
       <div><b>5 platforms</b><span>TikTok, Reels/Stories, Shorts, Meta feed, LinkedIn</span></div>
-      <div><b>9 tool adapters</b><span>One master prompt, rewritten per tool</span></div>
+      <div><b>10 tool adapters</b><span>One master prompt, rewritten per tool</span></div>
     </div>
   </section>
 
@@ -429,11 +429,13 @@ footer { margin-top: 88px; padding-top: 20px; border-top: 1px solid var(--hair);
   <section class="sec">
     <p class="k sec__k">Tools</p>
     <h2 class="sec__t">Any tool. The lock travels with the prompt.</h2>
+    <p class="sec__d">Two engines run inside Claude, split by strength. <b>Figma Weave</b> puts many models behind one connector and keeps the lock as a saved workflow the art director can open. <b>Higgsfield</b> does what Weave does not. Every paid run is quoted and approved first, and <code>assemble.py</code> prints the budget for a full round before stage 4: about 1,050 Weave credits for the 15-second pilot.</p>
     <div class="tbl-wrap">
       <table>
         <thead><tr><th>Tool</th><th>Used for</th><th>Negatives</th><th>How it runs</th></tr></thead>
         <tbody>
-          <tr><td>Higgsfield</td><td>Keyframes, motion, reframe, upscale, audio</td><td>Inline sentence</td><td><span class="pill pill--in">Inside Claude</span> via its connector</td></tr>
+          <tr><td>Figma Weave</td><td>Main engine: keyframes (Nano Banana 2 / Pro), motion (Kling, Veo 3.1), saved workflows</td><td>Inline for images, own field for video</td><td><span class="pill pill--in">Inside Claude</span> via Figma</td></tr>
+          <tr><td>Higgsfield</td><td>Reframe and outpaint, Marketing Studio, virality predictor, TikTok publishing</td><td>Inline sentence</td><td><span class="pill pill--in">Inside Claude</span> via its connector</td></tr>
           <tr><td>Nano Banana</td><td>Keyframes, one-detail fixes</td><td>Inline sentence</td><td><span class="pill">Google Flow / Gemini</span></td></tr>
           <tr><td>Midjourney</td><td>Keyframes, style reference, video</td><td><code>--no</code> parameter</td><td><span class="pill">Paste</span></td></tr>
           <tr><td>Veo (Google Flow)</td><td>Motion from frames, native SFX</td><td>Inline sentence</td><td><span class="pill">Paste</span></td></tr>
@@ -477,8 +479,8 @@ footer { margin-top: 88px; padding-top: 20px; border-top: 1px solid var(--hair);
     <div class="road">
       <div class="step step--done"><span class="step__s">Done</span><h3>The system</h3><p>Lock and four modes, specs, adapters, templates, and scripts with a self-test.</p></div>
       <div class="step step--done"><span class="step__s">Done</span><h3>The Claude skill</h3><p>Runs all ten stages in Claude and stops at every gate.</p></div>
-      <div class="step step--next"><span class="step__s">Next</span><h3>Video brief generator</h3><p>The Bingo Bay brief generator, rebuilt for video: intake in, brief, lock and storyboard out.</p></div>
-      <div class="step step--next"><span class="step__s">Next</span><h3>Sunpeel pilot</h3><p>Stages 1 to 3 are written. Run 4 to 10, log all generations, and publish it as a case study.</p></div>
+      <div class="step step--done"><span class="step__s">Done</span><h3>Video brief generator</h3><p>Intake in; brief, lock and storyboard out, with live platform checks and the credit budget.</p></div>
+      <div class="step step--next"><span class="step__s">In progress</span><h3>Sunpeel pilot</h3><p>Stages 1 to 3 are written. Stage 4 starts with the hero reference on Figma Weave, then shots, motion, edit and QA.</p></div>
     </div>
   </section>
 

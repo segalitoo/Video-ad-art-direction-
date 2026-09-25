@@ -1,0 +1,567 @@
+<title>Video Brief Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Tokens: Ran Segal studio design system (brand-system/tokens.css) */
+:root {
+  --surface-0: #FFFFFF; --surface-1: #F6F8FB; --surface-2: #FFFFFF; --surface-sunken: #EEF1F6;
+  --text-primary: #0C1330; --text-secondary: #5A6377; --text-muted: #8A92A3;
+  --border: #E3E8EF; --border-strong: #CBD2DD;
+  --primary: #2563EB; --primary-hover: #1E54CC; --primary-tint: #E7EFFE; --text-primary-on-tint: #1B4BB8; --on-primary: #FFFFFF;
+  --accent: #FF5D52; --accent-tint: #FFE9E6; --text-accent: #B53324;
+  --violet-tint: #ECE7FF; --text-violet: #4A32CC;
+  --success-tint: #E2F4EC; --text-success: #157551;
+  --warning-tint: #FCF1DA; --text-warning: #8A5E04;
+  --danger-tint: #FCE9E9; --text-danger: #B0282C;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+  --ring: 0 0 0 3px rgba(37, 99, 235, 0.35);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --surface-0: #0C1020; --surface-1: #141A2E; --surface-2: #161D33; --surface-sunken: #0E1426;
+    --text-primary: #EAEDF5; --text-secondary: #A8B0C2; --text-muted: #717A8E;
+    --border: #26304A; --border-strong: #36425F;
+    --primary: #4D86F0; --primary-hover: #6699F4; --primary-tint: #18233F; --text-primary-on-tint: #9CC0F8; --on-primary: #08122B;
+    --accent: #FF7A70; --accent-tint: #3A1F1C; --text-accent: #FFB4AD;
+    --violet-tint: #241C4A; --text-violet: #C2B3FF;
+    --success-tint: #11291F; --text-success: #7FD9B4;
+    --warning-tint: #2E2310; --text-warning: #F2C97A;
+    --danger-tint: #2E1517; --text-danger: #F59B9D;
+    --ring: 0 0 0 3px rgba(77, 134, 240, 0.45);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-0: #0C1020; --surface-1: #141A2E; --surface-2: #161D33; --surface-sunken: #0E1426;
+  --text-primary: #EAEDF5; --text-secondary: #A8B0C2; --text-muted: #717A8E;
+  --border: #26304A; --border-strong: #36425F;
+  --primary: #4D86F0; --primary-hover: #6699F4; --primary-tint: #18233F; --text-primary-on-tint: #9CC0F8; --on-primary: #08122B;
+  --accent: #FF7A70; --accent-tint: #3A1F1C; --text-accent: #FFB4AD;
+  --violet-tint: #241C4A; --text-violet: #C2B3FF;
+  --success-tint: #11291F; --text-success: #7FD9B4;
+  --warning-tint: #2E2310; --text-warning: #F2C97A;
+  --danger-tint: #2E1517; --text-danger: #F59B9D;
+  --ring: 0 0 0 3px rgba(77, 134, 240, 0.45);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--surface-0); color: var(--text-primary); font-family: var(--font-sans); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 24px; padding-block: 40px 72px; }
+@media (max-width: 600px) { .wrap { padding-inline: 16px; padding-block: 24px 48px; } }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.k { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-secondary); }
+
+header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+header h1 { margin-top: 10px; font-family: var(--font-display); font-weight: 400; font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.05; }
+header p.lede { margin-top: 10px; max-width: 58ch; color: var(--text-secondary); }
+.head-actions { display: flex; gap: 8px; }
+
+.layout { margin-top: 28px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px; align-items: start; }
+@media (max-width: 960px) { .layout { grid-template-columns: 1fr; } }
+
+/* Form */
+form { display: grid; gap: 22px; }
+fieldset { margin: 0; padding: 0; border: 0; display: grid; gap: 12px; min-width: 0; }
+legend { padding: 0 0 10px; font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-primary-on-tint); }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+@media (max-width: 480px) { .grid2 { grid-template-columns: 1fr; } }
+label.f { display: grid; gap: 4px; font-size: 0.8rem; font-weight: 500; color: var(--text-secondary); }
+label.f small { font-weight: 400; color: var(--text-muted); }
+input[type="text"], input[type="date"], textarea, select {
+  width: 100%; font: inherit; font-size: 0.9rem; color: var(--text-primary);
+  background: var(--surface-sunken); border: 1px solid transparent; border-radius: var(--radius-sm); padding: 8px 10px;
+}
+textarea { resize: vertical; min-height: 64px; line-height: 1.45; }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: var(--ring); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { position: relative; }
+.chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.chip span { display: inline-block; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--border-strong); font-size: 0.8rem; color: var(--text-secondary); cursor: pointer; }
+.chip input:checked + span { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.chip input:focus-visible + span { box-shadow: var(--ring); }
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.swatch { display: grid; gap: 4px; justify-items: center; font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-muted); }
+.swatch input[type="color"] { width: 40px; height: 40px; padding: 0; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: none; cursor: pointer; }
+.swatch input[type="text"] { width: 76px; padding: 4px 6px; font-family: var(--font-mono); font-size: 0.7rem; text-align: center; }
+
+button { font: inherit; cursor: pointer; }
+.btn { padding: 8px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-strong); background: var(--surface-2); color: var(--text-primary); font-size: 0.82rem; font-weight: 500; }
+.btn:hover { border-color: var(--text-muted); }
+.btn--primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.btn--primary:hover { background: var(--primary-hover); }
+.btn:focus-visible { outline: none; box-shadow: var(--ring); }
+
+/* Output */
+.out { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); display: grid; gap: 16px; }
+@media (max-width: 960px) { .out { position: static; } }
+.checks { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; display: grid; gap: 14px; }
+.checks__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.checks__head h2 { font-size: 0.95rem; font-weight: 600; }
+.score { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+ul.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+ul.list li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; align-items: baseline; font-size: 0.84rem; color: var(--text-secondary); }
+.lv { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em; text-align: center; padding: 2px 0; border-radius: 4px; }
+.lv--pass { background: var(--success-tint); color: var(--text-success); }
+.lv--warn { background: var(--warning-tint); color: var(--text-warning); }
+.lv--fail { background: var(--danger-tint); color: var(--text-danger); }
+.budget { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+@media (max-width: 480px) { .budget { grid-template-columns: 1fr; } }
+.budget div { display: grid; gap: 2px; }
+.budget b { font-size: 1.05rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.budget span { font-size: 0.74rem; color: var(--text-muted); }
+
+.files { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--surface-1); }
+.tabs { display: flex; gap: 2px; padding: 6px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+.tab { padding: 7px 12px; border: 0; border-radius: var(--radius-sm); background: none; color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.74rem; white-space: nowrap; }
+.tab[aria-selected="true"] { background: var(--surface-2); color: var(--text-primary); box-shadow: 0 0 0 1px var(--border); }
+.tab:focus-visible { outline: none; box-shadow: var(--ring); }
+.file-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 0.76rem; color: var(--text-muted); }
+pre.code { margin: 0; padding: 14px 16px; max-height: 560px; overflow: auto; font-family: var(--font-mono); font-size: 0.74rem; line-height: 1.65; white-space: pre; color: var(--text-primary); }
+.toast { font-size: 0.76rem; color: var(--text-success); min-width: 5ch; }
+.next { font-size: 0.82rem; color: var(--text-secondary); }
+.next code { font-family: var(--font-mono); font-size: 0.76rem; background: var(--surface-sunken); padding: 1px 5px; border-radius: 4px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <p class="k">Stage 01 · Video ad art direction</p>
+      <h1>Video brief generator</h1>
+      <p class="lede">A two-minute intake writes the brief, the lock and the storyboard. The platform rules and the budget are checked as you type. The lead approves the brief instead of writing it. Opens with the Sunpeel pilot as an example.</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn" type="button" id="reset">Load the Sunpeel example</button>
+      <button class="btn" type="button" id="clear">Start blank</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <form id="intake" autocomplete="off">
+      <fieldset>
+        <legend>The job</legend>
+        <div class="grid2">
+          <label class="f">Brand<input type="text" id="brand"></label>
+          <label class="f">Campaign<input type="text" id="campaign"></label>
+        </div>
+        <label class="f">Product <small>what it is, in one line</small><input type="text" id="product"></label>
+        <div class="grid2">
+          <label class="f">Requester<input type="text" id="requester"></label>
+          <label class="f">Deadline<input type="date" id="deadline"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>The message</legend>
+        <label class="f">The one thing <small>if it needs "and", it is two ads</small><input type="text" id="promise"></label>
+        <label class="f">Audience <small>who, and what stops their scroll</small><textarea id="audience" rows="2"></textarea></label>
+        <label class="f">Hook lines <small>one per line, first 3 become test variants</small><textarea id="hooks" rows="3"></textarea></label>
+        <label class="f">CTA lines <small>one per line</small><textarea id="ctas" rows="2"></textarea></label>
+        <label class="f">Mandatories <small>claims, legal lines, logo rules, disclosure</small><textarea id="mandatories" rows="2"></textarea></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Format</legend>
+        <div class="f" role="group" aria-labelledby="lbl-platforms"><span id="lbl-platforms" style="font-size:.8rem;font-weight:500;color:var(--text-secondary)">Platforms</span>
+          <div class="chips" id="platforms"></div>
+        </div>
+        <div class="f" role="radiogroup" aria-labelledby="lbl-length"><span id="lbl-length" style="font-size:.8rem;font-weight:500;color:var(--text-secondary)">Length</span>
+          <div class="chips" id="length"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>The look</legend>
+        <div class="f" role="radiogroup" aria-labelledby="lbl-mode"><span id="lbl-mode" style="font-size:.8rem;font-weight:500;color:var(--text-secondary)">Style mode</span>
+          <div class="chips" id="mode"></div>
+        </div>
+        <label class="f">World <small>setting, time of day, season</small><input type="text" id="world"></label>
+        <label class="f">Hero <small>the product or character exactly as it must look in every shot</small><textarea id="hero" rows="2"></textarea></label>
+        <div class="f"><span style="font-size:.8rem;font-weight:500;color:var(--text-secondary)">Palette <small style="font-weight:400;color:var(--text-muted)">first colour is the hero colour</small></span>
+          <div class="swatches" id="palette"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Budget</legend>
+        <div class="grid2">
+          <label class="f">Keyframe candidates per shot
+            <select id="candK"><option>4</option><option selected>8</option><option>12</option></select></label>
+          <label class="f">Motion candidates per kept frame
+            <select id="candM"><option>2</option><option selected>3</option><option>4</option></select></label>
+        </div>
+      </fieldset>
+    </form>
+
+    <div class="out">
+      <section class="checks" aria-live="polite">
+        <div class="checks__head"><h2>Pre-checks</h2><span class="score" id="score"></span></div>
+        <ul class="list" id="checks"></ul>
+        <div class="budget" id="budget"></div>
+      </section>
+
+      <section class="files">
+        <div class="tabs" role="tablist" id="tabs"></div>
+        <div class="file-bar"><span id="file-path"></span><span style="display:flex;align-items:center;gap:10px"><span class="toast" id="toast" role="status"></span><button class="btn btn--primary" type="button" id="copy">Copy file</button></span></div>
+        <pre class="code" id="code" tabindex="0"></pre>
+      </section>
+      <p class="next">Next: save the three files in <code>projects/&lt;brand&gt;-&lt;campaign&gt;/</code>, then run <code>python scripts/assemble.py storyboard.yml --check</code>.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Data, mirrored from the repo (platforms/specs.yml, lock/modes, adapters/tools.yml) ──
+const PLATFORMS = {
+  tiktok:         { name: "TikTok", aspects: ["9:16","1:1","16:9"], master: "9:16", max: 600,   rec: [21, 34], safe: { top: 7.3, bottom: 25.2, left: 5.6, right: 16.7 } },
+  meta_vertical:  { name: "Reels + Stories", aspects: ["9:16"], master: "9:16", max: 180,  rec: [6, 15],  safe: { top: 14, bottom: 35, left: 6, right: 6 } },
+  youtube_shorts: { name: "YouTube Shorts", aspects: ["9:16","1:1","16:9"], master: "9:16", max: 60, rec: [10, 30], safe: { top: 19.8, bottom: 20.3, left: 5.6, right: 11.1 } },
+  meta_feed:      { name: "Meta feed", aspects: ["4:5","1:1"], master: "4:5", max: 14460, rec: [6, 15], safe: { top: 4, bottom: 4, left: 4, right: 4 } },
+  linkedin_feed:  { name: "LinkedIn", aspects: ["1:1","4:5","16:9","9:16"], master: "1:1", max: 1800, rec: [6, 15], safe: { top: 4, bottom: 4, left: 4, right: 4 } },
+};
+const MODES = {
+  "3d-stylized":     { label: "3D stylized",     keyframeFirst: true },
+  "live-action":     { label: "Live action",     keyframeFirst: true },
+  "ugc":             { label: "UGC",             keyframeFirst: true },
+  "motion-graphics": { label: "Motion graphics", keyframeFirst: false },
+};
+const WEAVE = { draft: { name: "Nano Banana 2", credits: 6 }, final: { name: "Nano Banana Pro", credits: 11 }, video: { name: "Kling Video", credits: 35 } };
+
+// Beat structures per length. Durations add up to the length.
+const BEATS = {
+  6:  [["hook", 1.5, false], ["product", 2.5, true], ["end-card", 2, false]],
+  15: [["hook", 1.5, false], ["build", 3, true], ["product", 3, true], ["proof", 2.5, false], ["payoff", 3, true], ["end-card", 2, false]],
+  30: [["hook", 2, false], ["build", 5, true], ["product", 6, true], ["proof", 7, false], ["payoff", 6, true], ["end-card", 4, false]],
+};
+const BEAT_NOTE = {
+  hook: "first frame that stops the scroll with the sound off",
+  build: "the product arrives; energy rises",
+  product: "close on the product doing its one thing",
+  proof: "why to believe it: flavours, a result, a reaction",
+  payoff: "the feeling of the promise, the product in frame",
+};
+
+const SUNPEEL = {
+  brand: "Sunpeel", campaign: "Peel back summer", product: "zero-sugar sparkling citrus soda, 330ml can",
+  requester: "Brand manager", deadline: "2026-10-30",
+  promise: "All the zing of summer, none of the sugar",
+  audience: "20 to 32, city renters. They scroll past health lectures and stop for colour, texture and a satisfying sound.",
+  hooks: "Peel back summer.\nSoda, but make it summer.\nZero sugar. Full zing.",
+  ctas: "Find it cold near you.\nTry the summer 3-pack.",
+  mandatories: "\"Zero sugar\" must match the label. Can visible in 3 of 5 shots. AI label where required.",
+  platforms: ["tiktok", "meta_vertical", "youtube_shorts", "meta_feed"], length: "15", mode: "3d-stylized",
+  world: "a sun-bleached rooftop at golden hour, terracotta tiles, potted citrus trees",
+  hero: "a slim 330ml Sunpeel can in sunset orange with a white peeling-rind stripe and beads of condensation",
+  palette: ["#FF7A1A", "#FFC93C", "#2E9E6B", "#FFB3A7", "#C8553D", "#3B1F3A"],
+  candK: "8", candM: "3",
+};
+const BLANK = {
+  brand: "", campaign: "", product: "", requester: "", deadline: "", promise: "", audience: "",
+  hooks: "", ctas: "", mandatories: "", platforms: ["tiktok", "meta_vertical"], length: "15", mode: "3d-stylized",
+  world: "", hero: "", palette: ["#2563EB", "#FF5D52", "#F6F8FB", "#0C1330"], candK: "8", candM: "3",
+};
+
+// ── Build the controls ──
+const $ = id => document.getElementById(id);
+const TEXT_FIELDS = ["brand","campaign","product","requester","deadline","promise","audience","hooks","ctas","mandatories","world","hero","candK","candM"];
+
+function chip(group, type, value, label) {
+  const l = document.createElement("label"); l.className = "chip";
+  l.innerHTML = `<input type="${type}" name="${group}" value="${value}" id="${group}-${value}"><span>${label}</span>`;
+  return l;
+}
+Object.entries(PLATFORMS).forEach(([id, p]) => $("platforms").appendChild(chip("platforms", "checkbox", id, p.name)));
+["6", "15", "30"].forEach(v => $("length").appendChild(chip("length", "radio", v, v + "s")));
+Object.entries(MODES).forEach(([id, m]) => $("mode").appendChild(chip("mode", "radio", id, m.label)));
+for (let i = 0; i < 6; i++) {
+  const d = document.createElement("div"); d.className = "swatch";
+  d.innerHTML = `<input type="color" id="pc${i}" aria-label="Palette colour ${i + 1}"><input type="text" id="ph${i}" aria-label="Palette colour ${i + 1} hex" maxlength="7">`;
+  $("palette").appendChild(d);
+}
+
+function setState(s) {
+  TEXT_FIELDS.forEach(f => { $(f).value = s[f] ?? ""; });
+  document.querySelectorAll('input[name="platforms"]').forEach(i => { i.checked = s.platforms.includes(i.value); });
+  document.querySelectorAll('input[name="length"]').forEach(i => { i.checked = i.value === s.length; });
+  document.querySelectorAll('input[name="mode"]').forEach(i => { i.checked = i.value === s.mode; });
+  for (let i = 0; i < 6; i++) {
+    const hex = s.palette[i] || "";
+    $("ph" + i).value = hex; $("pc" + i).value = /^#[0-9a-f]{6}$/i.test(hex) ? hex : "#ffffff";
+  }
+  render();
+}
+function getState() {
+  const s = {};
+  TEXT_FIELDS.forEach(f => { s[f] = $(f).value.trim(); });
+  s.platforms = [...document.querySelectorAll('input[name="platforms"]:checked')].map(i => i.value);
+  s.length = (document.querySelector('input[name="length"]:checked') || {}).value || "15";
+  s.mode = (document.querySelector('input[name="mode"]:checked') || {}).value || "3d-stylized";
+  s.palette = [0,1,2,3,4,5].map(i => $("ph" + i).value.trim()).filter(Boolean);
+  return s;
+}
+
+// ── Writers ──
+const q = v => JSON.stringify(String(v ?? ""));          // JSON strings are valid YAML
+const lines = t => t.split("\n").map(x => x.trim()).filter(Boolean);
+const slug = t => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "brand";
+const orTodo = (v, what) => v || `<${what}>`;
+
+function wordsLimit(len) { return len <= 6 ? 4 : len <= 15 ? 5 : 6; }
+
+function writeBrief(s) {
+  const hooks = lines(s.hooks);
+  const plats = s.platforms.map(p => PLATFORMS[p].name).join(" · ") || "<pick platforms>";
+  return `# Video ad brief · ${orTodo(s.brand, "brand")} · ${orTodo(s.campaign, "campaign")}
+
+> Stage 1 output, written by the brief generator. The creative lead approves it before the lock is written.
+
+| Field | Value |
+|---|---|
+| Brand / product | ${orTodo(s.brand, "brand")}, ${orTodo(s.product, "product")} |
+| Campaign | ${orTodo(s.campaign, "campaign")} |
+| Requester | ${orTodo(s.requester, "requester")} |
+| Deadline | ${orTodo(s.deadline, "deadline")} |
+| Platforms | ${plats} |
+| Length | ${s.length}s master |
+| Style mode | ${s.mode} |
+
+## 1. The one thing
+${orTodo(s.promise, "one sentence")}
+
+## 2. Audience
+${orTodo(s.audience, "who, and what stops their scroll")}
+
+## 3. Insight
+<the true tension the ad plays on, one line>
+
+## 4. Hook angles (3 kept)
+| # | Line | First frame, sound off |
+|---|---|---|
+${[0,1,2].map(i => `| ${i + 1} | ${hooks[i] || "<hook>"} | <what the viewer sees> |`).join("\n")}
+
+## 5. Mandatories
+${orTodo(s.mandatories, "claims, legal lines, logo rules, AI disclosure")}
+
+## 6. Success metric
+Hook rate (3-second views / impressions). The hooks are tested against each other with the same body.
+
+## Approval
+- [ ] Creative lead approved · name · date
+`;
+}
+
+function writeLock(s) {
+  const pal = s.palette.length ? s.palette : ["#000000"];
+  const roles = ["hero", "accent", "accent", "background", "background", "type"];
+  return `# ${slug(s.brand)}.dna.yml · v1.0
+# owner: art director
+# Written by the brief generator. Tokens left out come from lock/modes/${s.mode}.yml.
+# Name each palette colour before the lock is signed.
+
+meta:
+  brand: ${q(orTodo(s.brand, "brand"))}
+  campaign: ${q(orTodo(s.campaign, "campaign"))}
+  version: "1.0"
+  owner: "Art director"
+  mode: ${s.mode}
+  audience: ${q(s.audience)}
+  promise: ${q(s.promise)}
+
+tokens:
+  WORLD: ${q(orTodo(s.world, "setting, time of day, season"))}
+
+palette:
+${pal.map((h, i) => `  - {hex: ${q(h.toUpperCase())}, name: ${q("colour " + (i + 1))}, role: ${roles[i] || "accent"}}`).join("\n")}
+
+type:
+  family: "<font>"
+  weight: "<weight>"
+  case: sentence
+  max_words_per_super: ${wordsLimit(+s.length)}
+  min_size_pct_of_height: 3.5
+
+sound:
+  genre: "<genre>"
+  bpm: 100
+  instruments: "<instruments>"
+  voice: none
+  signature: "<sound logo or recurring SFX>"
+
+end_card:
+  duration_s: ${BEATS[s.length].find(b => b[0] === "end-card")[1]}
+  logo: "<logo file>"
+  cta_style: "super plus platform button"
+
+negative: []
+
+hero:
+  description: ${q(orTodo(s.hero, "the product, exactly"))}
+  reference: "keyframes/hero_v1.png"   # set after the stage 4 gate
+`;
+}
+
+function writeStoryboard(s) {
+  const hooks = lines(s.hooks), ctas = lines(s.ctas);
+  const master = "9:16";
+  const shots = BEATS[s.length].map(([beat, dur, hero], i) => {
+    const id = beat === "end-card" ? "S99" : "S0" + (i + 1);
+    if (beat === "end-card") {
+      return `  - id: S99
+    beat: end-card
+    duration_s: ${dur}
+    subject: ${q((s.brand || "Brand") + " logo and CTA on the hero colour")}
+    generate: false
+    super: ${q(ctas[0] || "<CTA>")}`;
+    }
+    const sup = beat === "hook" ? (hooks[0] || "<hook line>") : "";
+    return `  - id: ${id}
+    beat: ${beat}
+    duration_s: ${dur}
+    subject: ${q("<" + BEAT_NOTE[beat] + ">")}
+    action: "<what moves, and how>"
+    camera_move: "<static | slow push-in | orbit | follow>"
+    hero: ${hero}
+    super: ${q(sup)}
+    sound: "<SFX or music cue>"
+    generate: true`;
+  });
+  return `# ${slug(s.brand)} · ${s.campaign || "campaign"} · ${s.length}s · stage 3 draft
+# Written by the brief generator. Fill each <...> at stage 3.
+
+ad:
+  id: ${slug(s.brand)}-${slug(s.campaign || "campaign")}-${s.length}s
+  lock: ${slug(s.brand)}.dna.yml
+  length_s: ${s.length}
+  master_aspect: "${master}"
+  platforms: [${s.platforms.join(", ")}]
+  tools: [figma-weave, higgsfield]
+  candidates: {keyframe: ${s.candK}, motion: ${s.candM}}
+
+shots:
+${shots.join("\n\n")}
+
+# Quote every line: a comma inside {...} breaks YAML.
+variants:
+  hooks:
+${(hooks.slice(0, 3).length ? hooks.slice(0, 3) : ["<hook line>"]).map((h, i) => `    - {id: H${i + 1}, super: ${q(h)}}`).join("\n")}
+  ctas:
+${(ctas.length ? ctas : ["<CTA>"]).map((c, i) => `    - {id: C${i + 1}, text: ${q(c)}}`).join("\n")}
+`;
+}
+
+// ── Checks: the same rules as assemble.py --check, plus budget ──
+function checks(s) {
+  const out = [], len = +s.length, lim = wordsLimit(len);
+  const add = (lv, msg) => out.push([lv, msg]);
+  const required = [["brand", "Brand"], ["campaign", "Campaign"], ["product", "Product"], ["promise", "The one thing"], ["audience", "Audience"], ["hero", "Hero"]];
+  const missing = required.filter(([k]) => !s[k]).map(([, l]) => l);
+  missing.length ? add("fail", "Missing: " + missing.join(", ")) : add("pass", "Every brief field is filled");
+  if (/\band\b/i.test(s.promise)) add("warn", "The one thing contains \"and\". Check it is one message, not two");
+
+  if (!s.platforms.length) add("fail", "Pick at least one platform");
+  s.platforms.forEach(p => {
+    const P = PLATFORMS[p];
+    if (len > P.max) add("fail", `${P.name}: ${len}s is over the ${P.max}s maximum`);
+    else if (len < P.rec[0] || len > P.rec[1]) add("warn", `${P.name}: ${len}s is outside the recommended ${P.rec[0]}–${P.rec[1]}s`);
+    if (!P.aspects.includes("9:16")) add("warn", `${P.name}: reframe the 9:16 master to ${P.master}`);
+  });
+  const nine = s.platforms.filter(p => PLATFORMS[p].aspects.includes("9:16"));
+  if (nine.length) {
+    const z = ["top", "bottom", "left", "right"].reduce((a, k) => (a[k] = Math.max(...nine.map(p => PLATFORMS[p].safe[k])), a), {});
+    add("pass", `9:16 safe zone: top ${z.top}% · bottom ${z.bottom}% · left ${z.left}% · right ${z.right}%`);
+  }
+
+  const hooks = lines(s.hooks);
+  if (hooks.length < 3) add("warn", `${hooks.length} hook line${hooks.length === 1 ? "" : "s"}; 3 give a real test`);
+  hooks.forEach((h, i) => { const w = h.split(/\s+/).length; if (w > lim) add("warn", `Hook ${i + 1} has ${w} words; a ${len}s ad allows ${lim}`); });
+  if (!lines(s.ctas).length) add("fail", "Add at least one CTA line");
+  lines(s.ctas).forEach((c, i) => { const w = c.split(/\s+/).length; if (w > lim) add("warn", `CTA ${i + 1} has ${w} words; a ${len}s ad allows ${lim}`); });
+
+  const bad = s.palette.filter(h => !/^#[0-9a-f]{6}$/i.test(h));
+  if (bad.length) add("fail", "Invalid hex: " + bad.join(", "));
+  else if (s.palette.length < 4) add("warn", `${s.palette.length} colours; 4 to 8 keep a lock tight`);
+  else add("pass", `Palette of ${s.palette.length} colours`);
+  return out;
+}
+
+function budget(s) {
+  const beats = BEATS[s.length].filter(b => b[0] !== "end-card");
+  const heroShots = beats.some(b => b[2]) ? 1 : 0;
+  const k = (beats.length + heroShots) * +s.candK;
+  const m = MODES[s.mode].keyframeFirst ? beats.length * +s.candM : 0;
+  return {
+    k, m,
+    draft: k * WEAVE.draft.credits + m * WEAVE.video.credits,
+    final: k * WEAVE.final.credits + m * WEAVE.video.credits,
+  };
+}
+
+// ── Render ──
+const FILES = [
+  { id: "brief", label: "brief.md", write: writeBrief },
+  { id: "lock", label: "lock.dna.yml", write: writeLock },
+  { id: "board", label: "storyboard.yml", write: writeStoryboard },
+];
+let active = "brief";
+try { active = localStorage.getItem("vbg-tab") || "brief"; } catch (e) {}
+if (!FILES.some(f => f.id === active)) active = "brief";
+
+FILES.forEach(f => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "tab"; b.setAttribute("role", "tab"); b.id = "tab-" + f.id; b.textContent = f.label;
+  b.addEventListener("click", () => { active = f.id; try { localStorage.setItem("vbg-tab", active); } catch (e) {} render(); });
+  $("tabs").appendChild(b);
+});
+
+function fileName(f, s) {
+  return f.id === "lock" ? `${slug(s.brand)}.dna.yml` : f.label;
+}
+
+function render() {
+  const s = getState();
+  const list = checks(s);
+  $("checks").innerHTML = list.map(([lv, msg]) => `<li><span class="lv lv--${lv}">${lv.toUpperCase()}</span><span>${msg.replace(/</g, "&lt;")}</span></li>`).join("");
+  const fails = list.filter(c => c[0] === "fail").length, warns = list.filter(c => c[0] === "warn").length;
+  $("score").textContent = `${fails} fail · ${warns} warn`;
+  const b = budget(s);
+  $("budget").innerHTML = `
+    <div><b>${b.k} + ${b.m}</b><span>keyframes + motion clips per round</span></div>
+    <div><b>≈ ${b.draft.toLocaleString()}</b><span>Weave credits, drafts on ${WEAVE.draft.name}</span></div>
+    <div><b>≈ ${b.final.toLocaleString()}</b><span>Weave credits, finals on ${WEAVE.final.name}</span></div>`;
+  FILES.forEach(f => $("tab-" + f.id).setAttribute("aria-selected", String(f.id === active)));
+  const f = FILES.find(x => x.id === active);
+  $("file-path").textContent = `projects/${slug(s.brand)}-${slug(s.campaign || "campaign")}/${fileName(f, s)}`;
+  $("code").textContent = f.write(s);
+  try { localStorage.setItem("vbg-state", JSON.stringify(s)); } catch (e) {}
+}
+
+// Palette: keep the colour picker and hex field in step.
+for (let i = 0; i < 6; i++) {
+  $("pc" + i).addEventListener("input", e => { $("ph" + i).value = e.target.value.toUpperCase(); render(); });
+  $("ph" + i).addEventListener("input", e => { if (/^#[0-9a-f]{6}$/i.test(e.target.value)) $("pc" + i).value = e.target.value; });
+}
+$("intake").addEventListener("input", render);
+$("intake").addEventListener("submit", e => e.preventDefault());
+$("reset").addEventListener("click", () => setState(SUNPEEL));
+$("clear").addEventListener("click", () => setState(BLANK));
+
+$("copy").addEventListener("click", () => {
+  const text = $("code").textContent;
+  const done = msg => { $("toast").textContent = msg; setTimeout(() => { $("toast").textContent = ""; }, 1800); };
+  const fallback = () => {
+    const r = document.createRange(); r.selectNodeContents($("code"));
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    done("Selected. Press Ctrl+C");
+  };
+  try { navigator.clipboard.writeText(text).then(() => done("Copied"), fallback); } catch (e) { fallback(); }
+});
+
+let saved = null;
+try { saved = JSON.parse(localStorage.getItem("vbg-state")); } catch (e) {}
+setState(saved && saved.platforms ? { ...BLANK, ...saved } : SUNPEEL);
+</script>
