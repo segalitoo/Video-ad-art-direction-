@@ -1,0 +1,22 @@
+# Mode preset: motion graphics (type, shape and UI in motion)
+# Here generators make textures and backgrounds. Type and layout are
+# built by hand (After Effects, Figma, Rive, Jitter), never generated.
+mode: motion-graphics
+tokens:
+  STYLE: flat vector motion design, bold graphic shapes, brand typography
+  FORM: geometric shapes, clean grid, generous negative space
+  LIGHT: flat light, no shadows or soft long shadows only
+  GRADE: exact brand colours, no gradients unless locked
+  CAMERA: 2D camera, flat frontal view, snap zooms and pans
+  MOTION: snappy ease-in-out, on-beat cuts and transitions
+  TECH: crisp edges, vector clean, seamless loopable background
+negative:
+  - photographic textures
+  - 3D perspective
+  - generated text or letters
+  - noise and grain
+keyframe_first: false            # layouts come from the design tool
+qa_watch:
+  - Type must be real text from the copy matrix, never generated
+  - Colours must match hex values exactly (check in the edit)
+  - Motion timing lines up with the music beat

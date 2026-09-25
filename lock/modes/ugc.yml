@@ -1,0 +1,21 @@
+# Mode preset: UGC (creator-style, phone-shot)
+# UGC works because it looks unpolished. The lock controls the brand, not the polish.
+mode: ugc
+tokens:
+  STYLE: authentic creator video, shot on a phone front camera, vertical
+  FORM: everyday home or street setting, product used naturally in hand
+  LIGHT: available window light or daylight, slightly uneven
+  GRADE: native phone colour, no heavy grade
+  CAMERA: handheld selfie framing, small natural shake, eye-level
+  MOTION: casual, real-time pacing, direct talk to camera
+  TECH: phone sensor look, mild compression, natural skin texture
+negative:
+  - studio lighting
+  - cinematic camera moves
+  - perfect skin retouching
+  - text in the image
+keyframe_first: true
+qa_watch:
+  - Synthetic presenter must be disclosed where the platform or law requires it
+  - Lip-sync drift on dialogue
+  - Claims spoken by a "customer" still need legal review

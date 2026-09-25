@@ -1,0 +1,22 @@
+# Mode preset: 3D stylized (the Bingo Bay look, extended to motion)
+# A lock picks one mode. Its own tokens override these defaults.
+mode: 3d-stylized
+tokens:
+  STYLE: glossy stylized 3D render, premium animated commercial look
+  FORM: soft rounded shapes, clean silhouettes that read at thumbnail size
+  LIGHT: soft key light with warm rim light
+  GRADE: clean saturated colour, soft contrast
+  CAMERA: smooth virtual camera, 35mm equivalent, clean compositions
+  MOTION: bouncy, squash-and-stretch energy, weighty landings
+  TECH: subsurface scattering, glossy highlights, high detail, no noise
+negative:
+  - photoreal skin
+  - text or letters in the image
+  - watermark
+  - deformed hands
+  - melting or morphing shapes between frames
+keyframe_first: true
+qa_watch:
+  - Character or product drifts off-model between shots
+  - Plastic "AI sheen" that differs from shot to shot
+  - Physics that floats instead of landing

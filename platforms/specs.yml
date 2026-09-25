@@ -1,0 +1,129 @@
+# platforms/specs.yml
+# One file for every platform rule. QA (scripts/spec_check.py) reads this file,
+# so a spec change is made here once and every check inherits it.
+#
+# last_checked: 2026-09-25
+# Platforms change these often. Anything marked `verify: true` comes from
+# third-party guides, not from an official number. Before a real client
+# delivery, check it against the platform's own template.
+#
+# Safe zones are in percent of the frame, so they work at any resolution.
+# Keep text, logo, product and faces inside the frame minus these margins.
+
+last_checked: 2026-09-25
+
+platforms:
+
+  tiktok:
+    name: TikTok In-Feed
+    aspects: ["9:16", "1:1", "16:9"]
+    master_aspect: "9:16"
+    resolution: [1080, 1920]
+    min_short_side: 720
+    fps: [23.976, 60]
+    duration_s:
+      max: 600
+      recommended: [21, 34]        # TikTok's own guidance
+    safe_zone_pct:                 # conservative preset for 1080x1920
+      top: 7.3                     # ~140px: username, "Sponsored"
+      bottom: 25.2                 # ~484px: caption, CTA, music
+      left: 5.6                    # ~60px
+      right: 16.7                  # ~180px: like / comment / share column
+      verify: true                 # TikTok publishes templates, not pixels
+    audio: expected
+    max_file_mb: 500
+    sources:
+      - https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads
+      - https://zeely.ai/blog/tiktok-safe-zones/
+
+  meta_vertical:
+    name: Instagram and Facebook Reels + Stories
+    aspects: ["9:16"]
+    master_aspect: "9:16"
+    resolution: [1080, 1920]
+    min_short_side: 720
+    fps: [23.976, 60]
+    duration_s:
+      max: 180
+      recommended: [6, 15]
+      verify: true
+    safe_zone_pct:                 # Meta's unified 9:16 safe zone (March 2026)
+      top: 14
+      bottom: 35
+      left: 6
+      right: 6
+    audio: expected
+    max_file_mb: 4000
+    sources:
+      - https://blog.adnabu.com/meta-ads/meta-safe-zones/
+      - https://billo.app/blog/meta-ads-safe-zones/
+
+  youtube_shorts:
+    name: YouTube Shorts
+    aspects: ["9:16", "1:1", "16:9"]
+    master_aspect: "9:16"
+    resolution: [1080, 1920]
+    min_short_side: 720
+    fps: [23.976, 60]
+    duration_s:
+      max: 60                      # ads up to 3 min, but the Shorts feed plays 60s
+      recommended: [10, 30]
+    safe_zone_pct:
+      top: 19.8                    # ~380px
+      bottom: 20.3                 # ~390px, plus the ad CTA button
+      left: 5.6                    # ~60px
+      right: 11.1                  # ~120px: like / comment / share column
+      verify: true
+    audio: expected
+    max_file_mb: 256000
+    sources:
+      - https://support.google.com/google-ads/answer/16041697?hl=en
+      - https://www.pod2reels.com/blog/youtube-shorts-safe-zone-guide
+
+  meta_feed:
+    name: Instagram and Facebook Feed
+    aspects: ["4:5", "1:1"]
+    master_aspect: "4:5"
+    resolution: [1080, 1350]
+    min_short_side: 600
+    fps: [23.976, 60]
+    duration_s:
+      max: 14460
+      recommended: [6, 15]
+    safe_zone_pct:                 # feed has no UI on top of the video,
+      top: 4                       # these are a small print margin only
+      bottom: 4
+      left: 4
+      right: 4
+    audio: optional                # most feed video plays muted
+    max_file_mb: 4000
+    sources:
+      - https://adsuploader.com/blog/meta-ads-size
+
+  linkedin_feed:
+    name: LinkedIn Feed (B2B clients)
+    aspects: ["1:1", "4:5", "16:9", "9:16"]
+    master_aspect: "1:1"
+    resolution: [1080, 1080]
+    min_short_side: 360
+    fps: [10, 60]
+    duration_s:
+      max: 1800
+      recommended: [6, 15]
+      verify: true
+    safe_zone_pct:
+      top: 4
+      bottom: 4
+      left: 4
+      right: 4
+    audio: optional
+    max_file_mb: 200
+    sources: []
+    verify: true
+
+# Sound, for every platform. Platforms normalise loudness, so a master that is
+# too loud gets turned down and loses punch; one that clips distorts on phones.
+loudness:
+  integrated_lufs: -14
+  tolerance_lu: 2
+  true_peak_dbtp_max: -1.0         # same ceiling as the Bingo Bay loop

@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.DS_Store
+# Media stays out of git. Keep it in Drive or the asset library;
+# the iteration log records where each file lives.
+*.mp4
+*.mov
+*.webm
+*.wav
+projects/*/clips/
+projects/*/exports/
+.selftest/

@@ -1,0 +1,113 @@
+# adapters/tools.yml
+# One master prompt, many tools. scripts/assemble.py reads this file and
+# rewrites each shot prompt into the form each tool expects.
+#
+# Add a tool: copy a block, set its fields, run assemble.py with --tools.
+# Tools change fast. Fields marked `verify: true` were right at
+# last_checked, not guaranteed now.
+#
+# Fields
+#   role        image | video | audio
+#   negative    param  -> appended as a parameter (see negative_param)
+#               field  -> printed separately, for the tool's own negative field
+#               inline -> appended as a positive "Keep it clean: no ..." sentence
+#               none   -> dropped; the tool works better with positive wording only
+#   aspect      param  -> appended with aspect_param
+#               ui     -> set in the tool's interface, printed as a reminder
+#   motion_prompt  true -> for image-to-video, send motion only, not the look.
+#                  The keyframe already carries the look; repeating it fights it.
+
+last_checked: 2026-09-25
+
+tools:
+
+  generic:
+    role: any
+    negative: inline
+    aspect: ui
+    notes: Fallback for any tool not listed.
+
+  higgsfield:
+    role: image+video
+    negative: inline
+    aspect: ui
+    motion_prompt: true
+    runs_in_claude: true
+    notes: >
+      Connected to Claude as an MCP server. Ask for a model recommendation
+      (models_explore, action recommend) per shot. Keyframe with generate_image,
+      then generate_video with the kept keyframe as the start frame.
+      Use reframe or outpaint for 4:5 and 1:1 derivatives, upscale_video last.
+      Use generate_video_batch for the 8-12 candidates, jobs_wait, then review.
+
+  nano-banana:
+    role: image
+    negative: inline
+    aspect: ui
+    notes: >
+      Gemini image model, used in Google Flow and the Gemini app. Strong for
+      keeping a hero consistent from reference images. Best for keyframes and
+      for fixing one detail in a kept frame without regenerating it.
+
+  midjourney:
+    role: image+video
+    negative: param
+    negative_param: "--no {items}"
+    aspect: param
+    aspect_param: "--ar {w}:{h}"
+    extra_params: "--raw"
+    motion_prompt: true
+    verify: true
+    notes: >
+      Use a style reference (--sref) from the approved hero keyframe to hold the
+      look across shots. Animate a kept image from the web app; choose low
+      motion for product shots, high motion for action.
+
+  google-flow-veo:
+    role: video
+    negative: inline
+    aspect: ui
+    motion_prompt: true
+    audio_native: true
+    clip_s: 8
+    verify: true
+    notes: >
+      Veo in Google Flow. Use "Frames to video" with the kept keyframe.
+      Veo can generate sound: describe the SFX in the prompt, or say
+      "no music" so the edit keeps control of the soundtrack.
+
+  kling:
+    role: video
+    negative: field
+    aspect: ui
+    motion_prompt: true
+    clip_s: [5, 10]
+    verify: true
+    notes: >
+      Image-to-video with optional end frame. Start and end frames give the
+      most control for product reveals. Paste the negative list in its own field.
+
+  runway:
+    role: video
+    negative: none
+    aspect: ui
+    motion_prompt: true
+    clip_s: [5, 10]
+    verify: true
+    notes: >
+      Image-to-video. Runway's own guidance is to describe what you want, not
+      what you don't, so the negative list is dropped for this tool.
+
+  suno:
+    role: audio
+    negative: inline
+    aspect: none
+    notes: >
+      Music bed from the lock's sound tokens. Ask for an instrumental with a
+      set bar count and length close to the edit, then cut and finish by hand.
+
+  elevenlabs:
+    role: audio
+    negative: none
+    aspect: none
+    notes: Voiceover and multi-language versions from the approved script.

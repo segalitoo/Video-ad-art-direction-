@@ -1,0 +1,2 @@
+id,date,stage,shot,prompt_ref,tool,model,lock_version,seed,verdict,reason,credits,file
+0001,2026-01-01,keyframe,S01,S01-K,nano-banana,,1.0,,rejected,"example: label warped",,

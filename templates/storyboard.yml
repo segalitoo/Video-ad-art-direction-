@@ -1,0 +1,44 @@
+# storyboard.yml · stage 3 output
+# The shot list. scripts/assemble.py turns it into prompts,
+# scripts/matrix.py turns its variants into the ad matrix.
+# Copy this file next to the lock, fill it in, then run:
+#   python scripts/assemble.py <this file> --check
+
+ad:
+  id: <brand>-<concept>-15s
+  lock: <brand>.dna.yml          # path relative to this file
+  length_s: 15
+  master_aspect: "9:16"          # generate once in this ratio, reframe the rest
+  platforms: [tiktok, meta_vertical, youtube_shorts, meta_feed]
+  tools: [higgsfield, nano-banana, google-flow-veo, kling]
+
+# Beats: hook | build | product | proof | payoff | end-card
+# The hook shot must land inside the first 2 seconds, with sound off.
+shots:
+  - id: S01
+    beat: hook
+    duration_s: 1.5
+    subject: <what is in the frame, one sentence; this fills the [SHOT] slot>
+    action: <what moves, and how; this becomes the motion prompt>
+    camera_move: <static | slow push-in | orbit | whip pan | handheld follow>
+    hero: false                  # true = attach the hero reference image
+    super: <on-screen text, from the copy matrix>
+    sound: <SFX or music cue>
+    vo: ""                       # voiceover line, if any
+    generate: true               # false = built by hand (end card, type)
+
+  - id: S99
+    beat: end-card
+    duration_s: 2
+    subject: logo and CTA on the hero colour
+    generate: false
+    super: <CTA line>
+
+# The ad matrix. One approved base, many variants.
+# Quote every line: a comma inside {...} breaks YAML.
+variants:
+  hooks:
+    - {id: H1, super: "<hook line 1>"}
+    - {id: H2, super: "<hook line 2>"}
+  ctas:
+    - {id: C1, text: "<CTA 1>"}

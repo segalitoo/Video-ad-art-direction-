@@ -1,0 +1,64 @@
+# <brand>-<campaign>.dna.yml · v1.0
+# owner: art director
+#
+# The lock. Written once, before the first generation.
+# Every prompt is built from these tokens by scripts/assemble.py.
+# Nothing is written freehand, so nothing drifts quietly.
+#
+# Change a token -> raise the version. Every clip in the iteration log
+# records the lock version it was made with.
+
+meta:
+  brand: <Brand name>
+  campaign: <Campaign name>
+  version: "1.0"
+  owner: <art director name>
+  mode: 3d-stylized            # 3d-stylized | live-action | ugc | motion-graphics
+  audience: <one line: who, and what they care about>
+  promise: <one line: the single thing the ad must say>
+
+# Leave a token out to use the mode default from lock/modes/<mode>.yml.
+tokens:
+  STYLE:
+  WORLD:        # where the ad lives: setting, time of day, season
+  FORM:         # how the product and characters look
+  LIGHT:
+  GRADE:
+  CAMERA:
+  MOTION:
+  TECH:
+
+# 4 to 8 colours. The first one is the hero colour.
+palette:
+  - {hex: "#000000", name: <name>, role: hero}
+  - {hex: "#000000", name: <name>, role: accent}
+  - {hex: "#000000", name: <name>, role: background}
+
+# On-screen text is added in the edit, never generated.
+type:
+  family: <font>
+  weight: <weight>
+  case: sentence            # sentence | upper
+  max_words_per_super: 6
+  min_size_pct_of_height: 3.5
+
+sound:
+  genre: <genre>
+  bpm: <bpm>
+  instruments: <instruments>
+  voice: none               # none | voiceover | on-camera dialogue
+  signature: <sound logo or recurring SFX>
+
+end_card:
+  duration_s: 2
+  logo: <file or description>
+  cta_style: <button, super, or both>
+
+# Added to the mode's negative list.
+negative: []
+
+# The recurring hero (product or character). Every shot that shows it
+# uses the same reference image, uploaded once to each tool.
+hero:
+  description: <one line, exact>
+  reference: <path to the approved hero keyframe, set after stage 4>

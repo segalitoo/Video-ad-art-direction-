@@ -1,0 +1,21 @@
+# Mode preset: live action (photoreal, shot-on-camera look)
+mode: live-action
+tokens:
+  STYLE: photoreal commercial cinematography, shot on a cinema camera
+  FORM: real materials, true-to-life product proportions and label
+  LIGHT: motivated natural light, soft practical sources
+  GRADE: filmic colour grade, gentle halation, natural skin tones
+  CAMERA: 50mm lens, shallow depth of field, real camera weight
+  MOTION: grounded, real-world physics and timing
+  TECH: fine film grain, accurate reflections, sharp focus on the subject
+negative:
+  - plastic skin
+  - extra or fused fingers
+  - warped or misspelled product label
+  - text in the image
+  - uncanny faces
+keyframe_first: true
+qa_watch:
+  - Hands, teeth and eyes in motion
+  - Product label warps or changes between frames
+  - Real people or likenesses that need rights clearance

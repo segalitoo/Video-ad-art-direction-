@@ -1,0 +1,59 @@
+# sunpeel-summer.dna.yml · v1.0
+# owner: art director
+# Fictional brand for the portfolio pilot. Name not trademark-checked.
+#
+# Switching the whole ad to another look is one line: change meta.mode.
+# Tokens set here override the mode; the rest come from lock/modes/.
+
+meta:
+  brand: Sunpeel
+  campaign: Peel back summer
+  version: "1.0"
+  owner: Art director
+  mode: 3d-stylized
+  audience: 20 to 32, city renters, swapping sugary soda for something lighter that still feels like a treat
+  promise: All the zing of summer, none of the sugar
+
+tokens:
+  STYLE: glossy stylized 3D render, premium animated drinks commercial
+  WORLD: a sun-bleached rooftop at golden hour, terracotta tiles, potted citrus trees, soft city skyline far behind
+  FORM: soft rounded shapes, real can proportions, juicy citrus with visible pulp, clean silhouettes
+  LIGHT: low golden-hour sun, warm rim light, sparkling highlights on condensation
+  MOTION: juicy springy motion, bubbles rising in slow motion, weighty bouncy landings
+
+palette:
+  - {hex: "#FF7A1A", name: sunset orange, role: hero}
+  - {hex: "#FFC93C", name: peel yellow, role: accent}
+  - {hex: "#2E9E6B", name: leaf green, role: accent}
+  - {hex: "#FFB3A7", name: blush sky, role: background}
+  - {hex: "#C8553D", name: terracotta, role: background}
+  - {hex: "#FFF4E0", name: cream, role: type on dark}
+  - {hex: "#3B1F3A", name: deep plum, role: type on light}
+
+type:
+  family: Recoleta (or any soft serif display)
+  weight: SemiBold
+  case: sentence
+  max_words_per_super: 5
+  min_size_pct_of_height: 3.5
+
+sound:
+  genre: sunny indie pop
+  bpm: 104
+  instruments: plucked guitar, hand claps, bright synth bass
+  voice: none
+  signature: can crack followed by a rising fizz
+
+end_card:
+  duration_s: 2
+  logo: Sunpeel wordmark in cream on sunset orange
+  cta_style: super plus platform button
+
+negative:
+  - human hands
+  - condensation that looks like sweat
+  - dull or brown citrus
+
+hero:
+  description: a slim 330ml Sunpeel can in sunset orange with a white peeling-rind stripe and beads of condensation
+  reference: keyframes/hero-can_v1.png   # set after the stage 4 gate
