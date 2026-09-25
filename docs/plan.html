@@ -1,0 +1,525 @@
+<title>Video Ad Art Direction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Tokens: Ran Segal studio design system (brand-system/tokens.css) */
+:root {
+  --surface-0: #FFFFFF; --surface-1: #F6F8FB; --surface-2: #FFFFFF; --surface-sunken: #EEF1F6;
+  --text-primary: #0C1330; --text-secondary: #5A6377; --text-muted: #8A92A3;
+  --border: #E3E8EF; --border-strong: #CBD2DD; --hair: #E3E8EF;
+  --primary: #2563EB; --primary-tint: #E7EFFE; --text-primary-on-tint: #1B4BB8;
+  --accent: #FF5D52; --accent-tint: #FFE9E6; --text-accent: #B53324;
+  --violet: #6D4AFF; --violet-tint: #ECE7FF; --text-violet: #4A32CC;
+  --success: #1F9D6B; --text-success: #157551; --warning-tint: #FCF1DA; --text-warning: #8A5E04;
+  --frame-fill: #0C1330; --frame-safe: #2563EB;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+  --shadow-lg: 0 12px 32px rgba(12, 19, 48, 0.12);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --surface-0: #0C1020; --surface-1: #141A2E; --surface-2: #161D33; --surface-sunken: #0E1426;
+    --text-primary: #EAEDF5; --text-secondary: #A8B0C2; --text-muted: #717A8E;
+    --border: #26304A; --border-strong: #36425F; --hair: #26304A;
+    --primary: #4D86F0; --primary-tint: #18233F; --text-primary-on-tint: #9CC0F8;
+    --accent: #FF7A70; --accent-tint: #3A1F1C; --text-accent: #FFB4AD;
+    --violet: #9277FF; --violet-tint: #241C4A; --text-violet: #C2B3FF;
+    --success: #34B883; --text-success: #7FD9B4; --warning-tint: #2E2310; --text-warning: #F2C97A;
+    --frame-fill: #EAEDF5; --frame-safe: #4D86F0;
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-0: #0C1020; --surface-1: #141A2E; --surface-2: #161D33; --surface-sunken: #0E1426;
+  --text-primary: #EAEDF5; --text-secondary: #A8B0C2; --text-muted: #717A8E;
+  --border: #26304A; --border-strong: #36425F; --hair: #26304A;
+  --primary: #4D86F0; --primary-tint: #18233F; --text-primary-on-tint: #9CC0F8;
+  --accent: #FF7A70; --accent-tint: #3A1F1C; --text-accent: #FFB4AD;
+  --violet: #9277FF; --violet-tint: #241C4A; --text-violet: #C2B3FF;
+  --success: #34B883; --text-success: #7FD9B4; --warning-tint: #2E2310; --text-warning: #F2C97A;
+  --frame-fill: #EAEDF5; --frame-safe: #4D86F0;
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--surface-0); color: var(--text-primary);
+  font-family: var(--font-sans); font-size: 16px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 24px; padding-block: 56px 96px; }
+@media (max-width: 600px) { .wrap { padding-inline: 16px; padding-block: 32px 64px; } }
+a { color: var(--primary); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; border-radius: 4px; }
+code, .mono { font-family: var(--font-mono); font-size: 0.85em; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+
+.k {
+  font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--text-secondary);
+}
+
+/* ── Hero ───────────────────────────── */
+.hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 48px; align-items: start; }
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; gap: 32px; } }
+.hero__t {
+  margin-top: 16px; font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(2.4rem, 5vw, 3.6rem); line-height: 1.02; letter-spacing: -0.01em;
+}
+.hero__t em { color: var(--text-accent); }
+.hero__d { margin-top: 20px; max-width: 46ch; font-size: 1.05rem; color: var(--text-secondary); }
+.hero__d b { color: var(--text-primary); font-weight: 500; }
+.hero__links { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 0.9rem; }
+
+/* ── Stage map ───────────────────────── */
+.map {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;
+  padding: 16px; border-radius: var(--radius-lg);
+  background: var(--surface-2); border: 1px solid var(--hair); box-shadow: var(--shadow-lg);
+}
+@media (max-width: 560px) { .map { grid-template-columns: 1fr; } }
+.ph { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.ph--a { --c: var(--primary); --t: var(--primary-tint); }
+.ph--b { --c: var(--violet); --t: var(--violet-tint); }
+.ph--c { --c: var(--text-accent); --t: var(--accent-tint); }
+.ph__k {
+  display: flex; justify-content: space-between; align-items: baseline; padding: 4px 4px 6px;
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c);
+}
+.ph__k span { color: var(--text-muted); letter-spacing: 0.08em; }
+.st { display: flex; flex-direction: column; gap: 6px; padding: 11px 12px; border-radius: var(--radius-md); background: var(--t); }
+.st__n { font-family: var(--font-mono); font-size: 0.62rem; color: var(--c); }
+.st__t { font-size: 0.88rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+.st__g { display: flex; gap: 6px; align-items: center; font-size: 0.7rem; line-height: 1.3; color: var(--text-secondary); }
+.st__g::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--surface-2); box-shadow: 0 0 0 2px var(--c); }
+.map__foot {
+  grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between;
+  padding: 10px 4px 0; border-top: 1px solid var(--hair); font-size: 0.72rem; color: var(--text-muted);
+}
+.map__foot b { font-weight: 500; color: var(--text-secondary); }
+
+/* ── Sections ────────────────────────── */
+.sec { padding-top: 88px; }
+.sec__k { padding-bottom: 18px; border-bottom: 1px solid var(--hair); }
+.sec__t { margin-top: 32px; max-width: 26ch; font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1.1; }
+.sec__d { margin-top: 14px; max-width: 64ch; color: var(--text-secondary); }
+.sec__d b { color: var(--text-primary); font-weight: 500; }
+
+.trio { margin-top: 56px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+@media (max-width: 800px) { .trio { grid-template-columns: 1fr; gap: 24px; } }
+.trio h3 { font-size: 0.95rem; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 8px; }
+.trio p { color: var(--text-secondary); font-size: 0.95rem; }
+
+.scope { margin-top: 40px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-block: 1px solid var(--hair); }
+@media (max-width: 800px) { .scope { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.scope div { padding: 20px 16px 20px 0; }
+.scope b { display: block; font-size: 1.05rem; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.scope span { font-size: 0.82rem; color: var(--text-secondary); }
+
+/* ── Stage list ──────────────────────── */
+.list { list-style: none; margin: 40px 0 0; padding: 0; }
+.row {
+  display: grid; grid-template-columns: 72px minmax(0, 5fr) minmax(0, 4fr) minmax(0, 3fr);
+  gap: 16px 36px; padding-block: 30px; border-top: 1px solid var(--hair);
+}
+.row:last-child { border-bottom: 1px solid var(--hair); }
+.row--a { --c: var(--primary); } .row--b { --c: var(--violet); } .row--c { --c: var(--text-accent); }
+@media (max-width: 900px) { .row { grid-template-columns: 56px minmax(0, 1fr); } .row > :nth-child(n+3) { grid-column: 2; } }
+.row__n { font-family: var(--font-mono); font-size: 0.72rem; color: var(--c); padding-top: 4px; }
+.row__n span { display: block; margin-top: 4px; font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
+.row h3 { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.03em; }
+.row__d { margin-top: 6px; color: var(--text-secondary); font-size: 0.95rem; }
+.gate { margin-top: 14px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--surface-1); font-size: 0.86rem; }
+.gate b { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c); display: block; margin-bottom: 2px; }
+.new { display: inline-block; margin-left: 8px; padding: 1px 7px; border-radius: 999px; background: var(--accent-tint); color: var(--text-accent); font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; vertical-align: 3px; }
+dl.facts { margin: 0; display: grid; gap: 10px; font-size: 0.86rem; }
+dl.facts dt { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
+dl.facts dd { margin: 2px 0 0; color: var(--text-secondary); }
+.jam { font-size: 0.86rem; color: var(--text-secondary); }
+.jam b { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 400; }
+.loop { margin-top: 0; padding: 14px 0 0 108px; font-size: 0.82rem; color: var(--text-muted); }
+@media (max-width: 900px) { .loop { padding-left: 0; } }
+
+/* ── Lock and prompt ─────────────────── */
+.two { margin-top: 40px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+@media (max-width: 900px) { .two { grid-template-columns: 1fr; } }
+.file { border: 1px solid var(--hair); border-radius: var(--radius-lg); background: var(--surface-1); overflow: hidden; }
+.file__h { display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--hair); font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
+.file pre { margin: 0; padding: 16px; overflow-x: auto; font-family: var(--font-mono); font-size: 0.76rem; line-height: 1.7; color: var(--text-primary); }
+.file pre .c { color: var(--text-muted); }
+.file pre .t { color: var(--text-violet); }
+.swatches { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 16px; }
+.sw { display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 0.64rem; color: var(--text-secondary); }
+.sw i { width: 14px; height: 14px; border-radius: 4px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+
+.formula { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.tok { padding: 5px 9px; border-radius: var(--radius-sm); background: var(--surface-sunken); font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary); }
+.tok--slot { background: var(--accent-tint); color: var(--text-accent); }
+.tok--motion { background: var(--violet-tint); color: var(--text-violet); }
+.formula-block + .formula-block { margin-top: 24px; }
+.formula-block h3 { font-size: 0.95rem; font-weight: 600; }
+.formula-block p { margin-top: 6px; font-size: 0.9rem; color: var(--text-secondary); }
+
+/* ── Modes ───────────────────────────── */
+.modes { margin-top: 40px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 900px) { .modes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .modes { grid-template-columns: 1fr; } }
+.mode { padding: 18px; border: 1px solid var(--hair); border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 10px; }
+.mode code { color: var(--text-accent); font-size: 0.72rem; }
+.mode h3 { font-size: 1rem; font-weight: 600; letter-spacing: -0.02em; }
+.mode p { font-size: 0.86rem; color: var(--text-secondary); }
+.mode .watch { font-size: 0.8rem; color: var(--text-muted); }
+.mode .watch b { color: var(--text-secondary); font-weight: 500; }
+
+/* ── Safe zones ──────────────────────── */
+.zones { margin-top: 40px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; align-items: end; }
+@media (max-width: 900px) { .zones { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .zones { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.zone { display: flex; flex-direction: column; gap: 10px; }
+.zone svg { width: 100%; max-width: 150px; height: auto; display: block; }
+.zone h3 { font-size: 0.86rem; font-weight: 600; letter-spacing: -0.01em; }
+.zone p { font-size: 0.74rem; color: var(--text-muted); font-family: var(--font-mono); font-variant-numeric: tabular-nums; line-height: 1.5; }
+.zone--master h3 { color: var(--text-accent); }
+.note { margin-top: 24px; max-width: 70ch; font-size: 0.86rem; color: var(--text-muted); }
+
+/* ── Tables ──────────────────────────── */
+.tbl-wrap { margin-top: 32px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.86rem; min-width: 640px; }
+th { text-align: left; font-family: var(--font-mono); font-weight: 400; font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); padding: 0 16px 10px 0; border-bottom: 1px solid var(--hair); }
+td { padding: 12px 16px 12px 0; border-bottom: 1px solid var(--hair); color: var(--text-secondary); vertical-align: top; }
+td:first-child { color: var(--text-primary); font-weight: 500; white-space: nowrap; }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.72rem; background: var(--surface-sunken); color: var(--text-secondary); }
+.pill--in { background: var(--primary-tint); color: var(--text-primary-on-tint); }
+
+/* ── Jams / compounding ──────────────── */
+.jc { margin-top: 40px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; }
+@media (max-width: 800px) { .jc { grid-template-columns: 1fr; gap: 32px; } }
+.jc h3 { font-size: 1rem; font-weight: 600; margin-bottom: 12px; }
+.jc ol, .jc ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+.jc li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 12px; font-size: 0.92rem; color: var(--text-secondary); }
+.jc li > span:first-child { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-accent); padding-top: 3px; }
+.jc li b { color: var(--text-primary); font-weight: 500; }
+
+/* ── Roadmap ─────────────────────────── */
+.road { margin-top: 40px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 900px) { .road { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .road { grid-template-columns: 1fr; } }
+.step { padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--hair); display: flex; flex-direction: column; gap: 8px; }
+.step--done { background: var(--surface-1); }
+.step__s { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; }
+.step--done .step__s { color: var(--text-success); }
+.step--next .step__s { color: var(--text-accent); }
+.step h3 { font-size: 0.95rem; font-weight: 600; letter-spacing: -0.02em; }
+.step p { font-size: 0.84rem; color: var(--text-secondary); }
+
+footer { margin-top: 88px; padding-top: 20px; border-top: 1px solid var(--hair); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: 0.8rem; color: var(--text-muted); }
+</style>
+
+<div class="wrap">
+
+  <!-- Hero -->
+  <header class="hero">
+    <div>
+      <p class="k">Extends the Bingo Bay AI workflow · 2026</p>
+      <h1 class="hero__t">Video ad art direction, <em>with a person at every gate.</em></h1>
+      <p class="hero__d">A system for art directing social video ads with Claude. AI makes the volume at every stage. <b>One named person decides what a viewer actually sees.</b> Same lock, same gates, same log as Bingo Bay, plus what video adds: time, motion, sound and platform rules.</p>
+      <p class="hero__links">
+        <a href="#stages">Walk the ten stages ↓</a>
+        <a href="https://segalitoo.github.io/ran-portfolio/work/ai-workflow.html">The Bingo Bay workflow</a>
+        <a href="https://github.com/segalitoo/video-ad-art-direction-/tree/claude/video-ad-art-direction-dekdmd">The repo</a>
+      </p>
+    </div>
+
+    <div class="map" role="img" aria-label="Ten stages in three phases: Define, Produce and Ship. Produce runs in parallel. Iteration loops back to Produce twice at most.">
+      <div class="ph ph--a">
+        <div class="ph__k">Define <span>3 stages</span></div>
+        <div class="st"><span class="st__n">01</span><span class="st__t">Brief and hooks</span><span class="st__g">Creative lead</span></div>
+        <div class="st"><span class="st__n">02</span><span class="st__t">The lock</span><span class="st__g">Art director</span></div>
+        <div class="st"><span class="st__n">03</span><span class="st__t">Storyboard</span><span class="st__g">Creative lead</span></div>
+      </div>
+      <div class="ph ph--b">
+        <div class="ph__k">Produce <span>in parallel</span></div>
+        <div class="st"><span class="st__n">04</span><span class="st__t">Keyframes</span><span class="st__g">Art director · 1 of 8–12</span></div>
+        <div class="st"><span class="st__n">05 · from 04</span><span class="st__t">Motion</span><span class="st__g">Art director · kept frames only</span></div>
+        <div class="st"><span class="st__n">06</span><span class="st__t">Sound and voice</span><span class="st__g">Audio direction</span></div>
+        <div class="st"><span class="st__n">07</span><span class="st__t">Copy and supers</span><span class="st__g">Copy lead</span></div>
+      </div>
+      <div class="ph ph--c">
+        <div class="ph__k">Ship <span>3 stages</span></div>
+        <div class="st"><span class="st__n">08</span><span class="st__t">Edit</span><span class="st__g">Editor</span></div>
+        <div class="st"><span class="st__n">09</span><span class="st__t">QA and platform check</span><span class="st__g">Craft, message, legal</span></div>
+        <div class="st"><span class="st__n">10</span><span class="st__t">Variants and iteration</span><span class="st__g">Owner of the winner</span></div>
+      </div>
+      <div class="map__foot"><span><b>○</b> one human gate per stage</span><span>Iteration loops back to Produce, <b>twice at most</b></span></div>
+    </div>
+  </header>
+
+  <!-- Brief -->
+  <section class="sec">
+    <p class="k sec__k">The brief</p>
+    <div class="trio">
+      <div><h3>What I set out to do</h3><p>Take the Bingo Bay workflow from stills to social video, for a portfolio case and for real clients, across every look (3D, live action, UGC, motion graphics) and any generation tool.</p></div>
+      <div><h3>What I decided</h3><p>Video multiplies the cost of every reject. So the look is locked as tokens, every shot starts as a still, and only a kept still is animated. Machines check specs, people judge craft.</p></div>
+      <div><h3>What I made</h3><p>Ten stages with their gates, a lock with four style modes, platform specs, tool adapters, scripts that assemble prompts and check exports, and a Claude skill that runs it all and stops at every gate.</p></div>
+    </div>
+    <div class="scope">
+      <div><b>10 stages, 3 phases</b><span>Define, produce, ship</span></div>
+      <div><b>4 style modes</b><span>One line in the lock switches the look</span></div>
+      <div><b>5 platforms</b><span>TikTok, Reels/Stories, Shorts, Meta feed, LinkedIn</span></div>
+      <div><b>9 tool adapters</b><span>One master prompt, rewritten per tool</span></div>
+    </div>
+  </section>
+
+  <!-- Stages -->
+  <section class="sec" id="stages">
+    <p class="k sec__k">The ten stages</p>
+    <h2 class="sec__t">Same stages every time. A person at every gate.</h2>
+    <p class="sec__d">Stages marked <span class="new">new</span> exist because of video. The rest keep the Bingo Bay shape, adapted. The scripts named here are in the repo and tested.</p>
+
+    <ol class="list">
+      <li class="row row--a">
+        <div class="row__n">01<span>Define</span></div>
+        <div><h3>Brief and hook angles</h3><p class="row__d">Claude turns a two-minute intake into a one-page brief and drafts ten hook angles, each with a first frame that reads with the sound off.</p><p class="gate"><b>Human gate</b>The creative lead keeps three hooks and approves one message.</p></div>
+        <dl class="facts"><div><dt>Tools</dt><dd>Claude, web search, Meta Ad Library, TikTok Creative Center</dd></div><div><dt>Automated</dt><dd>Brief draft, hook volume, reference scans</dd></div><div><dt>Stays manual</dt><dd>Framing the problem, picking the angle</dd></div></dl>
+        <p class="jam"><b>Bottleneck</b>Vague briefs. Claude keeps asking until every field is filled.</p>
+      </li>
+      <li class="row row--a">
+        <div class="row__n">02<span>Define</span></div>
+        <div><h3>The lock</h3><p class="row__d">Style frames at volume, narrowed to three directions, then frozen as tokens in <code>brand.dna.yml</code>: mode, world, light, camera, motion, palette, type, sound, hero.</p><p class="gate"><b>Human gate</b>The art director signs the lock. The highest-leverage call in the pipeline.</p></div>
+        <dl class="facts"><div><dt>Tools</dt><dd>Claude, Higgsfield, Nano Banana, Midjourney, Figma</dd></div><div><dt>Automated</dt><dd>Style frames, mode defaults, lock pre-checks</dd></div><div><dt>Stays manual</dt><dd>The lock itself</dd></div></dl>
+        <p class="jam"><b>Bottleneck</b>Decision fatigue. Three directions, never more.</p>
+      </li>
+      <li class="row row--a">
+        <div class="row__n">03<span>Define</span></div>
+        <div><h3>Script and storyboard <span class="new">new</span></h3><p class="row__d">The shot list, beat by beat: hook, build, product, proof, payoff, end card. Written as <code>storyboard.yml</code>, so a script can check it.</p><p class="gate"><b>Human gate</b>The creative lead checks the beats. The hook lands inside two seconds.</p></div>
+        <dl class="facts"><div><dt>Tools</dt><dd>Claude, Figma, <code>assemble.py --check</code></dd></div><div><dt>Automated</dt><dd>Timing sum, super word counts, hook position, platform length limits</dd></div><div><dt>Stays manual</dt><dd>Pacing, what the viewer feels at each beat</dd></div></dl>
+        <p class="jam"><b>Bottleneck</b>Boards that look finished too early. Words first, pictures at stage 4.</p>
+      </li>
+      <li class="row row--b">
+        <div class="row__n">04<span>Produce</span></div>
+        <div><h3>Keyframes <span class="new">new</span></h3><p class="row__d">One still per shot, from the assembled prompt. The hero shot goes first; once kept, it becomes the reference attached to every hero shot.</p><p class="gate"><b>Human gate</b>The art director picks one of eight to twelve. Never the first output.</p></div>
+        <dl class="facts"><div><dt>Tools</dt><dd>Higgsfield, Nano Banana, Midjourney, Photoshop</dd></div><div><dt>Automated</dt><dd>Batch generation, cutouts, the log entry</dd></div><div><dt>Stays manual</dt><dd>Selection, paint-over to the lock</dd></div></dl>
+        <p class="jam"><b>Bottleneck</b>Consistency across shots. One approved hero reference.</p>
+      </li>
+      <li class="row row--b">
+        <div class="row__n">05<span>Produce</span></div>
+        <div><h3>Motion <span class="new">new</span></h3><p class="row__d">Image-to-video from each kept keyframe. The prompt only says what moves; the frame already carries the look.</p><p class="gate"><b>Human gate</b>The art director picks per shot, against the lock and the shots around it.</p></div>
+        <dl class="facts"><div><dt>Tools</dt><dd>Higgsfield, Veo in Google Flow, Kling, Runway, Midjourney video</dd></div><div><dt>Automated</dt><dd>Clip batches, upscale, the log entry</dd></div><div><dt>Stays manual</dt><dd>Judging physics, morphing, on-model motion</dd></div></dl>
+        <p class="jam"><b>Bottleneck</b>Cost. Keyframes gate motion, so only approved frames get animated.</p>
+      </li>
+      <li class="row row--b">
+        <div class="row__n">06<span>Produce</span></div>
+        <div><h3>Sound and voice</h3><p class="row__d">Music bed, SFX and voiceover from the lock's sound tokens, mixed to about −14 LUFS with a −1 dBTP ceiling, the same ceiling as the Bingo Bay loop.</p><p class="gate"><b>Human gate</b>Audio direction clears rights for paid social. Judged on a phone speaker.</p></div>
+        <dl class="facts"><div><dt>Tools</dt><dd>Suno, ElevenLabs, Higgsfield audio, Veo sound</dd></div><div><dt>Automated</dt><dd>Candidates, VO languages, loudness measurement</dd></div><div><dt>Stays manual</dt><dd>The mix, cut points, rights</dd></div></dl>
+        <p class="jam"><b>Bottleneck</b>Licensing. A pre-cleared kit per brand.</p>
+      </li>
+      <li class="row row--b">
+        <div class="row__n">07<span>Produce</span></div>
+        <div><h3>Copy and on-screen text</h3><p class="row__d">Hooks, supers, CTAs, captions and primary text. Three lines per placement, one ships, and every losing line keeps its reason.</p><p class="gate"><b>Human gate</b>The copy lead picks and trims. Claims never ship unreviewed.</p></div>
+        <dl class="facts"><div><dt>Tools</dt><dd>Claude with the voice guide as system prompt</dd></div><div><dt>Automated</dt><dd>Bulk drafts, word limits from the lock, locales</dd></div><div><dt>Stays manual</dt><dd>Final voice, anything legal reads</dd></div></dl>
+        <p class="jam"><b>Bottleneck</b>Native review, by market priority.</p>
+      </li>
+      <li class="row row--c">
+        <div class="row__n">08<span>Ship</span></div>
+        <div><h3>Edit <span class="new">new</span></h3><p class="row__d">Clips, sound and type come together from an edit sheet built from the storyboard. Type and end cards are set by hand, never generated.</p><p class="gate"><b>Human gate</b>The editor or art director owns the cut.</p></div>
+        <dl class="facts"><div><dt>Tools</dt><dd>CapCut, Premiere, DaVinci Resolve, After Effects</dd></div><div><dt>Automated</dt><dd>Caption drafts, the edit sheet</dd></div><div><dt>Stays manual</dt><dd>Rhythm, cut points, type</dd></div></dl>
+        <p class="jam"><b>Bottleneck</b>Patching a bad clip in the edit. Send it back to stage 5.</p>
+      </li>
+      <li class="row row--c">
+        <div class="row__n">09<span>Ship</span></div>
+        <div><h3>QA and platform check</h3><p class="row__d"><code>spec_check.py</code> tests ratio, resolution, length, frame rate, loudness, true peak and file size, and saves the hook frame and end frame with the unsafe margins darkened.</p><p class="gate"><b>Human gate</b>Sign-off for craft, message and brand/legal, including AI disclosure.</p></div>
+        <dl class="facts"><div><dt>Tools</dt><dd><code>spec_check.py</code>, QA checklist</dd></div><div><dt>Automated</dt><dd>Every spec, the overlay frames</dd></div><div><dt>Stays manual</dt><dd>Creative judgement on what passed</dd></div></dl>
+        <p class="jam"><b>Bottleneck</b>The review queue. Only files with no FAIL reach a person.</p>
+      </li>
+      <li class="row row--c">
+        <div class="row__n">10<span>Ship</span></div>
+        <div><h3>Variants and iteration</h3><p class="row__d"><code>matrix.py</code> expands one approved base into hooks × CTAs × platforms, then performance data proposes what to fix.</p><p class="gate"><b>Human gate</b>Data proposes, a person decides. Someone owns the winner.</p></div>
+        <dl class="facts"><div><dt>Tools</dt><dd><code>matrix.py</code>, Higgsfield reframe, platform A/B tests</dd></div><div><dt>Automated</dt><dd>Variants, reframes, data pulls, logging</dd></div><div><dt>Stays manual</dt><dd>Deciding what to fix and why</dd></div></dl>
+        <p class="jam"><b>Bottleneck</b>Endless loops. Two cycles, then ship it or kill it.</p>
+      </li>
+    </ol>
+    <p class="loop">Loops back to stages 4 to 7. The lock stays frozen unless the art director raises its version.</p>
+  </section>
+
+  <!-- Lock -->
+  <section class="sec">
+    <p class="k sec__k">The lock, for video</p>
+    <h2 class="sec__t">A moodboard gets interpreted. A token gets pasted.</h2>
+    <p class="sec__d">The Bingo Bay lock held style, light, form and palette. The video lock adds <b>camera, motion, grade, type, sound and the hero</b>. Every prompt is assembled from it by <code>assemble.py</code>, so nothing drifts quietly between shots or between tools.</p>
+
+    <div class="two">
+      <div class="file">
+        <div class="file__h"><span>examples/sunpeel/sunpeel.dna.yml</span><span>v1.0</span></div>
+<pre><span class="c"># Pilot: Sunpeel, a fictional zero-sugar citrus soda</span>
+<span class="t">mode</span>    3d-stylized
+<span class="t">STYLE</span>   glossy stylized 3D render,
+        premium animated drinks commercial
+<span class="t">WORLD</span>   sun-bleached rooftop at golden hour,
+        terracotta tiles, potted citrus trees
+<span class="t">LIGHT</span>   low golden-hour sun, warm rim light
+<span class="t">MOTION</span>  juicy springy motion, bubbles rising
+        in slow motion, weighty landings
+<span class="t">SOUND</span>   sunny indie pop · 104 bpm
+<span class="t">HERO</span>    slim 330ml can, sunset orange,
+        white peeling-rind stripe
+<span class="c"># CAMERA, GRADE, FORM, TECH: mode defaults</span></pre>
+        <div class="swatches" aria-label="Sunpeel palette">
+          <span class="sw"><i style="background:#FF7A1A"></i>FF7A1A</span>
+          <span class="sw"><i style="background:#FFC93C"></i>FFC93C</span>
+          <span class="sw"><i style="background:#2E9E6B"></i>2E9E6B</span>
+          <span class="sw"><i style="background:#FFB3A7"></i>FFB3A7</span>
+          <span class="sw"><i style="background:#C8553D"></i>C8553D</span>
+          <span class="sw"><i style="background:#FFF4E0"></i>FFF4E0</span>
+          <span class="sw"><i style="background:#3B1F3A"></i>3B1F3A</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="formula-block">
+          <h3>Keyframe prompt</h3>
+          <div class="formula" aria-label="Keyframe prompt formula">
+            <span class="tok">STYLE</span><span class="tok tok--slot">[SHOT]</span><span class="tok">HERO</span><span class="tok">WORLD</span><span class="tok">FORM</span><span class="tok">LIGHT</span><span class="tok">GRADE</span><span class="tok">PALETTE</span><span class="tok">TECH</span><span class="tok">FRAME</span>
+          </div>
+          <p>Only the bracketed slot changes between shots, as the one slot did for the five Bingo Bay characters. <b>FRAME</b> is written from the strictest safe zone across the target platforms.</p>
+        </div>
+        <div class="formula-block">
+          <h3>Motion prompt</h3>
+          <div class="formula" aria-label="Motion prompt formula">
+            <span class="tok tok--motion">[ACTION]</span><span class="tok tok--motion">CAMERA MOVE</span><span class="tok">MOTION</span><span class="tok">hold the start frame</span>
+          </div>
+          <p>Image-to-video models already see the look in the keyframe. Describing it again fights the frame, so the motion prompt says only what moves.</p>
+        </div>
+        <div class="formula-block">
+          <h3>Then, per tool</h3>
+          <p>One master prompt becomes each tool's own form: <code>--no</code> and <code>--ar</code> for Midjourney, a separate negative field for Kling, positive wording only for Runway, sound cues for Veo. Adding a tool is one block in <code>adapters/tools.yml</code>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modes -->
+  <section class="sec">
+    <p class="k sec__k">Four style modes</p>
+    <h2 class="sec__t">One line switches the look. The story needs its own board.</h2>
+    <p class="sec__d">Each mode sets default tokens, negatives and what QA should watch for. A lock picks a mode and overrides only what makes the brand its own.</p>
+    <div class="modes">
+      <div class="mode"><code>3d-stylized</code><h3>3D stylized</h3><p>Glossy render, rim light, bouncy squash-and-stretch. The Bingo Bay look, in motion.</p><p class="watch"><b>QA watches:</b> the hero drifting off-model, floating physics.</p></div>
+      <div class="mode"><code>live-action</code><h3>Live action</h3><p>Cinema camera, 50mm, filmic grade, real-world timing.</p><p class="watch"><b>QA watches:</b> hands, teeth, eyes, labels warping between frames.</p></div>
+      <div class="mode"><code>ugc</code><h3>UGC</h3><p>Phone front camera, window light, talk to camera. The lock controls the brand, not the polish.</p><p class="watch"><b>QA watches:</b> disclosure of synthetic presenters, lip-sync, spoken claims.</p></div>
+      <div class="mode"><code>motion-graphics</code><h3>Motion graphics</h3><p>Flat shapes and brand type on the beat. Generators make textures only; layouts are built by hand.</p><p class="watch"><b>QA watches:</b> exact hex values, real type, timing to the music.</p></div>
+    </div>
+  </section>
+
+  <!-- Safe zones -->
+  <section class="sec">
+    <p class="k sec__k">Platform rules</p>
+    <h2 class="sec__t">Generate once in 9:16. Keep the message in the smallest safe area.</h2>
+    <p class="sec__d">Drawn to scale from <code>platforms/specs.yml</code>. The grey margins are where platform buttons, captions and CTAs sit; the blue box is safe. The <b>9:16 master</b> uses the strictest margin on each side, so one export is safe everywhere.</p>
+    <div class="zones" id="zones"></div>
+    <p class="note">Meta's margins are its published unified 9:16 zone (March 2026). TikTok and Shorts publish templates, not pixels, so their margins are conservative third-party values marked <code>verify: true</code> in the specs file. Checked 25 September 2026.</p>
+  </section>
+
+  <!-- Tools -->
+  <section class="sec">
+    <p class="k sec__k">Tools</p>
+    <h2 class="sec__t">Any tool. The lock travels with the prompt.</h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Tool</th><th>Used for</th><th>Negatives</th><th>How it runs</th></tr></thead>
+        <tbody>
+          <tr><td>Higgsfield</td><td>Keyframes, motion, reframe, upscale, audio</td><td>Inline sentence</td><td><span class="pill pill--in">Inside Claude</span> via its connector</td></tr>
+          <tr><td>Nano Banana</td><td>Keyframes, one-detail fixes</td><td>Inline sentence</td><td><span class="pill">Google Flow / Gemini</span></td></tr>
+          <tr><td>Midjourney</td><td>Keyframes, style reference, video</td><td><code>--no</code> parameter</td><td><span class="pill">Paste</span></td></tr>
+          <tr><td>Veo (Google Flow)</td><td>Motion from frames, native SFX</td><td>Inline sentence</td><td><span class="pill">Paste</span></td></tr>
+          <tr><td>Kling</td><td>Motion, start and end frames</td><td>Its own field</td><td><span class="pill">Paste</span></td></tr>
+          <tr><td>Runway</td><td>Motion from frames</td><td>Dropped, positive wording only</td><td><span class="pill">Paste</span></td></tr>
+          <tr><td>Suno · ElevenLabs</td><td>Music bed · voiceover</td><td>n/a</td><td><span class="pill">Paste</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Jams -->
+  <section class="sec">
+    <p class="k sec__k">Where it jams, and where it compounds</p>
+    <div class="jc">
+      <div>
+        <h3>The top four jams</h3>
+        <ol>
+          <li><span>01</span><span><b>The review queue.</b> Pre-checks at stages 3 and 9, and a warning when the matrix passes 24 variants.</span></li>
+          <li><span>02</span><span><b>Consistency in motion.</b> The lock, one hero reference, keyframe first, motion-only prompts.</span></li>
+          <li><span>03</span><span><b>Rights and disclosure.</b> Pre-cleared sound, likeness rules in the brief, AI labels in QA.</span></li>
+          <li><span>04</span><span><b>Endless iteration.</b> Two cycles, then ship it or kill it.</span></li>
+        </ol>
+      </div>
+      <div>
+        <h3>Where it gets faster each time</h3>
+        <ul>
+          <li><span>×N</span><span>One approved base becomes hooks × CTAs × platforms.</span></li>
+          <li><span>LOCK</span><span>The next campaign starts from this lock, not a blank prompt.</span></li>
+          <li><span>ADAPT</span><span>A new tool is one block in the adapters file.</span></li>
+          <li><span>LOG</span><span>Every verdict and reason sharpens the next lock version.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roadmap -->
+  <section class="sec">
+    <p class="k sec__k">Status</p>
+    <h2 class="sec__t">What exists, and what comes next.</h2>
+    <div class="road">
+      <div class="step step--done"><span class="step__s">Done</span><h3>The system</h3><p>Lock and four modes, specs, adapters, templates, and scripts with a self-test.</p></div>
+      <div class="step step--done"><span class="step__s">Done</span><h3>The Claude skill</h3><p>Runs all ten stages in Claude and stops at every gate.</p></div>
+      <div class="step step--next"><span class="step__s">Next</span><h3>Video brief generator</h3><p>The Bingo Bay brief generator, rebuilt for video: intake in, brief, lock and storyboard out.</p></div>
+      <div class="step step--next"><span class="step__s">Next</span><h3>Sunpeel pilot</h3><p>Stages 1 to 3 are written. Run 4 to 10, log all generations, and publish it as a case study.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Ran Segal · Creative Lead · 2026</span>
+    <span>Sunpeel is a fictional brand made for this case.</span>
+  </footer>
+</div>
+
+<script>
+// Safe zones, straight from platforms/specs.yml (percent of frame).
+const zones = [
+  { name: "TikTok", ratio: [9, 16], m: { top: 7.3, bottom: 25.2, left: 5.6, right: 16.7 } },
+  { name: "Reels + Stories", ratio: [9, 16], m: { top: 14, bottom: 35, left: 6, right: 6 } },
+  { name: "YouTube Shorts", ratio: [9, 16], m: { top: 19.8, bottom: 20.3, left: 5.6, right: 11.1 } },
+  { name: "Meta feed", ratio: [4, 5], m: { top: 4, bottom: 4, left: 4, right: 4 } },
+];
+const nine = zones.filter(z => z.ratio[1] === 16);
+const strictest = ["top", "bottom", "left", "right"].reduce((acc, side) => {
+  acc[side] = Math.max(...nine.map(z => z.m[side])); return acc;
+}, {});
+zones.push({ name: "9:16 master", ratio: [9, 16], m: strictest, master: true });
+
+const H = 160;
+const el = document.getElementById("zones");
+for (const z of zones) {
+  const W = H * z.ratio[0] / z.ratio[1];
+  const x = W * z.m.left / 100, y = H * z.m.top / 100;
+  const w = W * (1 - (z.m.left + z.m.right) / 100), h = H * (1 - (z.m.top + z.m.bottom) / 100);
+  const pct = Math.round((w * h) / (W * H) * 100);
+  const fig = document.createElement("figure");
+  fig.className = "zone" + (z.master ? " zone--master" : "");
+  fig.style.margin = "0";
+  fig.innerHTML = `
+    <svg viewBox="-2 -2 ${W + 4} ${H + 4}" role="img" aria-label="${z.name}: safe area is ${pct}% of the frame">
+      <rect x="0" y="0" width="${W}" height="${H}" rx="6" fill="var(--frame-fill)" opacity="0.14"/>
+      <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="var(--frame-safe)" opacity="${z.master ? 0.32 : 0.2}" stroke="var(--frame-safe)" stroke-width="1.5"/>
+      <rect x="0" y="0" width="${W}" height="${H}" rx="6" fill="none" stroke="var(--border-strong)" stroke-width="1"/>
+    </svg>
+    <h3>${z.name}</h3>
+    <p>${z.ratio.join(":")} · safe ${pct}%<br>T ${z.m.top} B ${z.m.bottom} L ${z.m.left} R ${z.m.right}</p>`;
+  el.appendChild(fig);
+}
+</script>

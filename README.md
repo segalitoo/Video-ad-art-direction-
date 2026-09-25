@@ -58,6 +58,7 @@ bash scripts/selftest.sh                                         # test everythi
 | `templates/` | Brief, storyboard, copy matrix, QA checklist, iteration log |
 | `scripts/` | Scaffold, assemble, matrix, spec check, self-test |
 | `examples/sunpeel/` | The pilot: a fictional zero-sugar citrus soda, run through stages 1 to 3 |
+| `docs/plan.html` | The plan as a page, in the portfolio design system |
 
 ## Honest limits
 
