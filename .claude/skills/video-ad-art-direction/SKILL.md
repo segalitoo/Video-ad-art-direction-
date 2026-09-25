@@ -40,7 +40,7 @@ Modes: `3d-stylized`, `live-action`, `ugc`, `motion-graphics` (see `lock/modes/`
 **01 Brief and hooks.** Ask the intake questions from `templates/brief.md` in one message (brand, product, platforms, lengths, mode, the one thing, audience, mandatories, metric). Fill `brief.md`. Draft 10 hook angles, each with a first frame that reads with the sound off. The lead keeps 3.
 → Gate: creative lead.
 
-**02 The lock.** Propose 3 directions in words: mode, world, light, palette, camera and motion language. If the user wants pictures, generate one style frame per direction with the tool they choose. Write the chosen direction into `<brand>.dna.yml`, set only the tokens that differ from the mode, and define the hero. Run `assemble.py --check`.
+**02 The lock.** Propose 3 directions in words: mode, world, light, palette, camera and motion language. If the user wants pictures, generate style frames per direction on GPT Image 2.5 medium (`draft_params`, 0.5 credits each). Write the chosen direction into `<brand>.dna.yml`, set only the tokens that differ from the mode, and define the hero. Run `assemble.py --check`.
 → Gate: art director signs the lock.
 
 **03 Storyboard.** Write `storyboard.yml`: beats, durations, subject (the [SHOT] slot), action, camera move, supers, sound, variants. Quote every line in `variants`. Run `assemble.py --check` and fix every FAIL. Explain each WARN.
@@ -48,7 +48,8 @@ Modes: `3d-stylized`, `live-action`, `ugc`, `motion-graphics` (see `lock/modes/`
 
 **04 Keyframes.** Run `assemble.py <storyboard> -o prompts.md` and show its **Budget** table first; that is the spend being approved. Generate the `H0` hero reference first: 8 to 12 candidates. When the hero is kept, set `hero.reference` in the lock and attach it to every `hero: true` shot.
 - Figma Weave (the default engine): `weave_find_model` for the model named in `adapters/tools.yml` → `weave_run_model` without `acknowledgedCost` to get the quote → ask Approve/Cancel with a structured question → run with the quoted cost → `weave_get_model_run_output` → download with the curl command it returns into `keyframes/`. Drafts on Nano Banana 2, finals on Nano Banana Pro.
-- Higgsfield: check `balance` first. `models_explore` (action `recommend`) → `generate_image_batch` → `jobs_wait` → `show_generation_by_ids`.
+- Higgsfield: check `balance` first. Keyframes on Nano Banana Pro with `image_params` from `adapters/tools.yml`; on hero shots attach the hero reference as `image_references`. `generate_image_batch` → `jobs_wait` → `show_generation_by_ids`.
+- First hero round is an A/B: 4 Nano Banana Pro + 4 GPT Image 2.5 (high, 2K, Sunburst), shown side by side and numbered. The winner is logged with its reason and becomes the keyframe model for the project.
 - Another tool: give the user the prompt block for that tool from `prompts.md`, and log what they report back.
 - Show every candidate side by side, with its number, before asking for a pick.
 → Gate: art director picks 1 per shot.

@@ -232,7 +232,7 @@ const MODES = {
 };
 // Quotes from adapters/tools.yml (2026-09-25). Video model: Seedance 2.5, 4s clips, 720p, sound off.
 const ENGINES = {
-  higgsfield: { name: "Higgsfield", image: 1, perSecond: 7, minS: 4, usd: 0.049 },   // Seedance 2.5 720p per second; Plus $49 / 1,000
+  higgsfield: { name: "Higgsfield", image: 2, perSecond: 7, minS: 4, usd: 0.049 },   // Seedance 2.5 720p per second; Plus $49 / 1,000
   weave:      { name: "Figma Weave", image: 11, video: 168, usd: 0.01125 },           // flat quote per clip; Professional $45 / 4,000
 };
 
@@ -536,7 +536,7 @@ function render() {
   const b = budget(s);
   $("budget").innerHTML = `
     <div><b>${b.k} + ${b.m}</b><span>keyframes + motion clips per round</span></div>
-    <div><b>≈ ${b.higgsfield.toLocaleString()} · $${Math.round(b.higgsfield * ENGINES.higgsfield.usd)}</b><span>Higgsfield credits · Nano Banana + Seedance 2.5</span></div>
+    <div><b>≈ ${b.higgsfield.toLocaleString()} · $${Math.round(b.higgsfield * ENGINES.higgsfield.usd)}</b><span>Higgsfield credits · Nano Banana Pro + Seedance 2.5</span></div>
     <div><b>≈ ${b.weave.toLocaleString()} · $${Math.round(b.weave * ENGINES.weave.usd)}</b><span>Weave credits · Nano Banana Pro + Seedance 2.5</span></div>`;
   FILES.forEach(f => $("tab-" + f.id).setAttribute("aria-selected", String(f.id === active)));
   const f = FILES.find(x => x.id === active);

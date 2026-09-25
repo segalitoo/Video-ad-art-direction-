@@ -51,11 +51,23 @@ tools:
     cost_unit: Higgsfield credits
     usd_per_credit: 0.049      # Plus monthly: $49 for 1,000 credits (annual $39 = 0.039; Ultra annual 0.033)
     models:                    # get_cost quotes, 9:16, 4s clips, sound off
-      image:       {name: Nano Banana, id: nano_banana, credits: 1}
+      image:       {name: Nano Banana Pro, id: nano_banana_pro, credits: 2}          # keyframes: best hero consistency
+      image_draft: {name: GPT Image 2.5 medium 1K, id: gpt_image_2_5, credits: 0.5}  # stage 2 style frames
+      image_alt:   {name: GPT Image 2.5 high 2K Sunburst, id: gpt_image_2_5, credits: 2.75}
       video:       {name: Seedance 2.5 720p, id: seedance_2_5, credits: 28, credits_per_s: 7, min_s: 4}
       video_1080:  {name: Seedance 2.5 1080p, id: seedance_2_5, credits: 48}
       video_draft: {name: Seedance 2.5 480p, id: seedance_2_5, credits: 12}
       video_alt:   {name: Kling 3.0 5s, id: kling3_0, credits: 8.75}
+    image_params:              # passed to generate_image / generate_image_batch
+      model: nano_banana_pro
+      resolution: 2k           # same price as 1k
+      aspect_ratio: "9:16"
+      medias: "image_references = the hero reference (hero shots, after the H0 gate)"
+    draft_params:
+      model: gpt_image_2_5
+      variant: flare
+      quality: medium
+      resolution: 1k
     video_params:              # passed to generate_video / generate_video_batch
       model: seedance_2_5
       mode: omni_reference
