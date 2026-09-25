@@ -49,6 +49,7 @@ tools:
     clip_range: [4, 30]        # Seedance 2.5: any whole second from 4 to 30
     hero_reference: true       # Seedance omni_reference takes extra reference images
     cost_unit: Higgsfield credits
+    usd_per_credit: 0.049      # Plus monthly: $49 for 1,000 credits (annual $39 = 0.039; Ultra annual 0.033)
     models:                    # get_cost quotes, 9:16, 4s clips, sound off
       image:       {name: Nano Banana, id: nano_banana, credits: 1}
       video:       {name: Seedance 2.5 720p, id: seedance_2_5, credits: 28, credits_per_s: 7, min_s: 4}
@@ -83,6 +84,7 @@ tools:
     runs_in_claude: true
     clip_range: [4, 30]
     cost_unit: Weave credits
+    usd_per_credit: 0.01125    # Professional: $45 for 4,000 credits (Starter $24 / 1,500 = 0.016; top-up $10 / 1,200)
     models:                    # quotes from weave_find_model; ids can change, look them up again
       image:       {name: Nano Banana Pro, id: af5a6789-c7af-4c46-9a42-70222654e55b, credits: 11}
       image_draft: {name: Nano Banana 2, id: bebebed5-50c1-4701-98b3-86929db21585, credits: 6}

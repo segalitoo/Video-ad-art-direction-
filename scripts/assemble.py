@@ -231,6 +231,8 @@ def budget(board, lock, tools, tool_names):
         )
         rows[-1] += (f"{mot_n} × {vid['name']} ≈ {mot_c:g} | " if vid else "n/a | ")
         rows[-1] += f"**{total:g}** {tools[name].get('cost_unit', 'credits')} |"
+        usd = tools[name].get("usd_per_credit")
+        rows[-1] += f" ≈ ${total * usd:,.0f} |" if usd else " n/a |"
     if not rows:
         return []
     return [
@@ -239,10 +241,11 @@ def budget(board, lock, tools, tool_names):
         f"{len(shots)} generated shots{' + the hero reference' if hero else ''}, "
         f"{cands['keyframe']} keyframe candidates each, {cands['motion']} motion candidates per kept frame. "
         "Prices are the quotes at `last_checked` in `adapters/tools.yml`; the tool quotes the real cost "
-        "before each run, and nothing runs without approval.",
+        "before each run, and nothing runs without approval. USD uses `usd_per_credit` (the plan "
+        "noted beside it); a Weave credit and a Higgsfield credit are not the same money.",
         "",
-        "| Tool | Keyframes | Motion | Total |",
-        "|---|---|---|---|",
+        "| Tool | Keyframes | Motion | Total | USD |",
+        "|---|---|---|---|---|",
         *rows,
         "",
     ]
