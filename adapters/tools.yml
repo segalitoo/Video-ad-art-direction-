@@ -23,6 +23,12 @@ last_checked: 2026-09-25
 #   figma-weave  main engine: keyframes, motion, saved workflows the art director can open
 #   higgsfield   reframe/outpaint, Marketing Studio, virality predictor, TikTok publishing
 # Both run inside Claude. Either can do the whole job; the split is by strength.
+#
+# Access (checked 2026-09-25):
+#   figma-weave  the MCP tools need a PAID Weave plan (app.weavy.ai); a free plan is refused
+#   higgsfield   needs credits on the account; the free plan had 0.1 credits
+# Per round, the credit counts differ a lot (see `models` below), but a Weave credit and
+# a Higgsfield credit are not the same money. Compare plan prices before choosing.
 
 tools:
 
@@ -38,6 +44,12 @@ tools:
     aspect: ui
     motion_prompt: true
     runs_in_claude: true
+    cost_unit: Higgsfield credits
+    models:                    # get_cost quotes, 9:16
+      image:       {name: Nano Banana, id: nano_banana, credits: 1}
+      video:       {name: Kling 3.0 5s, id: kling3_0, credits: 8.75}
+      video_alt:   {name: Seedance 2.5 5s, id: seedance_2_5, credits: 35}
+    verify: true
     notes: >
       Connected to Claude as an MCP server. Best for what Weave does not do:
       reframe and outpaint to 4:5 / 1:1, Marketing Studio product ads, the virality
