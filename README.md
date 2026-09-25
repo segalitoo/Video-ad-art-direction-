@@ -9,7 +9,7 @@ It extends the [Bingo Bay AI production workflow](https://segalitoo.github.io/ra
 **Looks:** 3D stylized · live action · UGC · motion graphics
 **Tools:** any. One master prompt, adapted for Figma Weave and Higgsfield (both inside Claude), Nano Banana, Midjourney, Veo in Google Flow, Kling, Runway, Suno, ElevenLabs. You can add more.
 
-**Inside Claude, two engines split by strength.** Figma Weave runs keyframes and motion (Nano Banana, Kling, Veo and more behind one connector) and keeps the lock as a saved workflow the art director can open. Higgsfield reframes to other ratios, runs Marketing Studio, predicts virality and publishes to TikTok. Every paid run is quoted and approved first; `assemble.py` prints the budget for a full round before stage 4.
+**Inside Claude, two engines split by strength.** The video model is **Seedance 2.5**, on either engine. Figma Weave runs keyframes and motion behind one connector and keeps the lock as a saved workflow the art director can open. Higgsfield is the cheaper route for Seedance, holds the hero as an extra reference in motion, and also reframes, runs Marketing Studio, predicts virality and publishes to TikTok. Every paid run is quoted and approved first; `assemble.py` prints the budget for a full round before stage 4.
 
 ## How it works
 

@@ -82,7 +82,7 @@ Image-to-video from each kept keyframe. The prompt describes only what moves.
 |---|---|
 | **Output** | One kept clip per shot in `clips/` |
 | **Human gate** | The art director picks per shot and checks against the lock and the previous cut. |
-| **Tools** | Figma Weave (Kling, Veo 3.1), Higgsfield, Runway, Midjourney video |
+| **Tools** | Seedance 2.5 on Higgsfield or Figma Weave (candidates at 720p, kept clip upscaled to 1080p); Kling or Veo 3.1 as fallbacks |
 | **Automated** | Clip batches, upscale, the log entry |
 | **Stays manual** | Selection, judging physics and on-model motion |
 | **Bottleneck** | Cost and morphing. Keyframes gate motion, so only approved frames get animated. |

@@ -22,8 +22,9 @@ The full stage descriptions are in `workflow/stages.md`. Read it once per sessio
 ## Tools: Figma Weave and Higgsfield
 
 Both run inside Claude. Split by strength, set in `adapters/tools.yml`:
-- **Figma Weave** is the main engine: keyframes and motion, with many models behind one connector, and saved Weave workflows the art director can open and adjust visually.
-- **Higgsfield** does what Weave does not: reframe and outpaint to other ratios, Marketing Studio, the virality predictor, TikTok publishing.
+- **Video model: Seedance 2.5** on either engine (the user's choice). Kling is the cheaper fallback; Veo 3.1 when a shot needs native sound.
+- **Figma Weave:** keyframes and motion, many models behind one connector, and saved Weave workflows the art director can open and adjust visually. Needs a paid Weave plan.
+- **Higgsfield:** the cheaper route for Seedance (about 28 credits per 4s 720p clip against about 168 on Weave), and the only one that takes the hero as an extra reference in motion. Also reframe and outpaint, Marketing Studio, the virality predictor, TikTok publishing.
 - If one has no credits, use the other and say so.
 
 ## Start
@@ -53,8 +54,10 @@ Modes: `3d-stylized`, `live-action`, `ugc`, `motion-graphics` (see `lock/modes/`
 → Gate: art director picks 1 per shot.
 
 **05 Motion.** For each kept keyframe, use the `-M` motion prompt for the chosen tool. The keyframe is the start frame. The prompt says only what moves.
-- Figma Weave: Kling Video for most shots, Veo 3.1 image-to-video for hero shots or native sound. The kept keyframe is the `image` / first-frame input; the lock's negatives go in `negative_prompt`. Same quote → approve → run loop as stage 4.
-- Higgsfield: `generate_video_batch` with the kept frame as the start image, then `jobs_wait`.
+- Seedance 2.5 settings: 4 seconds minimum (trim in the edit), 720p for candidates, sound off (`generate_audio: false`, sound is stage 6), 9:16.
+- Higgsfield: `generate_video_batch` with the `video_params` in `adapters/tools.yml`: `mode: omni_reference`, the kept keyframe as `start_image`, and on hero shots the hero reference as `image_references`. Then `jobs_wait` and `show_generation_by_ids`.
+- Figma Weave: Seedance 2.5 image-to-video, the kept keyframe as First Frame. Same quote → approve → run loop as stage 4.
+- After the pick, upscale only the kept clip to 1080p (Higgsfield `upscale_video`). Never re-render it at 1080p: without a seed the motion changes.
 - Judge each candidate for on-model hero, morphing, physics and continuity with the shots around it. Log the verdicts.
 → Gate: art director picks 1 per shot.
 

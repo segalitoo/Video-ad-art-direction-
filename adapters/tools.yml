@@ -20,8 +20,10 @@
 last_checked: 2026-09-25
 
 # Which tool does what (decided 2026-09-25):
-#   figma-weave  main engine: keyframes, motion, saved workflows the art director can open
-#   higgsfield   reframe/outpaint, Marketing Studio, virality predictor, TikTok publishing
+#   video model  Seedance 2.5 on either engine
+#   figma-weave  keyframes, motion, saved workflows the art director can open
+#   higgsfield   the cheaper route for Seedance, plus reframe/outpaint, Marketing Studio,
+#                virality predictor, TikTok publishing
 # Both run inside Claude. Either can do the whole job; the split is by strength.
 #
 # Access (checked 2026-09-25):
@@ -40,39 +42,53 @@ tools:
 
   higgsfield:
     role: image+video
-    negative: inline
+    negative: inline           # Seedance 2.5 has no negative field
     aspect: ui
     motion_prompt: true
     runs_in_claude: true
+    clip_range: [4, 30]        # Seedance 2.5: any whole second from 4 to 30
+    hero_reference: true       # Seedance omni_reference takes extra reference images
     cost_unit: Higgsfield credits
-    models:                    # get_cost quotes, 9:16
+    models:                    # get_cost quotes, 9:16, 4s clips, sound off
       image:       {name: Nano Banana, id: nano_banana, credits: 1}
-      video:       {name: Kling 3.0 5s, id: kling3_0, credits: 8.75}
-      video_alt:   {name: Seedance 2.5 5s, id: seedance_2_5, credits: 35}
+      video:       {name: Seedance 2.5 720p, id: seedance_2_5, credits: 28, credits_per_s: 7, min_s: 4}
+      video_1080:  {name: Seedance 2.5 1080p, id: seedance_2_5, credits: 48}
+      video_draft: {name: Seedance 2.5 480p, id: seedance_2_5, credits: 12}
+      video_alt:   {name: Kling 3.0 5s, id: kling3_0, credits: 8.75}
+    video_params:              # passed to generate_video / generate_video_batch
+      model: seedance_2_5
+      mode: omni_reference
+      duration: 4
+      resolution: 720p
+      aspect_ratio: "9:16"
+      generate_audio: false    # sound is stage 6; the edit owns the soundtrack
+      medias: "start_image = the kept keyframe; image_references = the hero reference (hero shots)"
     verify: true
     notes: >
-      Connected to Claude as an MCP server. Best for what Weave does not do:
-      reframe and outpaint to 4:5 / 1:1, Marketing Studio product ads, the virality
-      predictor, and TikTok publishing. Check `balance` first; a free plan cannot generate. Ask for a model recommendation
-      (models_explore, action recommend) per shot. Keyframe with generate_image,
-      then generate_video with the kept keyframe as the start frame.
-      Use reframe or outpaint for 4:5 and 1:1 derivatives, upscale_video last.
-      Use generate_video_batch for the 8-12 candidates, jobs_wait, then review.
+      Connected to Claude as an MCP server. Check `balance` first; a free plan cannot
+      generate. Video model: Seedance 2.5 (chosen 2026-09-25). Generate motion candidates
+      at 720p, then upscale_video only the kept clip to 1080p: there is no seed, so
+      re-rendering at a higher resolution would change the motion that was approved.
+      On hero shots pass the hero reference as image_references next to the start frame;
+      that is what holds the product on-model in motion. Also the tool for reframe and
+      outpaint to 4:5 / 1:1, Marketing Studio, the virality predictor and TikTok publishing.
+      Use generate_video_batch for the candidates, jobs_wait, then show_generation_by_ids.
 
   figma-weave:
     role: image+video
     negative_image: inline     # Nano Banana has no negative field
-    negative_video: field      # Veo and Kling in Weave take a negative_prompt
+    negative_video: inline     # Seedance 2.5 has no negative field (Kling and Veo do)
     aspect: ui
     motion_prompt: true
     runs_in_claude: true
-    clip_s: [5, 10]
+    clip_range: [4, 30]
     cost_unit: Weave credits
     models:                    # quotes from weave_find_model; ids can change, look them up again
       image:       {name: Nano Banana Pro, id: af5a6789-c7af-4c46-9a42-70222654e55b, credits: 11}
       image_draft: {name: Nano Banana 2, id: bebebed5-50c1-4701-98b3-86929db21585, credits: 6}
-      video:       {name: Kling Video 2.5 Turbo Pro, id: wnfmbl8VwUCfX2a1XcdfDlone, credits: 35}
-      video_hero:  {name: Veo 3.1 image-to-video, id: fg6e8647-d90a-4bad-a845-69fdc102a14j, credits: 90}
+      video:       {name: Seedance 2.5 image-to-video, id: cbe8b347-8c85-4e1a-b379-f96f48932f43, credits: 168}
+      video_alt:   {name: Kling Video 2.5 Turbo Pro, id: wnfmbl8VwUCfX2a1XcdfDlone, credits: 35}
+      video_sound: {name: Veo 3.1 image-to-video, id: fg6e8647-d90a-4bad-a845-69fdc102a14j, credits: 90}
     verify: true
     notes: >
       Figma Weave, connected to Claude through the Figma MCP server. Two ways in:
@@ -81,8 +97,9 @@ tools:
       tokens, the hero image as a reference node) so the art director can open and
       tweak it visually in Weave. Every run quotes its cost first and needs an explicit
       approval. Download outputs with the curl command the output call returns.
-      Use Nano Banana 2 for drafts, Nano Banana Pro for finals, Kling for most motion,
-      Veo 3.1 for the hero shots and native sound.
+      Use Nano Banana 2 for drafts, Nano Banana Pro for finals, Seedance 2.5 for motion
+      (the kept keyframe as First Frame, generate_audio off). Kling is the cheaper
+      fallback; Veo 3.1 when a shot needs native sound.
 
   nano-banana:
     role: image

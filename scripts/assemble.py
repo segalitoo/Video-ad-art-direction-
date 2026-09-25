@@ -13,6 +13,7 @@ so an image-to-video model does not fight the frame it was given.
 """
 
 import argparse
+import math
 from pathlib import Path
 import sys
 
@@ -217,7 +218,13 @@ def budget(board, lock, tools, tool_names):
         key_n = (len(shots) + hero) * cands["keyframe"]
         mot_n = len(shots) * cands["motion"] if lock["_mode"].get("keyframe_first") else 0
         key_c = key_n * img["credits"] if img else None
-        mot_c = mot_n * vid["credits"] if vid else None
+        mot_c = None
+        if vid and "credits_per_s" in vid:
+            # Priced by the second: each shot is generated at its own length, never under the minimum.
+            secs = sum(max(vid.get("min_s", 0), math.ceil(float(s.get("duration_s", 0)))) for s in shots)
+            mot_c = secs * vid["credits_per_s"] * (cands["motion"] if mot_n else 0)
+        elif vid:
+            mot_c = mot_n * vid["credits"]
         total = (key_c or 0) + (mot_c or 0)
         rows.append(
             f"| {name} | {key_n} × {img['name']} ≈ {key_c:g} | " if img else f"| {name} | n/a | "
@@ -298,10 +305,15 @@ def build(board, lock, specs, tools, tool_names):
         for name in video_tools:
             base = mov if tools[name].get("motion_prompt") else key + " " + mov
             text, extra = for_tool(base, tools[name], negatives, aspect, motion=True)
-            clip = tools[name].get("clip_s")
-            if clip:
+            clip, span = tools[name].get("clip_s"), tools[name].get("clip_range")
+            if span:
+                gen = max(span[0], math.ceil(float(shot.get("duration_s", span[0]))))
+                extra.append(f"Generate {gen}s (allowed {span[0]}-{span[1]}s), trim to {shot.get('duration_s')}s in the edit")
+            elif clip:
                 options = " or ".join(str(c) for c in clip) if isinstance(clip, list) else clip
                 extra.append(f"Generate {options}s, trim to {shot.get('duration_s')}s in the edit")
+            if shot.get("hero") and tools[name].get("hero_reference"):
+                extra.append("Attach the hero reference as an extra reference image, next to the start frame")
             motions.append((name, text, extra))
         out += render_group(f"{shot['id']}-K · keyframe", keyframes)
         out += render_group(f"{shot['id']}-M · motion", motions)

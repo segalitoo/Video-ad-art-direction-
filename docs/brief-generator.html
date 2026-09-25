@@ -230,7 +230,11 @@ const MODES = {
   "ugc":             { label: "UGC",             keyframeFirst: true },
   "motion-graphics": { label: "Motion graphics", keyframeFirst: false },
 };
-const WEAVE = { draft: { name: "Nano Banana 2", credits: 6 }, final: { name: "Nano Banana Pro", credits: 11 }, video: { name: "Kling Video", credits: 35 } };
+// Quotes from adapters/tools.yml (2026-09-25). Video model: Seedance 2.5, 4s clips, 720p, sound off.
+const ENGINES = {
+  higgsfield: { name: "Higgsfield", image: 1, perSecond: 7, minS: 4 },   // Seedance 2.5 720p is priced per second
+  weave:      { name: "Figma Weave", image: 11, video: 168 },             // flat quote per clip
+};
 
 // Beat structures per length. Durations add up to the length.
 const BEATS = {
@@ -439,7 +443,7 @@ ad:
   length_s: ${s.length}
   master_aspect: "${master}"
   platforms: [${s.platforms.join(", ")}]
-  tools: [figma-weave, higgsfield]
+  tools: [higgsfield, figma-weave]
   candidates: {keyframe: ${s.candK}, motion: ${s.candM}}
 
 shots:
@@ -496,8 +500,9 @@ function budget(s) {
   const m = MODES[s.mode].keyframeFirst ? beats.length * +s.candM : 0;
   return {
     k, m,
-    draft: k * WEAVE.draft.credits + m * WEAVE.video.credits,
-    final: k * WEAVE.final.credits + m * WEAVE.video.credits,
+    higgsfield: k * ENGINES.higgsfield.image
+      + (m ? +s.candM : 0) * beats.reduce((t, b) => t + Math.max(ENGINES.higgsfield.minS, Math.ceil(b[1])), 0) * ENGINES.higgsfield.perSecond,
+    weave: k * ENGINES.weave.image + m * ENGINES.weave.video,
   };
 }
 
@@ -531,8 +536,8 @@ function render() {
   const b = budget(s);
   $("budget").innerHTML = `
     <div><b>${b.k} + ${b.m}</b><span>keyframes + motion clips per round</span></div>
-    <div><b>≈ ${b.draft.toLocaleString()}</b><span>Weave credits, drafts on ${WEAVE.draft.name}</span></div>
-    <div><b>≈ ${b.final.toLocaleString()}</b><span>Weave credits, finals on ${WEAVE.final.name}</span></div>`;
+    <div><b>≈ ${b.higgsfield.toLocaleString()}</b><span>Higgsfield credits · Nano Banana + Seedance 2.5</span></div>
+    <div><b>≈ ${b.weave.toLocaleString()}</b><span>Weave credits · Nano Banana Pro + Seedance 2.5</span></div>`;
   FILES.forEach(f => $("tab-" + f.id).setAttribute("aria-selected", String(f.id === active)));
   const f = FILES.find(x => x.id === active);
   $("file-path").textContent = `projects/${slug(s.brand)}-${slug(s.campaign || "campaign")}/${fileName(f, s)}`;

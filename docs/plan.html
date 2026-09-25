@@ -429,13 +429,13 @@ footer { margin-top: 88px; padding-top: 20px; border-top: 1px solid var(--hair);
   <section class="sec">
     <p class="k sec__k">Tools</p>
     <h2 class="sec__t">Any tool. The lock travels with the prompt.</h2>
-    <p class="sec__d">Two engines run inside Claude, split by strength. <b>Figma Weave</b> puts many models behind one connector and keeps the lock as a saved workflow the art director can open. <b>Higgsfield</b> does what Weave does not. Every paid run is quoted and approved first, and <code>assemble.py</code> prints the budget for a full round before stage 4: about 1,050 Weave credits for the 15-second pilot.</p>
+    <p class="sec__d">Two engines run inside Claude, split by strength. <b>Figma Weave</b> puts many models behind one connector and keeps the lock as a saved workflow the art director can open. <b>Higgsfield</b> is the cheaper route for the video model, <b>Seedance 2.5</b>, and does what Weave does not. Every paid run is quoted and approved first, and <code>assemble.py</code> prints the budget for a full round before stage 4: about 470 Higgsfield credits for the 15-second pilot.</p>
     <div class="tbl-wrap">
       <table>
         <thead><tr><th>Tool</th><th>Used for</th><th>Negatives</th><th>How it runs</th></tr></thead>
         <tbody>
-          <tr><td>Figma Weave</td><td>Main engine: keyframes (Nano Banana 2 / Pro), motion (Kling, Veo 3.1), saved workflows</td><td>Inline for images, own field for video</td><td><span class="pill pill--in">Inside Claude</span> via Figma</td></tr>
-          <tr><td>Higgsfield</td><td>Reframe and outpaint, Marketing Studio, virality predictor, TikTok publishing</td><td>Inline sentence</td><td><span class="pill pill--in">Inside Claude</span> via its connector</td></tr>
+          <tr><td>Figma Weave</td><td>Keyframes (Nano Banana 2 / Pro), motion (Seedance 2.5), saved workflows</td><td>Inline for images, own field for video</td><td><span class="pill pill--in">Inside Claude</span> via Figma</td></tr>
+          <tr><td>Higgsfield</td><td>Motion on Seedance 2.5 with the hero as reference, reframe and outpaint, Marketing Studio, virality, TikTok publishing</td><td>Inline sentence</td><td><span class="pill pill--in">Inside Claude</span> via its connector</td></tr>
           <tr><td>Nano Banana</td><td>Keyframes, one-detail fixes</td><td>Inline sentence</td><td><span class="pill">Google Flow / Gemini</span></td></tr>
           <tr><td>Midjourney</td><td>Keyframes, style reference, video</td><td><code>--no</code> parameter</td><td><span class="pill">Paste</span></td></tr>
           <tr><td>Veo (Google Flow)</td><td>Motion from frames, native SFX</td><td>Inline sentence</td><td><span class="pill">Paste</span></td></tr>
