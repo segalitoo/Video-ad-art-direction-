@@ -17,7 +17,13 @@ HEX_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")
 
 def load_yaml(path):
     with open(path, encoding="utf-8") as f:
-        return yaml.safe_load(f) or {}
+        try:
+            return yaml.safe_load(f) or {}
+        except yaml.YAMLError as err:
+            mark = getattr(err, "problem_mark", None)
+            where = f"line {mark.line + 1}, column {mark.column + 1}" if mark else "unknown place"
+            fail(f"{path} is not valid YAML at {where}: {getattr(err, 'problem', err)}. "
+                 "A value with a colon or comma in it needs quotes.")
 
 
 def fail(msg):

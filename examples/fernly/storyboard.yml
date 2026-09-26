@@ -1,0 +1,118 @@
+# Fernly · "Plant reviews" · 15s · stage 3 output
+# The plant reviews its human. Captions carry the joke; Arthur reads them.
+# Every clip is steady; scripts/phone_look.py adds the handheld feel in the edit.
+
+ad:
+  id: fernly-reviews-15s
+  lock: fernly.dna.yml
+  length_s: 15
+  master_aspect: "9:16"
+  platforms: [tiktok, meta_vertical, youtube_shorts, meta_feed]
+  tools: [higgsfield, figma-weave]
+  candidates: {keyframe: 6, motion: 2, static: 4}
+
+shots:
+  - id: S01
+    beat: hook
+    duration_s: 2
+    subject: very low angle from the soil of a plant pot looking up, the spout of a watering can angled in from the top of the frame, a stream of water mid-air
+    action: water pours from the spout straight down toward the camera
+    camera_move: static
+    hero: false
+    super: "My human is trying to drown me."
+    vo: "My human is trying to drown me."
+    sound: none
+    sfx: water pouring onto soil, close and loud
+    generate: true
+
+  - id: S02
+    beat: build
+    duration_s: 2.5
+    subject: macro of dark wet potting soil, a shallow puddle of water sitting on top
+    action: a single drop lands in the puddle and ripples outward
+    camera_move: static macro
+    hero: false
+    super: "Day 3. Watered. Again. ★★☆☆☆"
+    vo: "Day three. Watered. Again. Two stars."
+    sound: none
+    sfx: one water drip, quiet room
+    generate: true
+
+  - id: S03
+    beat: build
+    duration_s: 3
+    subject: low angle from the pot toward a window, harsh midday sun, sheer curtain glowing white
+    action: the glare slowly swells until the frame blows out to white
+    camera_move: static
+    hero: false
+    super: "Moved into full sun. ★☆☆☆☆"
+    vo: "Then my human moved me into the sun. One star."
+    sound: none
+    sfx: a faint summer hum, a fly buzzing past
+    generate: true
+
+  - id: S04
+    beat: product
+    duration_s: 3
+    subject: a phone lying face up on a wooden table next to the pot, screen dark
+    action: the phone screen lights up softly
+    camera_move: static
+    hero: false
+    super: "Then my human got Fernly."
+    vo: "Then my human got Fernly."
+    sound: none
+    sfx: a soft notification chime
+    note: the notification ("Water Monty in 3 days") is real UI, laid over the screen in the edit
+    generate: true
+
+  - id: S05
+    beat: payoff
+    duration_s: 2.5
+    subject: the monstera plant with drooping, tired leaves in its pot by the window, soft morning light
+    end_subject: the same monstera plant, lush and upright, glossy healthy green leaves, same pot, same window, same light
+    action: the leaves slowly lift and open until the plant stands tall
+    camera_move: static
+    hero: true
+    super: "Finally. Someone who listens. ★★★★★"
+    vo: "Finally. Someone who listens. Five stars."
+    sound: lo-fi bed starts
+    sfx: soft leaves rustling
+    generate: true
+
+  - id: S99
+    beat: end-card
+    duration_s: 2
+    subject: fernly wordmark and CTA on fern green
+    generate: false
+    super: "Your plants will leave better reviews."
+
+statics:
+  - id: A1
+    concept: the five-star plant
+    subject: the lush monstera in its terracotta pot by the window, glossy leaves, soft morning light
+    hero: true
+    copy_space: top
+    headline: "Finally. Someone who listens. ★★★★★"
+    cta: "Get Fernly free"
+    plates: ["4:5", "9:16"]
+    platforms: [meta_feed, meta_vertical, tiktok]
+
+  - id: A2
+    concept: the one-star plant
+    subject: the same monstera drooping and tired in its pot, a watering can too close beside it
+    hero: true
+    copy_space: top
+    headline: "My human, before Fernly. ★☆☆☆☆"
+    cta: "Get Fernly free"
+    plates: ["4:5", "9:16"]
+    platforms: [meta_feed, meta_vertical, tiktok]
+
+# Quote every line: a comma inside {...} breaks YAML.
+variants:
+  hooks:
+    - {id: H1, super: "My human is trying to drown me."}
+    - {id: H2, super: "One star. Would not live here again."}
+    - {id: H3, super: "Day 3 of being overwatered."}
+  ctas:
+    - {id: C1, text: "Get Fernly free"}
+    - {id: C2, text: "Save your plants"}

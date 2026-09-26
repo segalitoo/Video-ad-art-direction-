@@ -188,6 +188,18 @@ def lint(board, lock):
                    f'or leave the can blank. Describe the label graphically and set hero.wordmark if the name '
                    f'must appear')
 
+    if lock.get("meta", {}).get("people") is False:
+        for key, value in lock["tokens"].items():
+            found = [b for b in ("skin", "face", "hand", "finger", "person", "people") if b in str(value).lower()]
+            if found:
+                out.append(f"tokens: {key} mentions {', '.join(found)} but the lock has people: false; "
+                           f"override {key} in the lock")
+
+    for n in lock["negative"] + lock["negative_image"] + lock["negative_video"]:
+        if re.search(r"\b(in|on|during|when|except|only) the\b.*\b(shots?|scenes?|frames?)\b", n.lower()):
+            out.append(f'negative "{n}" is conditional; models cannot follow conditions. Put it in the '
+                       f"shot's own description instead")
+
     colours = [c for c in lock.get("palette") or [] if not str(c.get("role", "")).startswith("type")]
     if len(colours) > MAX_SCENE_COLOURS:
         out.append(f"palette: {len(colours)} scene colours in every prompt; image models follow 3 to 6. "
@@ -211,7 +223,7 @@ def lint(board, lock):
         if not shot.get("generate", True):
             continue
         sid = shot["id"]
-        moving = sorted(set(_motion_words(shot.get("subject", ""))))
+        moving = sorted(set(_motion_words(f"{shot.get('subject', '')} {shot.get('end_subject', '')}")))
         if moving:
             out.append(f"{sid}: subject has movement ({', '.join(moving)}). A keyframe is one frozen frame: "
                        f"describe the first frame, put the movement in `action`")
@@ -354,12 +366,12 @@ def motion_prompt(shot, lock):
     action = shot.get("action") or "subtle ambient motion"
     move = shot.get("camera_move") or "static camera"
     keep = "the hero" if shot.get("hero") else "the subject"
-    parts = [
-        action,
-        f"Camera: {move}",
-        t["MOTION"],
-        f"Keep the look, colours and {keep} exactly as in the start frame",
-    ]
+    if shot.get("end_subject"):
+        # The subject is meant to change here; only the setting must hold.
+        hold = "Move smoothly from the start frame to the end frame; keep the setting, framing and light the same"
+    else:
+        hold = f"Keep the look, colours and {keep} exactly as in the start frame"
+    parts = [action, f"Camera: {move}", t["MOTION"], hold]
     return ". ".join(p.strip().rstrip(".") for p in parts) + "."
 
 
@@ -419,7 +431,8 @@ def budget(board, lock, tools, tool_names):
         img, vid = models.get("image"), models.get("video")
         if not (img or vid):
             continue
-        key_n = (len(shots) + hero) * cands["keyframe"]
+        ends = sum(1 for s in shots if s.get("end_subject"))
+        key_n = (len(shots) + hero + ends) * cands["keyframe"]
         mot_n = len(shots) * cands["motion"] if lock["_mode"].get("keyframe_first") else 0
         key_c = key_n * img["credits"] if img else None
         mot_c = None
@@ -528,8 +541,16 @@ def build(board, lock, specs, tools, tool_names):
                 extra.append(f"Generate {options}s, trim to {shot.get('duration_s')}s in the edit")
             if shot.get("hero") and tools[name].get("hero_reference"):
                 extra.append("Attach the hero reference as an extra reference image, next to the start frame")
+            if shot.get("end_subject"):
+                extra.append(f"Last frame: the kept {shot['id']}-K-end keyframe (role end_image); the model fills the change between")
             motions.append((name, text, extra))
         out += render_group(f"{shot['id']}-K · keyframe", keyframes)
+        if shot.get("end_subject"):
+            # First + last frame: the model interpolates between two approved stills, which keeps a
+            # change of state (droopy -> lush, closed -> open) from melting into something else.
+            end = keyframe_prompt({**shot, "subject": shot["end_subject"]}, lock, frame_words)
+            out += render_group(f"{shot['id']}-K-end · last frame",
+                                [(n, *for_tool(end, tools[n], neg_image, aspect)) for n in image_tools])
         out += render_group(f"{shot['id']}-M · motion", motions)
 
     statics = board.get("statics") or []

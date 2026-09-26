@@ -7,6 +7,9 @@ tmp=.selftest; rm -rf "$tmp"; mkdir -p "$tmp"
 ok() { echo "ok   $1"; }
 
 python3 scripts/assemble.py examples/sunpeel/storyboard.yml --check 2>/dev/null && ok "sunpeel passes pre-checks"
+python3 scripts/assemble.py examples/fernly/storyboard.yml --check 2>/dev/null && ok "fernly passes pre-checks"
+python3 scripts/assemble.py examples/fernly/storyboard.yml > "$tmp/fernly.md" 2>/dev/null
+diff -q "$tmp/fernly.md" examples/fernly/prompts.md >/dev/null && ok "committed fernly prompts.md is up to date"
 python3 scripts/assemble.py examples/sunpeel/storyboard.yml > "$tmp/prompts.md" 2>/dev/null
 diff -q "$tmp/prompts.md" examples/sunpeel/prompts.md >/dev/null && ok "committed prompts.md is up to date"
 python3 scripts/matrix.py examples/sunpeel/storyboard.yml > "$tmp/matrix.csv" 2>/dev/null

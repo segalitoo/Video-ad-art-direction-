@@ -1,0 +1,66 @@
+# fernly-reviews.dna.yml · v1.0
+# owner: art director
+# Fictional brand for a portfolio pilot. Name not trademark-checked.
+#
+# The look is phone footage from a houseplant's point of view. The plant is the
+# "creator": it never talks on camera, its review lives in captions and voice.
+# Steady clips are generated; the handheld feel is added in the edit
+# (scripts/phone_look.py), which keeps it believable and the same across shots.
+
+meta:
+  brand: Fernly
+  campaign: Plant reviews
+  version: "1.0"
+  owner: Art director
+  mode: ugc
+  people: false            # no faces, no hands: objects enter the frame on their own
+  audience: 24 to 38, renters with 3+ houseplants, half of them quietly dying
+  promise: Your plants finally get what they need, when they need it
+
+tokens:
+  STYLE: authentic phone video, unpolished, real home footage, vertical
+  WORLD: a lived-in small apartment, wooden floor, a window with sheer curtains, a few books and mugs around
+  FORM: real everyday objects at true scale, honest textures
+  LIGHT: available daylight from the window, a little uneven
+  GRADE: native phone colour, slightly warm, no heavy grade
+  CAMERA: very low angle from inside the plant pot, wide phone lens, steady (shake is added in the edit)
+  MOTION: real-time, real-world physics, one simple movement per shot
+  TECH: phone sensor look, mild compression, natural textures
+
+palette:
+  - {hex: "#2F7D4F", name: fern green, role: hero}
+  - {hex: "#C8643B", name: terracotta, role: accent}
+  - {hex: "#F2C14E", name: sunny yellow, role: accent}
+  - {hex: "#F4EFE6", name: linen, role: background}
+  - {hex: "#FFFFFF", name: white, role: type on dark}
+  - {hex: "#1F2A24", name: ink, role: type on light}
+
+type:
+  family: "Inter (captions in bold white with a soft dark shadow, TikTok style)"
+  weight: Bold
+  case: sentence
+  max_words_per_super: 7
+  min_size_pct_of_height: 3.5
+
+sound:
+  genre: none; the voice and room sound carry it, a faint lo-fi bed under the end card only
+  bpm: 80
+  instruments: soft lo-fi keys (end card only)
+  voice: voiceover
+  voice_model: text2speech_v2 (variant elevenlabs)
+  voice_name: Arthur
+  voice_id: 30fc8796-ceb6-4a66-b3a7-4a145ef7f346   # Higgsfield preset, chosen 2026-09-26
+  voice_direction: deadpan and a little theatrical, a tired critic writing a one-star review; never cute
+  signature: a single water drip
+
+end_card:
+  duration_s: 2
+  logo: fernly wordmark in linen on fern green
+  cta_style: super plus platform button
+
+negative:
+  - studio lighting
+
+hero:
+  description: a medium monstera plant with large split leaves in a terracotta pot
+  reference: keyframes/hero-plant_v1.png   # set after the H0 gate
