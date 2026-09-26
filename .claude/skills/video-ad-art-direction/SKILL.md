@@ -17,7 +17,8 @@ The full stage descriptions are in `workflow/stages.md`. Read it once per sessio
 5. **Log everything.** Every generation gets a row in the project's `iteration-log.csv`: prompt ref, tool, model, lock version, verdict (kept / rejected / fix) and the reason.
 6. **Ask before spending.** Before any paid generation, state the tool, the model, the number of generations and the quoted cost, and wait for an explicit yes. Every run, including reruns. Weave quotes the exact cost when called without `acknowledgedCost`; Higgsfield takes `get_cost: true`.
 7. **Two cycles, then ship or kill.** At stage 10, count the cycles. After the second, recommend ship or kill; do not start a third without the owner saying so.
-8. **Specs can be out of date.** Values marked `verify: true` in `platforms/specs.yml` or `adapters/tools.yml` are not official. Say so for real client work.
+8. **Judge before every pick.** After each keyframe, clip or static plate round, run the judge pass below and lead the gate with its report. You recommend; the art director picks, and can overrule any score.
+9. **Specs can be out of date.** Values marked `verify: true` in `platforms/specs.yml` or `adapters/tools.yml` are not official. Say so for real client work.
 
 ## Tools: Figma Weave and Higgsfield
 
@@ -38,6 +39,17 @@ When the environment has the Higgsfield API credential connected (or HF_KEY is s
 ## Getting the files
 
 Generations live on Higgsfield and appear in the chat widget. This cloud environment's network policy blocks the media hosts (checked 2026-09-26), so files cannot be downloaded into the repo here. Either the user downloads the kept files and runs the scripts locally, or the user adds Higgsfield's media host, `d1xarpci4ikg0w.cloudfront.net` (seen in its result URLs, 2026-09-26), to the environment's allowed domains. API results come from a different host, `d3u0tzju9qaucj.cloudfront.net` (seen 2026-09-26); allow it too. Until then, build a contact sheet page from the output URLs in `runs.jsonl`: the user's browser can load them even when this container cannot. Output URLs expire after about 7 days, so download kept files before then. The log still records job IDs, which is all that later generations need (keyframe job IDs feed motion, clip job IDs feed upscale).
+
+## Judge pass (scripts/judge.py)
+
+Runs between generation and the gate in stages 4 and 5 and for static plates. It needs the files on disk (see Getting the files).
+1. `judge.py new judge/<round>.yml --lock <lock> G="glob" ... --label G="what it is" --pair A:B:first_last|same_set`. One group per shot. `first_last` for a start/end frame pair (framing must match); `same_set` for shots in one room (pot, props, light must match).
+2. `judge.py measure judge/<round>.yml`: the machine pass, plus a 5-frame strip per clip.
+3. Open every file (clips: open the strip) with the Read tool and fill `scores` with 1 to 5 per rubric criterion and a one-line note that names what you saw. Then fill `pair_scores` for the pairs it lists: name any prop, pot, surface or light change. Add `fail: "<reason>"` for a hard fail: text or letters in the image, people or body parts when `people: false`, a broken hero, the wrong ratio.
+   - Never score a file you have not opened. Score what you see, not the machine numbers, and not the model you expect to win.
+   - Use the whole scale: 3 is usable, 5 is ready for a client.
+4. Add `fixes`: the prompt or lock changes that would lift the weakest criterion (they feed the next lock version).
+5. `judge.py rank judge/<round>.yml -o judge/<round>.md --sheet judge/<round>.html`. Lead the gate with the round score and band, the top 3 sets with why, and the fixes; send the sheet. Log the scores next to the verdicts in `iteration-log.csv`.
 
 ## Start
 
@@ -63,7 +75,7 @@ Modes: `3d-stylized`, `live-action`, `ugc`, `motion-graphics` (see `lock/modes/`
 - Higgsfield: check `balance` first. Keyframes on Nano Banana Pro with `image_params` from `adapters/tools.yml`; on hero shots attach the hero reference as `image_references`. `generate_image_batch` → `jobs_wait` → `show_generation_by_ids`.
 - First hero round is an A/B: 4 Nano Banana Pro + 4 GPT Image 2.5 (high, 2K, Sunburst), shown side by side and numbered. The winner is logged with its reason and becomes the keyframe model for the project.
 - Another tool: give the user the prompt block for that tool from `prompts.md`, and log what they report back.
-- Show every candidate side by side, with its number, before asking for a pick.
+- Run the judge pass. Show every candidate side by side, with its number and score, and the best matching set, before asking for a pick.
 → Gate: art director picks 1 per shot.
 
 **05 Motion.** For each kept keyframe, use the `-M` motion prompt for the chosen tool. The keyframe is the start frame. The prompt says only what moves.
@@ -72,7 +84,7 @@ Modes: `3d-stylized`, `live-action`, `ugc`, `motion-graphics` (see `lock/modes/`
 - Figma Weave: Seedance 2.5 image-to-video, the kept keyframe as First Frame. Same quote → approve → run loop as stage 4.
 - Submit batches of at most 6 videos and 8 images (the Plus plan's parallel limit).
 - After the pick, upscale only the kept clip to 1080p (Higgsfield `upscale_video`, provider `topaz`, resolution `1080p`). Never re-render it at 1080p: without a seed the motion changes. Upscale has no price preview: say so, and ask before running it.
-- Judge each candidate for on-model hero, morphing, physics and continuity with the shots around it. Log the verdicts.
+- Run the judge pass on the clips (the clip rubric: on model, morphing, physics, the asked movement, continuity, craft). Log the verdicts.
 → Gate: art director picks 1 per shot.
 
 **06 Sound.** Higgsfield has no music or general SFX model inside Claude (its audio tool is speech only).
@@ -82,7 +94,7 @@ Modes: `3d-stylized`, `live-action`, `ugc`, `motion-graphics` (see `lock/modes/`
 - Mix target: about -14 LUFS, true peak at or below -1 dBTP.
 → Gate: audio direction, including rights for paid social.
 
-**Static plates (with stage 4).** For each item in `statics`, generate the `A#-<ratio>` plate prompts from `prompts.md` on the keyframe model, 4 candidates per ratio, with the hero reference on hero statics. Plates carry no text: the headline band stays empty. Same gate as keyframes.
+**Static plates (with stage 4).** For each item in `statics`, generate the `A#-<ratio>` plate prompts from `prompts.md` on the keyframe model, 4 candidates per ratio, with the hero reference on hero statics. Plates carry no text: the headline band stays empty. Judge pass, then the same gate as keyframes.
 
 **07 Copy.** Fill `copy-matrix.md`: 3 lines per placement, word limits from `lock.type`. Static headlines: at most 7 words and 40 characters (checked by `--check`). Keep the losing lines and their reasons. Flag every claim for legal.
 → Gate: copy lead.
@@ -100,5 +112,5 @@ Modes: `3d-stylized`, `live-action`, `ugc`, `motion-graphics` (see `lock/modes/`
 
 End each stage with exactly this:
 - **Made:** the files, in one line.
-- **Checks:** the PASS / WARN / FAIL summary.
+- **Checks:** the PASS / WARN / FAIL summary, and the judge round score when the stage generated files.
 - **Decision needed:** the one question for the gate owner, with your recommendation.

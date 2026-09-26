@@ -16,18 +16,18 @@ It extends the [Bingo Bay AI production workflow](https://segalitoo.github.io/ra
 
 ```
 DEFINE                      PRODUCE (in parallel)                SHIP
-01 Brief & hooks            04 Keyframes → 05 Motion             08 Edit
+01 Brief & hooks            04 Keyframes →J 05 Motion →J         08 Edit
 02 The lock                 06 Sound & voice                     09 QA & platform check
 03 Storyboard               07 Copy & on-screen text             10 Variants & iteration
 ```
 
-Ten stages, one human gate each, two iteration cycles at most. Full detail: [`workflow/stages.md`](workflow/stages.md).
+Ten stages, one human gate each, two iteration cycles at most. **J** is the judge pass: before each pick, Claude scores every image or clip against a fixed rubric, gives the round one score, and names the best matching set (`scripts/judge.py`). Full detail: [`workflow/stages.md`](workflow/stages.md).
 
 Five ideas carry the whole system:
 1. **The lock.** The look is written as tokens before the first generation (`<brand>.dna.yml`). A moodboard gets interpreted; a token gets pasted.
 2. **Assembled prompts.** `STYLE + [SHOT] + WORLD + FORM + LIGHT + GRADE + PALETTE + TECH + FRAME`. Only the bracketed slot changes between shots, so every shot reads as one film.
 3. **Keyframe first.** Each shot starts as a still (pick 1 of 8 to 12). Only a kept frame gets animated, and its motion prompt says only what moves. This keeps paid video generations low.
-4. **Machines check first.** Pre-checks on the storyboard, and spec checks on every export, so people only review what passed.
+4. **Machines check first.** Pre-checks on the storyboard, a judge pass on every batch, and spec checks on every export, so people only review what passed, ranked.
 5. **Everything logged.** Each generation records its verdict, reason and lock version.
 
 ## Using it with Claude
@@ -45,6 +45,9 @@ python scripts/new_project.py acme spring-launch --mode ugc      # scaffold proj
 python scripts/assemble.py <storyboard.yml> --check              # stage 3 pre-checks
 python scripts/assemble.py <storyboard.yml> -o prompts.md        # every prompt, for every tool
 python scripts/matrix.py   <storyboard.yml> -o matrix.csv        # hooks × CTAs × platforms
+python scripts/judge.py new judge/r1.yml --lock ../x.dna.yml D="out/droopy*" L="out/lush*" --pair D:L:first_last
+python scripts/judge.py measure judge/r1.yml                    # machine pass; then Claude scores by eye
+python scripts/judge.py rank judge/r1.yml -o report.md --sheet sheet.html   # round score, best matching sets
 python scripts/crop.py master.mp4 4:5                           # free 4:5 feed cut, checks the safe area
 python scripts/phone_look.py clip.mp4 --shake 1                 # phone-footage feel: drift, grain, flicker
 python scripts/hf_api.py run <model> -i body.json --yes --out clips/   # Higgsfield API: estimate, approve, submit, wait, download
@@ -64,7 +67,7 @@ bash scripts/selftest.sh                                         # test everythi
 | `platforms/specs.yml` | Ratios, lengths, safe zones and loudness per platform, with sources |
 | `adapters/tools.yml` | How each tool wants its prompt (negatives, aspect, clip length) |
 | `templates/` | Brief, storyboard, copy matrix, QA checklist, iteration log |
-| `scripts/` | Scaffold, assemble, matrix, spec check, self-test |
+| `scripts/` | Scaffold, assemble, matrix, judge, spec check, crop, statics, Higgsfield API client, self-test |
 | `examples/sunpeel/` | The pilot: a fictional zero-sugar citrus soda, photoreal product look (lock v1.2), 15s video + 3 static ads |
 | `examples/fernly/` | Pilot candidate: a plant-care app, UGC from the plant's point of view, voice by Arthur; run `test-plan.md` first |
 | `docs/brief-generator.html` | Intake form that writes the brief, lock and storyboard ([live](https://claude.ai/artifact/DvdWpJVGGaiz4g3wWVT6h6)) |

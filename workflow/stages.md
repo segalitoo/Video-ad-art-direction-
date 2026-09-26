@@ -7,12 +7,13 @@ This is the Bingo Bay workflow adapted for video, where every rejected clip cost
 
 ```
 DEFINE                       PRODUCE (in parallel)                     SHIP
-01 Brief & hooks  ─┐         04 Keyframes ──► 05 Motion ─┐             08 Edit
+01 Brief & hooks  ─┐         04 Keyframes ─J► 05 Motion J┐             08 Edit
 02 The lock        ├──────►  06 Sound & voice            ├──────►      09 QA & platform check
 03 Storyboard     ─┘         07 Copy & on-screen text   ─┘             10 Variants & iteration
                                                                             │
                          ◄──── loops back to 04–07, two cycles at most ─────┘
 ```
+J = judge pass: Claude scores every batch and names the best matching set before a person picks.
 
 **Rules that never move**
 - One human gate per stage, with a named owner. The person there edits; they do not operate the tools.
@@ -20,6 +21,7 @@ DEFINE                       PRODUCE (in parallel)                     SHIP
 - Prompts are assembled from the lock (`scripts/assemble.py`), never written freehand.
 - Keyframe first, motion second. Only a kept frame gets animated.
 - Every generation is logged with a verdict and a reason (`iteration-log.csv`).
+- Claude judges every batch before a person does (`judge.py`): a score and a reason per file, and the best matching set. People pick.
 - Two iteration cycles, then ship it or kill it.
 
 ---
@@ -71,7 +73,7 @@ One still per shot, generated from the assembled prompt. Pick 1 of 8 to 12.
 | **Output** | The hero reference (`H0`) first, then one kept keyframe per shot in `keyframes/` |
 | **Human gate** | The art director curates the batch. Never the first output. |
 | **Tools** | Figma Weave (Nano Banana 2 drafts, Nano Banana Pro finals), Higgsfield, Midjourney, Photoshop for paint-over |
-| **Automated** | Budget for the round (`assemble.py`), batch generation, background removal, the log entry |
+| **Automated** | Budget for the round (`assemble.py`), batch generation, background removal, the judge pass, the log entry |
 | **Stays manual** | Selection, paint-over, retouching to the lock |
 | **Bottleneck** | Consistency across shots. The hero reference is approved first and attached to every hero shot. |
 
@@ -83,9 +85,23 @@ Image-to-video from each kept keyframe. The prompt describes only what moves.
 | **Output** | One kept clip per shot in `clips/` |
 | **Human gate** | The art director picks per shot and checks against the lock and the previous cut. |
 | **Tools** | Seedance 2.5 on Higgsfield or Figma Weave (candidates at 720p, kept clip upscaled to 1080p); Kling or Veo 3.1 as fallbacks |
-| **Automated** | Clip batches, upscale, the log entry |
+| **Automated** | Clip batches, the judge pass, upscale, the log entry |
 | **Stays manual** | Selection, judging physics and on-model motion |
 | **Bottleneck** | Cost and morphing. Keyframes gate motion, so only approved frames get animated. |
+
+## J · Produce · Judge pass (before every pick)
+After each generation round (keyframes, clips, static plates), Claude scores every file before the art director sees the batch. It recommends; it never picks.
+
+| | |
+|---|---|
+| **Output** | `judge/<round>.yml` (every score with a reason), `report.md` (round score, top 3 matching sets, ranking per shot, by model, what to fix), a scored contact sheet |
+| **How** | `judge.py new` groups the files by shot and says which must match (`first_last` for a start/end frame pair, `same_set` for shots in one room). `judge.py measure` runs the machine pass. Claude opens every file and scores the rubric 1 to 5 with a note, plus the shortlisted pairs. `judge.py rank` combines them. |
+| **Rubric, images** | Lock 20 · hero on model 20 · craft (AI tells) 20 · composition and caption space 15 · story beat 15 · animatable 10 |
+| **Rubric, clips** | On model 20 · no morphing 20 · physics 15 · the asked movement only 20 · continuity 15 · craft 10 |
+| **Score** | Per file: 85% eyes, 15% machine (sharpness, calm caption bands, palette pull, steadiness). A hard fail (text in the image, people in a people-free lock, a broken hero) scores 0. Per set: the mean of its files × how well they match. The round score is the best set's: 80+ go to the gate, 65–79 usable with the listed fixes, under 65 regenerate. |
+| **Human gate** | None of its own: it feeds the stage 4 and 5 gates. The art director can overrule any score; the log keeps both. |
+| **Stays manual** | Taste. The scores rank; they do not decide. |
+| **Bottleneck** | Small props. Pixels barely move when a mug changes, so the machine only orders the pairs; matching props is judged by eye on the shortlist. |
 
 ## 06 · Produce · Sound and voice
 Music bed, SFX and voiceover from the lock's sound tokens.

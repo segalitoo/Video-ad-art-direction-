@@ -28,6 +28,38 @@ lint_out=$(python3 scripts/assemble.py "$tmp/lint.yml" --check 2>&1 || true)
 echo "$lint_out" | grep -q "subject has movement (spinning)" && echo "$lint_out" | grep -q "S02: action has 3" \
   && ok "prompt lint flags movement in a keyframe and an overloaded action" || { echo "FAIL prompt lint"; exit 1; }
 
+# Judge pass: a matching pair must beat a mismatched one, a hard fail drops out, an unscored file stops the rank.
+mkdir -p "$tmp/judge/out"
+python3 - "$tmp/judge" <<'PY'
+import sys
+from PIL import Image, ImageDraw
+t = sys.argv[1]
+def plant(name, pot, droop):
+    im = Image.new("RGB", (540, 960), (244, 239, 230)); d = ImageDraw.Draw(im)
+    d.rectangle((0, 700, 540, 960), fill=(150, 110, 70)); d.rectangle((195, 550, 345, 725), fill=pot)
+    for i in range(7):
+        x = 270 + (i - 3) * 45; d.ellipse((x - 40, 325 + droop, x + 40, 425 + droop), fill=(47, 125, 79))
+    im.save(f"{t}/out/{name}")
+plant("droopy.a.png", (200, 100, 59), 100); plant("droopy.b.png", (120, 120, 120), 100)
+plant("lush.a.png", (200, 100, 59), 0); plant("lush.b.png", (120, 120, 120), 0)
+PY
+cp examples/fernly/fernly.dna.yml "$tmp/"
+python3 scripts/judge.py new "$tmp/judge/r.yml" --lock ../fernly.dna.yml D="out/droopy.*" L="out/lush.*" --pair D:L:first_last >/dev/null
+python3 scripts/judge.py measure "$tmp/judge/r.yml" >/dev/null
+python3 - "$tmp/judge/r.yml" <<'PY'
+import sys, yaml
+p = sys.argv[1]; d = yaml.safe_load(open(p))
+s = dict(lock=4, hero=4, craft=4, composition=4, story=4, animatable=4)
+d["scores"] = {"D1": s, "D2": s, "L1": s, "L2": {**s, "fail": "text in the image"}}
+assert d["pair_machine"]["D1+L1"] > d["pair_machine"]["D2+L1"], "matching pots must measure closer"
+yaml.safe_dump(d, open(p, "w"), sort_keys=False)
+del d["scores"]["D2"]["craft"]; yaml.safe_dump(d, open(p.replace("r.yml", "bad.yml"), "w"), sort_keys=False)
+PY
+python3 scripts/judge.py rank "$tmp/judge/r.yml" | grep -q "Best set: D1 + L1" && ok "judge ranks the matching pair first and drops a hard fail" \
+  || { echo "FAIL judge ranking"; exit 1; }
+if python3 scripts/judge.py rank "$tmp/judge/bad.yml" >/dev/null 2>&1; then echo "FAIL unscored file not caught"; exit 1; fi
+ok "judge refuses to rank an unfinished visual pass"
+
 if command -v ffmpeg >/dev/null; then
   ffmpeg -y -v error -f lavfi -i "testsrc2=size=1080x1920:rate=30:duration=15" \
     -f lavfi -i "sine=frequency=440:duration=15" -af "loudnorm=I=-14:TP=-1.5" \
