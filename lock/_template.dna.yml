@@ -54,11 +54,15 @@ end_card:
   logo: <file or description>
   cta_style: <button, super, or both>
 
-# Added to the mode's negative list.
+# Added to the mode's negative lists. `negative` goes into every prompt;
+# `negative_image` only into stills, `negative_video` only into motion.
 negative: []
+negative_image: []
+negative_video: []
 
 # The recurring hero (product or character). Every shot that shows it
 # uses the same reference image, uploaded once to each tool.
 hero:
-  description: <one line, exact>
+  description: <one line, exact; describe the label graphically, not by brand name>
+  wordmark: ""              # e.g. "SUNPEEL": the only text allowed in frame, printed on the product
   reference: <path to the approved hero keyframe, set after stage 4>

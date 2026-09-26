@@ -47,7 +47,7 @@ Modes: `3d-stylized`, `live-action`, `ugc`, `motion-graphics` (see `lock/modes/`
 **02 The lock.** Propose 3 directions in words: mode, world, light, palette, camera and motion language. If the user wants pictures, generate style frames per direction on GPT Image 2.5 medium (`draft_params`, 0.5 credits each). Write the chosen direction into `<brand>.dna.yml`, set only the tokens that differ from the mode, and define the hero. Run `assemble.py --check`.
 → Gate: art director signs the lock.
 
-**03 Storyboard.** Write `storyboard.yml`: beats, durations, subject (the [SHOT] slot), action, camera move, supers, sound, variants. Quote every line in `variants`. Run `assemble.py --check` and fix every FAIL. Explain each WARN.
+**03 Storyboard.** Write `storyboard.yml`: beats, durations, subject (the [SHOT] slot), action, camera move, supers, sound, variants. Quote every line in `variants`. Run `assemble.py --check` and fix every FAIL. Fix every prompt-lint WARN (movement in a keyframe subject, more than 2 movements per short clip, brand name vs the text ban, too many scene colours, a music cue with no `sfx`), or explain why it stays. Then read the assembled prompts once, whole, as the model will: the lint catches patterns, not contradictions.
 → Gate: creative lead.
 
 **04 Keyframes.** Run `assemble.py <storyboard> -o prompts.md` and show its **Budget** table first; that is the spend being approved. Generate the `H0` hero reference first: 8 to 12 candidates. When the hero is kept, set `hero.reference` in the lock and attach it to every `hero: true` shot.

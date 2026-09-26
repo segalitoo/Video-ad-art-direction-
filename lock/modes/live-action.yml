@@ -14,6 +14,8 @@ negative:
   - warped or misspelled product label
   - text in the image
   - uncanny faces
+negative_video:
+  - label warping between frames
 keyframe_first: true
 qa_watch:
   - Hands, teeth and eyes in motion

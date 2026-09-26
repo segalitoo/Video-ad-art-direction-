@@ -11,9 +11,10 @@ tokens:
   TECH: phone sensor look, mild compression, natural skin texture
 negative:
   - studio lighting
-  - cinematic camera moves
   - perfect skin retouching
   - text in the image
+negative_video:
+  - cinematic camera moves
 keyframe_first: true
 qa_watch:
   - Synthetic presenter must be disclosed where the platform or law requires it

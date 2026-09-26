@@ -59,7 +59,7 @@ The shot list, beat by beat: hook, build, product, proof, payoff, end card.
 | **Output** | `storyboard.yml` (and a Figma board if a client needs pictures) |
 | **Human gate** | The creative lead checks the beats against the brief. The hook must land in 2 seconds with the sound off. |
 | **Tools** | Claude, Figma, `assemble.py --check` |
-| **Automated** | Beat drafts, timing sum, word counts on supers, hook position, platform length limits |
+| **Automated** | Beat drafts, timing sum, word counts on supers, hook position, platform length limits, and a prompt lint: movement in a keyframe, too many events for a short clip, brand names that clash with the text ban, too many scene colours, music cues leaking into SFX |
 | **Stays manual** | Pacing, what the viewer feels at each beat |
 | **Bottleneck** | Storyboards that look finished too early. Words first, pictures at stage 4. |
 

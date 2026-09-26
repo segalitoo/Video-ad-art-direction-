@@ -18,6 +18,13 @@ cp examples/sunpeel/sunpeel.dna.yml "$tmp/"
 if python3 scripts/assemble.py "$tmp/bad.yml" --check 2>/dev/null; then echo "FAIL missing hook not caught"; exit 1; fi
 ok "missing hook is caught"
 
+# The prompt lint must flag movement in a keyframe and an overloaded action.
+sed 's/floating in mid-air/spinning in mid-air/; s/the can drops onto the ledge and settles with one springy bounce/the can drops, lands and rolls/' \
+  examples/sunpeel/storyboard.yml > "$tmp/lint.yml"
+lint_out=$(python3 scripts/assemble.py "$tmp/lint.yml" --check 2>&1 || true)
+echo "$lint_out" | grep -q "subject has movement (spinning)" && echo "$lint_out" | grep -q "S02: action has 3" \
+  && ok "prompt lint flags movement in a keyframe and an overloaded action" || { echo "FAIL prompt lint"; exit 1; }
+
 if command -v ffmpeg >/dev/null; then
   ffmpeg -y -v error -f lavfi -i "testsrc2=size=1080x1920:rate=30:duration=15" \
     -f lavfi -i "sine=frequency=440:duration=15" -af "loudnorm=I=-14:TP=-1.5" \

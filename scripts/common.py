@@ -59,7 +59,10 @@ def load_lock(path):
         if value:
             tokens[key] = value
     lock["tokens"] = tokens
-    lock["negative"] = list(mode.get("negative", [])) + list(lock.get("negative") or [])
+    # Negatives come in three scopes: both, image only, video only. Mode first, then the lock.
+    lock["_own_negative"] = list(lock.get("negative") or [])
+    for key in ("negative", "negative_image", "negative_video"):
+        lock[key] = list(mode.get(key) or []) + list(lock.get(key) or [])
     lock["_mode"] = mode
     lock["_path"] = Path(path)
     return lock

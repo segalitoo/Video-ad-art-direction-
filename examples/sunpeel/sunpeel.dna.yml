@@ -1,4 +1,5 @@
-# sunpeel-summer.dna.yml · v1.0
+# sunpeel-summer.dna.yml · v1.1
+# v1.1: hero label described graphically + SUNPEEL wordmark; type colours kept out of scene prompts
 # owner: art director
 # Fictional brand for the portfolio pilot. Name not trademark-checked.
 #
@@ -8,7 +9,7 @@
 meta:
   brand: Sunpeel
   campaign: Peel back summer
-  version: "1.0"
+  version: "1.1"
   owner: Art director
   mode: 3d-stylized
   audience: 20 to 32, city renters, swapping sugary soda for something lighter that still feels like a treat
@@ -55,5 +56,6 @@ negative:
   - dull or brown citrus
 
 hero:
-  description: a slim 330ml Sunpeel can in sunset orange with a white peeling-rind stripe and beads of condensation
+  description: a slim 330ml aluminium can in sunset orange with a white peeling-rind stripe wrapping around it and beads of condensation
+  wordmark: SUNPEEL        # the only text allowed in frame; QA checks it does not warp in motion
   reference: keyframes/hero-can_v1.png   # set after the stage 4 gate

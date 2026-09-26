@@ -405,6 +405,7 @@ negative: []
 
 hero:
   description: ${q(orTodo(s.hero, "the product, exactly"))}
+  wordmark: ""                         # the only text allowed in frame, e.g. the brand name on the pack
   reference: "keyframes/hero_v1.png"   # set after the stage 4 gate
 `;
 }
@@ -431,7 +432,8 @@ function writeStoryboard(s) {
     camera_move: "<static | slow push-in | orbit | follow>"
     hero: ${hero}
     super: ${q(sup)}
-    sound: "<SFX or music cue>"
+    sound: "<music cue, for the edit>"
+    sfx: "<what the viewer hears in this shot>"
     generate: true`;
   });
   return `# ${slug(s.brand)} · ${s.campaign || "campaign"} · ${s.length}s · stage 3 draft

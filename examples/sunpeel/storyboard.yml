@@ -13,23 +13,25 @@ shots:
   - id: S01
     beat: hook
     duration_s: 1.5
-    subject: a whole ripe orange spinning in mid-air against a blush sky
+    subject: a whole ripe orange floating in mid-air against a blush sky, peel intact
     action: the peel unzips itself in one clean spiral and the fruit bursts into a cloud of sparkling bubbles
     camera_move: slow push-in
     hero: false
     super: Peel back summer.
     sound: zip, then a fizz crack on the burst
+    sfx: a quick zip, then a bright fizzy crack
     generate: true
 
   - id: S02
     beat: build
     duration_s: 3
-    subject: a cloud of sparkling bubbles re-forming into a can above a terracotta rooftop ledge
-    action: the can drops, lands on the ledge with a springy bounce, condensation beads roll down its side
+    subject: a can hanging in mid-air above a terracotta rooftop ledge, wrapped in a cloud of sparkling bubbles
+    action: the can drops onto the ledge and settles with one springy bounce
     camera_move: follow the drop, settle into a low hero angle
     hero: true
     super: Zero sugar. All zing.
     sound: music kicks in on the landing
+    sfx: a soft metallic thud on the landing
     generate: true
 
   - id: S03
@@ -40,6 +42,7 @@ shots:
     camera_move: static macro
     hero: true
     sound: can crack and rising fizz (the sound signature)
+    sfx: a crisp can crack followed by a rising fizz
     generate: true
 
   - id: S04
@@ -51,17 +54,19 @@ shots:
     hero: false
     super: Blood orange. Yuzu. Grapefruit.
     sound: three claps on the hops
+    sfx: three light metallic taps, one per hop
     generate: true
 
   - id: S05
     beat: payoff
     duration_s: 3
     subject: the can in the foreground on the rooftop at sunset, citrus trees and the soft skyline behind
-    action: the sun dips, citrus leaves sway, bubbles drift upward like fireflies
+    action: citrus leaves sway gently while bubbles drift upward like fireflies
     camera_move: slow orbit around the can
     hero: true
     super: Your summer, peeled.
     sound: music resolves
+    sfx: a gentle fizz and a soft warm breeze
     generate: true
 
   - id: S99

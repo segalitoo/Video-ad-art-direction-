@@ -14,6 +14,7 @@ so an image-to-video model does not fight the frame it was given.
 
 import argparse
 import math
+import re
 from pathlib import Path
 import sys
 
@@ -94,7 +95,96 @@ def check(board, lock, specs, tools):
         if words > max_words:
             warnings.append(f"hook {variant['id']}: {words} words, the lock allows {max_words}")
 
+    warnings += lint(board, lock)
     return errors, warnings
+
+
+# ---------- prompt lint: what makes generators fail, caught before any spend
+
+# A keyframe is one frozen frame. Movement words in its subject get drawn as blur
+# or ignored, and the motion prompt then has nothing clear to start from.
+# Only words that are almost always a movement. Words that are just as often a noun
+# or an adjective ("in turn", "a springy bounce", "pops open") are left out on purpose.
+MOTION_VERBS = [
+    "spin", "drop", "fall", "burst", "re-form", "reform", "pop", "fly", "run", "jump", "move",
+    "spray", "hop", "sway", "roll", "unzip", "pour", "splash", "land", "dip", "drift", "rise",
+    "shake", "twist", "slide", "glide", "fold", "melt", "explode", "swirl", "zoom", "tilt", "drip",
+]
+
+
+def _forms(verb):
+    """drop -> drop, drops, dropped, dropping; rise -> rises, rising, rose; fly -> flies."""
+    forms = {verb, verb + "s", verb + "es", verb + "ed", verb + "ing"}
+    if verb.endswith("e"):
+        forms |= {verb[:-1] + "ing", verb + "d"}
+    if verb.endswith("y"):
+        forms |= {verb[:-1] + "ies", verb[:-1] + "ied"}
+    if len(verb) > 2 and verb[-1] not in "aeiouywx" and verb[-2] in "aeiou" and verb[-3] not in "aeiou":
+        forms |= {verb + verb[-1] + "ing", verb + verb[-1] + "ed"}
+    return forms
+
+
+MOTION_FORMS = {f: v for v in MOTION_VERBS for f in _forms(v)} | {"rose": "rise", "flew": "fly", "fell": "fall"}
+
+
+def _motion_words(text):
+    return [w for w in re.findall(r"[a-z]+(?:-[a-z]+)?", str(text).lower()) if w in MOTION_FORMS]
+
+
+MAX_EVENTS_PER_CLIP = 2
+MAX_SCENE_COLOURS = 6
+
+
+def _events(action):
+    """How many separate movements one action line asks for, counted by movement verbs."""
+    return len(_motion_words(action))
+
+
+def lint(board, lock):
+    out = []
+    brand = str(lock.get("meta", {}).get("brand", "")).strip()
+    hero = lock.get("hero") or {}
+    bans_text = any("text" in n.lower() for n in lock["negative"] + lock["negative_image"])
+
+    if brand and brand.lower() in str(hero.get("description", "")).lower() and bans_text and not hero.get("wordmark"):
+        out.append(f'hero: "{brand}" in the description while text is banned. The model may print it anyway '
+                   f'or leave the can blank. Describe the label graphically and set hero.wordmark if the name '
+                   f'must appear')
+
+    colours = [c for c in lock.get("palette") or [] if not str(c.get("role", "")).startswith("type")]
+    if len(colours) > MAX_SCENE_COLOURS:
+        out.append(f"palette: {len(colours)} scene colours in every prompt; image models follow 3 to 6. "
+                   f"Mark extra colours as role: type or background-only")
+
+    seen = {}
+    for key, value in lock["tokens"].items():
+        for phrase in str(value or "").split(","):
+            ph = phrase.strip().lower()
+            if len(ph.split()) >= 2:
+                if ph in seen and seen[ph] != key:
+                    out.append(f'tokens: "{ph}" is in both {seen[ph]} and {key}; say it once')
+                seen.setdefault(ph, key)
+
+    for shot in board["shots"]:
+        if not shot.get("generate", True):
+            continue
+        sid = shot["id"]
+        moving = sorted(set(_motion_words(shot.get("subject", ""))))
+        if moving:
+            out.append(f"{sid}: subject has movement ({', '.join(moving)}). A keyframe is one frozen frame: "
+                       f"describe the first frame, put the movement in `action`")
+        n = _events(str(shot.get("action", "")))
+        if n > MAX_EVENTS_PER_CLIP:
+            out.append(f"{sid}: action has {n} separate events for a {shot.get('duration_s')}s shot; "
+                       f"clips this short land 1 or 2 cleanly")
+        if "music" in str(shot.get("sound", "")).lower() and not shot.get("sfx"):
+            out.append(f"{sid}: sound is a music cue and there is no sfx line; the clip will be generated "
+                       f"without sound effects. Add `sfx:` for what the viewer should hear")
+        ref = hero.get("reference")
+        if shot.get("hero") and not (ref and (lock["_path"].parent / ref).exists()):
+            out.append(f"{sid}: hero shot, but the hero reference ({ref or 'not set'}) does not exist yet. "
+                       f"Generate and approve H0 first")
+    return out
 
 
 # ---------- prompt assembly
@@ -113,12 +203,54 @@ def frame_line(ad, specs):
     return words, zone
 
 
+def scene_palette(lock):
+    """Colours the scene is painted with. Colours reserved for type are set in the edit, not generated."""
+    return ", ".join(c["name"] for c in lock.get("palette") or []
+                     if not str(c.get("role", "")).startswith("type"))
+
+
+def hero_words(lock):
+    hero = lock["hero"]
+    words = hero["description"]
+    if hero.get("wordmark"):
+        words += f', with the wordmark "{hero["wordmark"]}" printed cleanly on it'
+    return words
+
+
+def negatives_for(lock, kind):
+    """Negatives for a still ("image") or a clip ("video").
+
+    Stills get the full list. Clips get a short one: the lock's own negatives, the
+    motion-only ones and the text rule. Video models tend to draw what a long list
+    names, and the start frame already carries everything a still negative protects.
+    A mode negative is dropped when the lock already bans the same thing ("deformed
+    hands" under "human hands"), and the wordmark is carved out of the text ban.
+    """
+    own = lock["_own_negative"]
+    if kind == "video":
+        text_rules = [n for n in lock["negative"] if "text" in n.lower() or "letters" in n.lower()]
+        items = text_rules[:1] + own + lock["negative_video"]
+    else:
+        items = lock["negative"] + lock["negative_image"]
+    own_heads = {n.split()[-1].lower() for n in own}
+    items = [n for n in items if n in own or n.split()[-1].lower() not in own_heads]
+    mark = (lock.get("hero") or {}).get("wordmark")
+    if mark:
+        items = [f"text other than the {mark} wordmark" if "text" in n.lower() else n for n in items]
+    seen, out = set(), []
+    for n in items:
+        if n.lower() not in seen:
+            seen.add(n.lower())
+            out.append(n)
+    return out
+
+
 def keyframe_prompt(shot, lock, frame_words):
     t = lock["tokens"]
-    palette = ", ".join(c["name"] for c in lock.get("palette") or [])
+    palette = scene_palette(lock)
     parts = [t["STYLE"], f"[SHOT: {shot['subject']}]"]
     if shot.get("hero"):
-        parts.append(f"featuring {lock['hero']['description']}")
+        parts.append(f"featuring {hero_words(lock)}")
     if t.get("WORLD"):
         parts.append(t["WORLD"])
     parts += [t["FORM"], t["LIGHT"], t["GRADE"]]
@@ -137,7 +269,7 @@ def hero_prompt(lock):
     t = lock["tokens"]
     parts = [
         t["STYLE"],
-        f"[HERO: {lock['hero']['description']}]",
+        f"[HERO: {hero_words(lock)}]",
         t["FORM"], t["LIGHT"], t["GRADE"], t["TECH"],
         "product reference shot, centred, whole product in frame, three-quarter view, "
         "clean neutral soft-gradient background for easy cutout",
@@ -254,7 +386,7 @@ def budget(board, lock, tools, tool_names):
 def build(board, lock, specs, tools, tool_names):
     ad, meta = board["ad"], lock["meta"]
     frame_words, zone = frame_line(ad, specs)
-    negatives = lock["negative"]
+    neg_image, neg_video = negatives_for(lock, "image"), negatives_for(lock, "video")
     aspect = ad["master_aspect"]
     image_tools = [n for n in tool_names if "image" in tools[n]["role"] or tools[n]["role"] == "any"]
     video_tools = [n for n in tool_names if "video" in tools[n]["role"] or tools[n]["role"] == "any"]
@@ -289,7 +421,7 @@ def build(board, lock, specs, tools, tool_names):
         out += ["## H0 · hero reference · first", "",
                 "Generate and approve this before any shot. The kept image becomes `hero.reference` "
                 "in the lock and is attached to every hero shot.", ""]
-        out += render_group("H0-K · hero", [(n, *for_tool(hero, tools[n], negatives, aspect)) for n in image_tools])
+        out += render_group("H0-K · hero", [(n, *for_tool(hero, tools[n], neg_image, aspect)) for n in image_tools])
 
     for shot in board["shots"]:
         out += [f"## {shot['id']} · {shot.get('beat', '')} · {shot.get('duration_s', '?')}s", ""]
@@ -303,14 +435,15 @@ def build(board, lock, specs, tools, tool_names):
 
         key = keyframe_prompt(shot, lock, frame_words)
         mov = motion_prompt(shot, lock)
-        keyframes = [(name, *for_tool(key, tools[name], negatives, aspect)) for name in image_tools]
+        keyframes = [(name, *for_tool(key, tools[name], neg_image, aspect)) for name in image_tools]
         motions = []
         for name in video_tools:
             base = mov if tools[name].get("motion_prompt") else key + " " + mov
-            if tools[name].get("audio_native") and shot.get("sound"):
+            sfx = shot.get("sfx") or ("" if "music" in str(shot.get("sound", "")).lower() else shot.get("sound"))
+            if tools[name].get("audio_native") and sfx:
                 # Native-audio models make SFX from the prompt; music always comes from stage 6.
-                base += f" Sound: {shot['sound']}, no music, no voice."
-            text, extra = for_tool(base, tools[name], negatives, aspect, motion=True)
+                base += f" Sound effects only: {sfx}. No music, no voice."
+            text, extra = for_tool(base, tools[name], neg_video, aspect, motion=True)
             clip, span = tools[name].get("clip_s"), tools[name].get("clip_range")
             if span:
                 gen = max(span[0], math.ceil(float(shot.get("duration_s", span[0]))))

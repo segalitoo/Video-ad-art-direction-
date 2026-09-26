@@ -23,7 +23,8 @@ shots:
     camera_move: <static | slow push-in | orbit | whip pan | handheld follow>
     hero: false                  # true = attach the hero reference image
     super: <on-screen text, from the copy matrix>
-    sound: <SFX or music cue>
+    sound: <music cue, for the edit>
+    sfx: <what the viewer hears in this shot; goes into the motion prompt>
     vo: ""                       # voiceover line, if any
     generate: true               # false = built by hand (end card, type)
 
