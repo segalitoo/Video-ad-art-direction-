@@ -40,11 +40,11 @@ carry over; about $1.50 is spent, half of it returned as cashback.
 
 | Item | Pass / fail | Why |
 |---|---|---|
-| 1 Pour | | |
-| 2 POV | | |
-| 3 Growth | | |
-| 4 Voice | | |
-| **Decision** | | |
+| 1 Pour | Pass | Steady stream, water pools on the soil, no melting spout. Thin, not a gush (round 2 clip) |
+| 2 POV | Fail | 0 of 7 frames across two rounds gave the view from the soil; the camera watches the plant |
+| 3 Growth | Pass | D1 to L1 on first/last frame: leaves lift, yellow turns green, room and pot hold, no morph |
+| 4 Voice | Not run | The API has no text-to-speech; needs the Higgsfield web app or ElevenLabs |
+| **Decision** | Pending item 4 | 2 of 3 tested pass. Item 4 decides: a pass makes it 3 of 4 = go |
 
 ## Results, round 1 (2026-09-26)
 
@@ -63,3 +63,12 @@ Eight requests, $0.60 at list: 4 wilting frames and 2 pour frames on Qwen Image 
 - **The S05 pair now matches 5/5:** the edit kept the room, shelf, books, mug, curtain and light; only the plant changed. This was the main fix.
 - **S01 now shows the monstera,** in the same room. The view from the soil never appeared (0 of 7 across both rounds).
 - **Open:** the room is consistent but bare; the stream is thin. Fixes are in the report.
+
+## Results, round 2 clips
+
+Two Seedance 2.5 clips, 4s 480p with sound, $1.64 at list. Report: [`test/judge-r2-clips.md`](test/judge-r2-clips.md).
+Test total: $2.53 at list across both rounds.
+
+- **S05, 77:** the edited first/last pair works. This is the method for every change-of-state shot.
+- **S01, 72:** stable and believable, but the stream is thin and the can never tilts. The motion follows the start frame, so the gush has to be in the keyframe.
+- **Concept note:** with rule 2 failed, the camera observes the plant instead of seeing from it. The captions and Arthur still make the plant the narrator.

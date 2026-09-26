@@ -16,7 +16,7 @@ shots:
     beat: hook
     duration_s: 2
     subject: the view from the soil inside the pot looking straight up past the monstera's stems and big split leaves, a sunny yellow watering can tipped far over at the top of the frame, a heavy gush of water mid-air
-    action: water pours from the spout straight down toward the camera
+    action: a heavy gush of water pours from the spout onto the leaves and into the soil
     camera_move: static
     hero: true
     super: "My human is trying to drown me."

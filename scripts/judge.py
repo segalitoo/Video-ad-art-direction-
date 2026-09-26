@@ -247,7 +247,7 @@ def cmd_new(args):
             fail(f"group {gid}: no images or clips match {pattern} (relative to {base})")
         groups[gid] = {"label": dict(l.split("=", 1) for l in args.label or []).get(gid, gid), "files": len(files)}
         for n, f in enumerate(files, 1):
-            items[f"{gid}{n}"] = {"file": str(Path(f).resolve().relative_to(base.resolve()))
+            items[f"{gid}-{n}" if gid[-1].isdigit() else f"{gid}{n}"] = {"file": str(Path(f).resolve().relative_to(base.resolve()))
                                   if Path(f).resolve().is_relative_to(base.resolve()) else f,
                                   "group": gid, "kind": kind_of(f), "model": model_of(f)}
     pairs = []

@@ -47,7 +47,7 @@ authentic phone video, unpolished, real home footage, vertical. [SHOT: the view 
 **S01-M · motion · higgsfield**
 
 ```
-water pours from the spout straight down toward the camera. Camera: static. real-time, real-world physics, one simple movement per shot. Keep the look, colours and the hero exactly as in the start frame. Sound effects only: water pouring onto soil, close and loud. No music, no voice. Keep it clean: no text in the image, no studio lighting, no cinematic camera moves, no people or body parts.
+a heavy gush of water pours from the spout onto the leaves and into the soil. Camera: static. real-time, real-world physics, one simple movement per shot. Keep the look, colours and the hero exactly as in the start frame. Sound effects only: water pouring onto soil, close and loud. No music, no voice. Keep it clean: no text in the image, no studio lighting, no cinematic camera moves, no people or body parts.
 ```
 - Start frame: the kept keyframe (9:16); the clip inherits its aspect ratio
 - Generate 4s (allowed 4-30s), trim to 2s in the edit
@@ -56,7 +56,7 @@ water pours from the spout straight down toward the camera. Camera: static. real
 **S01-M · motion · figma-weave**
 
 ```
-water pours from the spout straight down toward the camera. Camera: static. real-time, real-world physics, one simple movement per shot. Keep the look, colours and the hero exactly as in the start frame. Sound effects only: water pouring onto soil, close and loud. No music, no voice. Keep it clean: no text in the image, no studio lighting, no cinematic camera moves, no people or body parts.
+a heavy gush of water pours from the spout onto the leaves and into the soil. Camera: static. real-time, real-world physics, one simple movement per shot. Keep the look, colours and the hero exactly as in the start frame. Sound effects only: water pouring onto soil, close and loud. No music, no voice. Keep it clean: no text in the image, no studio lighting, no cinematic camera moves, no people or body parts.
 ```
 - Start frame: the kept keyframe (9:16); the clip inherits its aspect ratio
 - Generate 4s (allowed 4-30s), trim to 2s in the edit

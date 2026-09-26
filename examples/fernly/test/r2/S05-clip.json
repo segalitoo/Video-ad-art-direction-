@@ -1,0 +1,8 @@
+{
+ "image_url": "https://d3u0tzju9qaucj.cloudfront.net/2584f776-b711-47aa-8e5e-c821d55e349a/d6c087df-b45c-41ce-87b8-57abf373035e.png",
+ "end_image_url": "https://d3u0tzju9qaucj.cloudfront.net/2584f776-b711-47aa-8e5e-c821d55e349a/0bbf674f-4dc3-4b4d-ab83-e90ad946560e.png",
+ "prompt": "the leaves slowly lift and open until the plant stands tall. Camera: static. real-time, real-world physics, one simple movement per shot. Move smoothly from the start frame to the end frame; keep the setting, framing and light the same. Sound effects only: soft leaves rustling. No music, no voice. Keep it clean: no text in the image, no studio lighting, no cinematic camera moves, no people or body parts.",
+ "duration": 4,
+ "resolution": "480p",
+ "generate_audio": true
+}

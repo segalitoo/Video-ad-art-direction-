@@ -1,0 +1,61 @@
+round: Fernly test, round 2 clips
+lock: ../fernly.dna.yml
+groups:
+  S05:
+    label: Wilting to lush, D1 to L1
+    files: 1
+  S01:
+    label: Pour, from P2
+    files: 1
+pairs: []
+items:
+  S05-1:
+    file: r2/out/S05.seedance.mp4
+    group: S05
+    kind: clip
+    model: seedance
+  S01-1:
+    file: r2/out/S01.seedance.mp4
+    group: S01
+    kind: clip
+    model: seedance
+scores:
+  S05-1:
+    on_model: 4
+    morph: 4
+    physics: 4
+    motion: 5
+    continuity: 4
+    craft: 3
+    note: 'Clean time-lapse recovery: leaves lift, yellow turns green, room and pot hold. No melting. Soft at 480p'
+  S01-1:
+    on_model: 5
+    morph: 5
+    physics: 3
+    motion: 2
+    continuity: 4
+    craft: 4
+    note: Rock steady and water pools on the soil, but a thin stream, not the heavy gush asked for; the can never
+      tilts
+pair_scores: {}
+fixes:
+- 'S05 passes: first/last frame from an edited pair is the method for every change-of-state shot.'
+- 'S01: the stream follows the start frame. Put the gush in the keyframe (a wide sheet of water, the can tipped
+  far over), or accept a steady pour and let the caption carry ''drown''.'
+- Finals at 720p ($1.85 per 4s at list), and upscale only the kept clip.
+machine:
+  S05-1:
+    size: 480x854
+    sharp: 81.6
+    calm_bands: 84.7
+    palette: 39.5
+    steady: 96.0
+    strip: r2/out/S05.seedance.strip.png
+  S01-1:
+    size: 480x854
+    sharp: 100.0
+    calm_bands: 72.8
+    palette: 41.1
+    steady: 99.3
+    strip: r2/out/S01.seedance.strip.png
+pair_machine: {}
