@@ -1,0 +1,279 @@
+round: Fernly round 1, step 1 frames (lock v1.2)
+lock: ../fernly.dna.yml
+groups:
+  S02:
+    label: Puddle on the soil
+    files: 4
+  S03:
+    label: Moved into full sun
+    files: 4
+  S04:
+    label: Phone on the shelf
+    files: 4
+  A2:
+    label: 'Static: the can, too close'
+    files: 2
+pairs: []
+items:
+  S02-1:
+    file: out/S02_1.qwen.jpg
+    group: S02
+    kind: image
+    model: qwen
+  S02-2:
+    file: out/S02_2.qwen.jpg
+    group: S02
+    kind: image
+    model: qwen
+  S02-3:
+    file: out/S02_3.qwen.jpg
+    group: S02
+    kind: image
+    model: qwen
+  S02-4:
+    file: out/S02_4.qwen.jpg
+    group: S02
+    kind: image
+    model: qwen
+  S03-1:
+    file: out/S03_1.qwen.jpg
+    group: S03
+    kind: image
+    model: qwen
+  S03-2:
+    file: out/S03_2.qwen.jpg
+    group: S03
+    kind: image
+    model: qwen
+  S03-3:
+    file: out/S03_3.qwen.jpg
+    group: S03
+    kind: image
+    model: qwen
+  S03-4:
+    file: out/S03_4.qwen.jpg
+    group: S03
+    kind: image
+    model: qwen
+  S04-1:
+    file: out/S04_1.qwen.jpg
+    group: S04
+    kind: image
+    model: qwen
+  S04-2:
+    file: out/S04_2.qwen.jpg
+    group: S04
+    kind: image
+    model: qwen
+  S04-3:
+    file: out/S04_3.qwen.jpg
+    group: S04
+    kind: image
+    model: qwen
+  S04-4:
+    file: out/S04_4.qwen.jpg
+    group: S04
+    kind: image
+    model: qwen
+  A2-1:
+    file: out/A2_1.qwen.jpg
+    group: A2
+    kind: image
+    model: qwen
+  A2-2:
+    file: out/A2_2.qwen.jpg
+    group: A2
+    kind: image
+    model: qwen
+scores:
+  S02-1:
+    lock: 4
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 4
+    animatable: 4
+    note: Puddle reads; pot rim looks like a shallow bowl; room sharp, not out of focus
+  S02-2:
+    lock: 4
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 5
+    animatable: 4
+    note: Biggest, clearest puddle in the centre; a drop will land well. Faint cover text on one book
+  S02-3:
+    lock: 4
+    hero: 4
+    craft: 3
+    composition: 4
+    story: 4
+    animatable: 4
+    note: Glossy puddle, but readable lettering on the book covers
+  S02-4:
+    lock: 4
+    hero: 4
+    craft: 3
+    composition: 3
+    story: 4
+    animatable: 4
+    note: Pot fills two thirds, two puddles split the eye; book lettering
+  S03-1:
+    lock: 4
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 3
+    animatable: 4
+    note: 'Soft window light, one pale leaf: reads ''sunny'', not ''scorched'''
+  S03-2:
+    lock: 4
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 4
+    animatable: 4
+    note: 'Sun streaks on the floor, several bleached leaves: reads ''too much sun''. Eye level, not low'
+  S03-3:
+    lock: 4
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 4
+    animatable: 4
+    note: One big bleached leaf, clean; less sun on the floor than S03-2
+  S03-4:
+    lock: 4
+    hero: 3
+    craft: 4
+    composition: 4
+    story: 3
+    animatable: 4
+    note: Plant shape looks thin and odd; light soft
+  S04-1:
+    lock: 4
+    hero: 4
+    craft: 4
+    composition: 3
+    story: 2
+    animatable: 4
+    note: Phone too small to carry the app screen; lots of empty floor
+  S04-2:
+    lock: 4
+    hero: 3
+    craft: 2
+    composition: 4
+    story: 4
+    animatable: 4
+    note: 'Phone is giant and lies on the floor: scale error'
+  S04-3:
+    lock: 4
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 4
+    animatable: 4
+    note: Medium phone on the shelf, a leaf hanging in, floral mug; screen angled, needs a perspective warp for
+      the UI
+  S04-4:
+    lock: 4
+    hero: 4
+    craft: 4
+    composition: 3
+    story: 4
+    animatable: 4
+    note: Phone near the shelf edge, pot cut on the left; screen angled
+  A2-1:
+    lock: 4
+    hero: 5
+    craft: 4
+    composition: 4
+    story: 5
+    animatable: 4
+    note: 'Room identical to D1; the can right against the pot: the joke reads at once. Top band empty'
+  A2-2:
+    lock: 4
+    hero: 5
+    craft: 4
+    composition: 4
+    story: 4
+    animatable: 4
+    note: Same room; the can a little further away, less pointed
+pair_scores: {}
+fixes:
+- 'S02: ''far out of focus'' did not happen with the full room in WORLD; a shot-level way to drop WORLD for macros
+  would help.'
+- 'Book lettering still slips through on covers (not spines): widen the negative to ''lettering on books''.'
+- 'S04: the UI overlay needs a corner-pin in the edit; the phone screen is never square to the camera.'
+machine:
+  S02-1:
+    size: 1152x2048
+    sharp: 86.3
+    calm_bands: 0.0
+    palette: 30.6
+  S02-2:
+    size: 1152x2048
+    sharp: 88.5
+    calm_bands: 0.0
+    palette: 30.1
+  S02-3:
+    size: 1152x2048
+    sharp: 85.3
+    calm_bands: 0.0
+    palette: 29.7
+  S02-4:
+    size: 1152x2048
+    sharp: 100.0
+    calm_bands: 0.0
+    palette: 24.9
+  S03-1:
+    size: 1152x2048
+    sharp: 48.2
+    calm_bands: 56.0
+    palette: 45.1
+  S03-2:
+    size: 1152x2048
+    sharp: 55.2
+    calm_bands: 78.7
+    palette: 46.5
+  S03-3:
+    size: 1152x2048
+    sharp: 48.8
+    calm_bands: 63.1
+    palette: 47.3
+  S03-4:
+    size: 1152x2048
+    sharp: 45.5
+    calm_bands: 68.3
+    palette: 44.5
+  S04-1:
+    size: 1152x2048
+    sharp: 44.6
+    calm_bands: 39.7
+    palette: 38.8
+  S04-2:
+    size: 1152x2048
+    sharp: 54.4
+    calm_bands: 43.3
+    palette: 35.4
+  S04-3:
+    size: 1152x2048
+    sharp: 43.2
+    calm_bands: 51.6
+    palette: 43.3
+  S04-4:
+    size: 1152x2048
+    sharp: 48.5
+    calm_bands: 41.7
+    palette: 42.7
+  A2-1:
+    size: 1152x2048
+    sharp: 54.6
+    calm_bands: 59.4
+    palette: 46.3
+  A2-2:
+    size: 1152x2048
+    sharp: 55.8
+    calm_bands: 58.2
+    palette: 45.4
+pair_machine: {}

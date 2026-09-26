@@ -70,4 +70,4 @@ negative_image:
 
 hero:
   description: a medium monstera plant with large split leaves in a plain matte terracotta pot with a thin rim, on a matching saucer
-  reference: keyframes/hero-plant_v1.png   # set after the H0 gate
+  reference: test/r2/out/lush_1.qwen-edit.jpg   # the kept L1 frame, approved 2026-09-26

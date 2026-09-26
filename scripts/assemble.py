@@ -143,6 +143,12 @@ def check_statics(board, lock, specs):
             warnings.append(f"static {sid}: headline is {len(head)} characters; keep under {rules['max_headline_chars']}")
         if st.get("hero") and not (lock.get("hero") or {}).get("description"):
             errors.append(f"static {sid}: uses the hero, but the lock has no hero description")
+        frames = {f"{s['id']}-K" for s in board["shots"]} | {f"{s['id']}-K-end" for s in board["shots"] if s.get("end_subject")}
+        for key in ("from_frame", "edit_of"):
+            if st.get(key) and st[key] not in frames:
+                errors.append(f"static {sid}: {key} '{st[key]}' is not a shot frame. Options: {', '.join(sorted(frames))}")
+        if st.get("from_frame") and st.get("edit_of"):
+            errors.append(f"static {sid}: use from_frame or edit_of, not both")
     return errors, warnings
 
 
@@ -483,7 +489,9 @@ def budget(board, lock, tools, tool_names):
             mot_c = secs * vid["credits_per_s"] * (cands["motion"] if mot_n else 0)
         elif vid:
             mot_c = mot_n * vid["credits"]
-        st_n = sum(len(st.get("plates") or []) for st in board.get("statics") or []) * cands["static"]
+        # A static reusing a kept frame costs nothing; an edit of one is a single plate, cropped for the other ratios.
+        st_n = sum(0 if st.get("from_frame") else 1 if st.get("edit_of") else len(st.get("plates") or [])
+                   for st in board.get("statics") or []) * cands["static"]
         st_c = st_n * img["credits"] if img else None
         total = (key_c or 0) + (mot_c or 0) + (st_c or 0)
         rows.append(
@@ -619,6 +627,20 @@ def build(board, lock, specs, tools, tool_names):
                     f"- **Headline ({st.get('copy_space')}):** {st.get('headline')}",
                     f"- **CTA:** {st.get('cta', '')}",
                     f"- **Platforms:** {', '.join(st.get('platforms') or [])}", ""]
+            master = board["ad"]["master_aspect"]
+            if st.get("from_frame"):
+                out += [f"**{st['id']} · plates from the kept {st['from_frame']} frame.** Nothing to generate: "
+                        f"use it as the {master} plate and crop the others from it, keeping the "
+                        f"{st.get('copy_space', 'top')} band.", ""]
+                continue
+            if st.get("edit_of"):
+                prompt = edit_prompt(st["subject"], st, lock, verb="Add")
+                results = [(n, *for_tool(prompt, tools[n], neg_image, master)) for n in image_tools]
+                results = [(n, t, [f"Edit the kept {st['edit_of']} frame (image input); crop the other ratios "
+                                   f"from the kept plate, keeping the {st.get('copy_space', 'top')} band"] + e)
+                           for n, t, e in results]
+                out += render_group(f"{st['id']}-{master} · static plate, edited from {st['edit_of']}", results)
+                continue
             for ratio in st.get("plates") or []:
                 prompt = static_prompt(st, lock, ratio)
                 out += render_group(f"{st['id']}-{ratio} · static plate",

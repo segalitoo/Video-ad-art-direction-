@@ -29,7 +29,7 @@ shots:
   - id: S02
     beat: build
     duration_s: 2.5
-    subject: macro of dark wet potting soil, a shallow puddle of water sitting on top
+    subject: extreme close-up of dark wet potting soil filling most of the frame, a shallow puddle of water sitting on top, the pot's terracotta rim at the edge, the room far out of focus behind
     action: a single drop lands in the puddle and ripples outward
     camera_move: static macro
     hero: false
@@ -42,10 +42,10 @@ shots:
   - id: S03
     beat: build
     duration_s: 3
-    subject: low angle from the pot toward a window, harsh midday sun, sheer curtain glowing white
+    subject: the monstera in its pot on the floor right against the window, harsh midday sun burning through the linen curtains, leaves bleached pale by the glare, seen from low down
     action: the glare slowly swells until the frame blows out to white
     camera_move: static
-    hero: false
+    hero: true
     super: "Moved into full sun. ★☆☆☆☆"
     vo: "Then my human moved me into the sun. One star."
     sound: none
@@ -55,7 +55,7 @@ shots:
   - id: S04
     beat: product
     duration_s: 3
-    subject: a phone lying face up on the pale oak shelf next to the pot, screen dark
+    subject: close-up from above of a phone lying flat and face up on the pale oak shelf, the screen large, square to the camera and dark, the terracotta pot rim and one drooping monstera leaf at the edge of the frame
     action: the phone screen lights up softly
     camera_move: static
     hero: false
@@ -91,6 +91,7 @@ statics:
   - id: A1
     concept: the five-star plant
     subject: the lush monstera in its terracotta pot by the window, glossy leaves, soft morning light
+    from_frame: S05-K-end     # the kept lush frame already leaves the top third empty
     hero: true
     copy_space: top
     headline: "Finally. Someone who listens. ★★★★★"
@@ -100,7 +101,8 @@ statics:
 
   - id: A2
     concept: the one-star plant
-    subject: the same monstera drooping and tired in its pot, a watering can too close beside it
+    subject: a sunny yellow watering can with a plain open spout standing on the floor right against the pot, much too close
+    edit_of: S05-K            # the kept wilting frame, plus the culprit
     hero: true
     copy_space: top
     headline: "My human, before Fernly. ★☆☆☆☆"
