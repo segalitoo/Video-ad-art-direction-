@@ -43,8 +43,8 @@ carry over; about $1.50 is spent, half of it returned as cashback.
 | 1 Pour | Pass | Round 2 clip passed but the floating can read as fake. Re-run with a hand (lock v1.2): steady pour, water pools, clean pot, natural hand (judge 80) |
 | 2 POV | Fail | 0 of 7 frames across two rounds gave the view from the soil; the camera watches the plant |
 | 3 Growth | Pass | D1 to L1 on first/last frame: leaves lift, yellow turns green, room and pot hold, no morph |
-| 4 Voice | Not run | The API has no text-to-speech; needs the Higgsfield web app or ElevenLabs |
-| **Decision** | Pending item 4 | 2 of 3 tested pass. Item 4 decides: a pass makes it 3 of 4 = go |
+| 4 Voice | Pass | The art director heard Arthur read the S01 line on higgsfield.ai: "sounds good" (2026-09-26) |
+| **Decision** | **Go** | 3 of 4 pass (pour, growth, voice). The POV rule failed: the camera watches the plant, and the captions and Arthur make it the narrator |
 
 ## Results, round 1 (2026-09-26)
 
