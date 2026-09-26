@@ -1,0 +1,36 @@
+round: Fernly S01 hand clip, retry (lock v1.2)
+lock: ../fernly.dna.yml
+groups:
+  S01:
+    label: Hand pours, from H2, fixed motion line
+    files: 1
+pairs: []
+items:
+  S01-1:
+    file: r2/out/S01-hand2.seedance.mp4
+    group: S01
+    kind: clip
+    model: seedance
+scores:
+  S01-1:
+    on_model: 5
+    morph: 4
+    physics: 4
+    motion: 4
+    continuity: 4
+    craft: 4
+    note: Hand and can hold, the arm drifts a little like a real pour. Water pools on the soil and reaches the saucer;
+      the pot stays clean. A steady stream, not a gush. Soft at 480p
+pair_scores: {}
+fixes:
+- 'Describe what the water does inside the pot, never ''flood'' or ''overflow'': Seedance turns those into mud.'
+- For more 'drown', hold the shot longer in the edit or add a second pour beat; do not push the physics.
+machine:
+  S01-1:
+    size: 480x854
+    sharp: 100.0
+    calm_bands: 76.8
+    palette: 41.7
+    steady: 99.2
+    strip: r2/out/S01-hand2.seedance.strip.png
+pair_machine: {}

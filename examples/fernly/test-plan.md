@@ -40,7 +40,7 @@ carry over; about $1.50 is spent, half of it returned as cashback.
 
 | Item | Pass / fail | Why |
 |---|---|---|
-| 1 Pour | Pass | Steady stream, water pools on the soil, no melting spout. Thin, not a gush (round 2 clip) |
+| 1 Pour | Pass | Round 2 clip passed but the floating can read as fake. Re-run with a hand (lock v1.2): steady pour, water pools, clean pot, natural hand (judge 80) |
 | 2 POV | Fail | 0 of 7 frames across two rounds gave the view from the soil; the camera watches the plant |
 | 3 Growth | Pass | D1 to L1 on first/last frame: leaves lift, yellow turns green, room and pot hold, no morph |
 | 4 Voice | Not run | The API has no text-to-speech; needs the Higgsfield web app or ElevenLabs |
@@ -72,3 +72,13 @@ Test total: $2.53 at list across both rounds.
 - **S05, 77:** the edited first/last pair works. This is the method for every change-of-state shot.
 - **S01, 72:** stable and believable, but the stream is thin and the can never tilts. The motion follows the start frame, so the gush has to be in the keyframe.
 - **Concept note:** with rule 2 failed, the camera observes the plant instead of seeing from it. The captions and Arthur still make the plant the narrator.
+
+## Results, S01 with a hand (lock v1.2)
+
+The art director rejected the floating can as not real. Lock v1.2 allows one hand (`people: hands`); S01 became an edit of L1.
+Two hand frames ($0.15, judge 75), then two clips ($1.64):
+
+- **First clip, 54:** the hand held, but "floods over the pot rim" made Seedance glaze the pot and floor with mud.
+- **Retry on H2, 80:** steady pour, water pools on the soil, clean pot, no finger morph. The motion line now says what the water does inside the pot.
+
+Test total: $4.32 at list.
