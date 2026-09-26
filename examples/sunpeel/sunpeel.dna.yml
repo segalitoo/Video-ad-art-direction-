@@ -1,4 +1,5 @@
-# sunpeel-summer.dna.yml · v1.1
+# sunpeel-summer.dna.yml · v1.2
+# v1.2: photoreal product look (live-action mode, no people); 3D stylized is v1.1 in git history
 # v1.1: hero label described graphically + SUNPEEL wordmark; type colours kept out of scene prompts
 # owner: art director
 # Fictional brand for the portfolio pilot. Name not trademark-checked.
@@ -9,18 +10,21 @@
 meta:
   brand: Sunpeel
   campaign: Peel back summer
-  version: "1.1"
+  version: "1.2"
   owner: Art director
-  mode: 3d-stylized
+  mode: live-action
+  people: false            # product only: no people, hands or faces anywhere
   audience: 20 to 32, city renters, swapping sugary soda for something lighter that still feels like a treat
   promise: All the zing of summer, none of the sugar
 
 tokens:
-  STYLE: glossy stylized 3D render, premium animated drinks commercial
+  STYLE: hyper-real premium beverage commercial, photoreal product cinematography
   WORLD: a sun-bleached rooftop at golden hour, terracotta tiles, potted citrus trees, soft city skyline far behind
-  FORM: soft rounded shapes, real can proportions, juicy citrus with visible pulp, clean silhouettes
-  LIGHT: low golden-hour sun, warm rim light, sparkling highlights on condensation
-  MOTION: juicy springy motion, bubbles rising in slow motion, weighty bouncy landings
+  FORM: true-to-life aluminium can proportions, printed-ink label finish, juicy citrus with visible pulp, real condensation droplets
+  LIGHT: low golden-hour backlight, warm rim light on the can edges, sparkling highlights on the droplets
+  GRADE: warm filmic grade, rich saturated oranges, clean bright highlights
+  CAMERA: 100mm macro lens for close-ups, 50mm for wider shots, shallow depth of field
+  MOTION: real-world physics, high-speed slow motion for fizz, liquid and fruit
 
 palette:
   - {hex: "#FF7A1A", name: sunset orange, role: hero}
@@ -51,9 +55,9 @@ end_card:
   cta_style: super plus platform button
 
 negative:
-  - human hands
   - condensation that looks like sweat
   - dull or brown citrus
+  - cartoon or plastic look
 
 hero:
   description: a slim 330ml aluminium can in sunset orange with a white peeling-rind stripe wrapping around it and beads of condensation

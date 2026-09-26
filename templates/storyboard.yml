@@ -35,6 +35,19 @@ shots:
     generate: false
     super: <CTA line>
 
+# Static ads (optional). Plates are generated with empty space where the headline goes;
+# scripts/static_compose.py sets headline, CTA and wordmark and sizes every platform.
+statics:
+  - id: A1
+    concept: <one line>
+    subject: <the frozen image, like a keyframe subject>
+    hero: true
+    copy_space: top            # top | bottom: where the headline sits
+    headline: "<max 7 words, 40 characters>"
+    cta: "<CTA>"
+    plates: ["4:5", "9:16"]    # ratios to generate; other sizes are cut from the nearest one
+    platforms: [meta_feed, meta_vertical]
+
 # The ad matrix. One approved base, many variants.
 # Quote every line: a comma inside {...} breaks YAML.
 variants:

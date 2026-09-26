@@ -69,8 +69,12 @@ def load_lock(path):
 
 
 def parse_aspect(aspect):
-    w, h = aspect.split(":")
-    return int(w), int(h)
+    """'9:16' -> (9, 16); '1.91:1' -> (1.91, 1)."""
+    def num(x):
+        x = float(x)
+        return int(x) if x.is_integer() else x
+    w, h = str(aspect).split(":")
+    return num(w), num(h)
 
 
 def safe_union(specs, platform_ids):

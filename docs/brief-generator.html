@@ -193,7 +193,7 @@ pre.code { margin: 0; padding: 14px 16px; max-height: 560px; overflow: auto; fon
           <label class="f">Keyframe candidates per shot
             <select id="candK"><option>4</option><option selected>8</option><option>12</option></select></label>
           <label class="f">Motion candidates per kept frame
-            <select id="candM"><option>2</option><option selected>3</option><option>4</option></select></label>
+            <select id="candM"><option selected>2</option><option>3</option><option>4</option></select></label>
         </div>
       </fieldset>
     </form>
@@ -258,16 +258,16 @@ const SUNPEEL = {
   hooks: "Peel back summer.\nSoda, but make it summer.\nZero sugar. Full zing.",
   ctas: "Find it cold near you.\nTry the summer 3-pack.",
   mandatories: "\"Zero sugar\" must match the label. Can visible in 3 of 5 shots. AI label where required.",
-  platforms: ["tiktok", "meta_vertical", "youtube_shorts", "meta_feed"], length: "15", mode: "3d-stylized",
+  platforms: ["tiktok", "meta_vertical", "youtube_shorts", "meta_feed"], length: "15", mode: "live-action",
   world: "a sun-bleached rooftop at golden hour, terracotta tiles, potted citrus trees",
   hero: "a slim 330ml Sunpeel can in sunset orange with a white peeling-rind stripe and beads of condensation",
   palette: ["#FF7A1A", "#FFC93C", "#2E9E6B", "#FFB3A7", "#C8553D", "#3B1F3A"],
-  candK: "8", candM: "3",
+  candK: "8", candM: "2",
 };
 const BLANK = {
   brand: "", campaign: "", product: "", requester: "", deadline: "", promise: "", audience: "",
   hooks: "", ctas: "", mandatories: "", platforms: ["tiktok", "meta_vertical"], length: "15", mode: "3d-stylized",
-  world: "", hero: "", palette: ["#2563EB", "#FF5D52", "#F6F8FB", "#0C1330"], candK: "8", candM: "3",
+  world: "", hero: "", palette: ["#2563EB", "#FF5D52", "#F6F8FB", "#0C1330"], candK: "8", candM: "2",
 };
 
 // ── Build the controls ──
@@ -446,17 +446,49 @@ ad:
   master_aspect: "${master}"
   platforms: [${s.platforms.join(", ")}]
   tools: [higgsfield, figma-weave]
-  candidates: {keyframe: ${s.candK}, motion: ${s.candM}}
+  candidates: {keyframe: ${s.candK}, motion: ${s.candM}, static: ${STATIC_CANDIDATES}}
 
 shots:
 ${shots.join("\n\n")}
 
+${writeStatics(s)}
 # Quote every line: a comma inside {...} breaks YAML.
 variants:
   hooks:
 ${(hooks.slice(0, 3).length ? hooks.slice(0, 3) : ["<hook line>"]).map((h, i) => `    - {id: H${i + 1}, super: ${q(h)}}`).join("\n")}
   ctas:
 ${(ctas.length ? ctas : ["<CTA>"]).map((c, i) => `    - {id: C${i + 1}, text: ${q(c)}}`).join("\n")}
+`;
+}
+
+// Static ads: two concepts from the first two hook lines, on every chosen platform that runs statics.
+const STATIC_PLATFORMS = ["tiktok", "meta_vertical", "meta_feed", "linkedin_feed"];
+const STATIC_PLATES = ["4:5", "9:16"];
+const STATIC_CANDIDATES = 4;
+function staticItems(s) {
+  const plats = s.platforms.filter(p => STATIC_PLATFORMS.includes(p));
+  if (!plats.length) return [];
+  const hooks = lines(s.hooks), ctas = lines(s.ctas);
+  return [
+    { id: "A1", copy: "top", headline: hooks[0] || "<headline>", cta: ctas[0] || "<CTA>", hero: true, plats },
+    { id: "A2", copy: "bottom", headline: hooks[1] || hooks[0] || "<headline>", cta: ctas[1] || ctas[0] || "<CTA>", hero: true, plats },
+  ];
+}
+function writeStatics(s) {
+  const items = staticItems(s);
+  if (!items.length) return "# Static ads: none of the chosen platforms run them.\n";
+  return `# Static ads. Plates are generated with empty space for the headline;
+# scripts/static_compose.py sets the type and sizes every platform.
+statics:
+${items.map(it => `  - id: ${it.id}
+    concept: "<one line>"
+    subject: "<the product in its world, one frozen frame>"
+    hero: ${it.hero}
+    copy_space: ${it.copy}
+    headline: ${q(it.headline)}
+    cta: ${q(it.cta)}
+    plates: [${STATIC_PLATES.map(p => `"${p}"`).join(", ")}]
+    platforms: [${it.plats.join(", ")}]`).join("\n\n")}
 `;
 }
 
@@ -500,11 +532,12 @@ function budget(s) {
   const heroShots = beats.some(b => b[2]) ? 1 : 0;
   const k = (beats.length + heroShots) * +s.candK;
   const m = MODES[s.mode].keyframeFirst ? beats.length * +s.candM : 0;
+  const st = staticItems(s).length * STATIC_PLATES.length * STATIC_CANDIDATES;
   return {
-    k, m,
-    higgsfield: k * ENGINES.higgsfield.image
+    k, m, st,
+    higgsfield: (k + st) * ENGINES.higgsfield.image
       + (m ? +s.candM : 0) * beats.reduce((t, b) => t + Math.max(ENGINES.higgsfield.minS, Math.ceil(b[1])), 0) * ENGINES.higgsfield.perSecond,
-    weave: k * ENGINES.weave.image + m * ENGINES.weave.video,
+    weave: (k + st) * ENGINES.weave.image + m * ENGINES.weave.video,
   };
 }
 
@@ -537,7 +570,7 @@ function render() {
   $("score").textContent = `${fails} fail · ${warns} warn`;
   const b = budget(s);
   $("budget").innerHTML = `
-    <div><b>${b.k} + ${b.m}</b><span>keyframes + motion clips per round</span></div>
+    <div><b>${b.k} + ${b.m} + ${b.st}</b><span>keyframes + motion clips + static plates per round</span></div>
     <div><b>≈ ${b.higgsfield.toLocaleString()} · $${Math.round(b.higgsfield * ENGINES.higgsfield.usd)}</b><span>Higgsfield credits · Nano Banana Pro + Seedance 2.5</span></div>
     <div><b>≈ ${b.weave.toLocaleString()} · $${Math.round(b.weave * ENGINES.weave.usd)}</b><span>Weave credits · Nano Banana Pro + Seedance 2.5</span></div>`;
   FILES.forEach(f => $("tab-" + f.id).setAttribute("aria-selected", String(f.id === active)));

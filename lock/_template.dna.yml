@@ -14,6 +14,7 @@ meta:
   version: "1.0"
   owner: <art director name>
   mode: 3d-stylized            # 3d-stylized | live-action | ugc | motion-graphics
+  people: true                 # false = product only; body-part negatives collapse into "no people"
   audience: <one line: who, and what they care about>
   promise: <one line: the single thing the ad must say>
 

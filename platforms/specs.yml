@@ -32,6 +32,12 @@ platforms:
       verify: true                 # TikTok publishes templates, not pixels
     audio: expected
     max_file_mb: 500
+    static:                        # image carousel ads, 2 to 35 images, music required
+      sizes: {"9:16": [1080, 1920]}
+      native_cta: true             # the platform draws its own CTA button; don't add one
+      max_file_mb: 5
+      formats: [jpg, png]
+      verify: true                 # guides disagree on the file limit; check Ads Manager
     sources:
       - https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads
       - https://zeely.ai/blog/tiktok-safe-zones/
@@ -54,6 +60,11 @@ platforms:
       right: 6
     audio: expected
     max_file_mb: 4000
+    static:                        # Stories image ads; same unified safe zone as video
+      sizes: {"9:16": [1080, 1920]}
+      native_cta: true
+      max_file_mb: 30
+      formats: [jpg, png]
     sources:
       - https://blog.adnabu.com/meta-ads/meta-safe-zones/
       - https://billo.app/blog/meta-ads-safe-zones/
@@ -97,6 +108,10 @@ platforms:
       right: 4
     audio: optional                # most feed video plays muted
     max_file_mb: 4000
+    static:
+      sizes: {"4:5": [1080, 1350], "1:1": [1080, 1080]}
+      max_file_mb: 30
+      formats: [jpg, png]
     sources:
       - https://adsuploader.com/blog/meta-ads-size
 
@@ -118,8 +133,20 @@ platforms:
       right: 4
     audio: optional
     max_file_mb: 200
+    static:
+      sizes: {"1:1": [1200, 1200], "1.91:1": [1200, 628]}
+      max_file_mb: 5
+      formats: [jpg, png]
     sources: []
     verify: true
+
+# Static ads, for every platform that takes them.
+# Text on the image is set by scripts/static_compose.py, never generated.
+# Meta dropped the 20% text rule, but ads with less text overlay still tend to deliver
+# better; headline fields truncate past about 40 characters.
+static_text:
+  max_headline_chars: 40
+  max_headline_words: 7
 
 # Sound, for every platform. Platforms normalise loudness, so a master that is
 # too loud gets turned down and loses punch; one that clips distorts on phones.

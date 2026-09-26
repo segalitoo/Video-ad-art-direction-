@@ -1,25 +1,36 @@
-variant_id,platform,aspect,source,length_s,hook_id,hook,cta_id,cta,lock_version,status
-sunpeel-peelback-15s_tiktok_H1C1,tiktok,9:16,master,15,H1,Peel back summer.,C1,Find it cold near you.,1.1,draft
-sunpeel-peelback-15s_tiktok_H1C2,tiktok,9:16,master,15,H1,Peel back summer.,C2,Try the summer 3-pack.,1.1,draft
-sunpeel-peelback-15s_tiktok_H2C1,tiktok,9:16,master,15,H2,"Soda, but make it summer.",C1,Find it cold near you.,1.1,draft
-sunpeel-peelback-15s_tiktok_H2C2,tiktok,9:16,master,15,H2,"Soda, but make it summer.",C2,Try the summer 3-pack.,1.1,draft
-sunpeel-peelback-15s_tiktok_H3C1,tiktok,9:16,master,15,H3,Zero sugar. Full zing.,C1,Find it cold near you.,1.1,draft
-sunpeel-peelback-15s_tiktok_H3C2,tiktok,9:16,master,15,H3,Zero sugar. Full zing.,C2,Try the summer 3-pack.,1.1,draft
-sunpeel-peelback-15s_meta_vertical_H1C1,meta_vertical,9:16,master,15,H1,Peel back summer.,C1,Find it cold near you.,1.1,draft
-sunpeel-peelback-15s_meta_vertical_H1C2,meta_vertical,9:16,master,15,H1,Peel back summer.,C2,Try the summer 3-pack.,1.1,draft
-sunpeel-peelback-15s_meta_vertical_H2C1,meta_vertical,9:16,master,15,H2,"Soda, but make it summer.",C1,Find it cold near you.,1.1,draft
-sunpeel-peelback-15s_meta_vertical_H2C2,meta_vertical,9:16,master,15,H2,"Soda, but make it summer.",C2,Try the summer 3-pack.,1.1,draft
-sunpeel-peelback-15s_meta_vertical_H3C1,meta_vertical,9:16,master,15,H3,Zero sugar. Full zing.,C1,Find it cold near you.,1.1,draft
-sunpeel-peelback-15s_meta_vertical_H3C2,meta_vertical,9:16,master,15,H3,Zero sugar. Full zing.,C2,Try the summer 3-pack.,1.1,draft
-sunpeel-peelback-15s_youtube_shorts_H1C1,youtube_shorts,9:16,master,15,H1,Peel back summer.,C1,Find it cold near you.,1.1,draft
-sunpeel-peelback-15s_youtube_shorts_H1C2,youtube_shorts,9:16,master,15,H1,Peel back summer.,C2,Try the summer 3-pack.,1.1,draft
-sunpeel-peelback-15s_youtube_shorts_H2C1,youtube_shorts,9:16,master,15,H2,"Soda, but make it summer.",C1,Find it cold near you.,1.1,draft
-sunpeel-peelback-15s_youtube_shorts_H2C2,youtube_shorts,9:16,master,15,H2,"Soda, but make it summer.",C2,Try the summer 3-pack.,1.1,draft
-sunpeel-peelback-15s_youtube_shorts_H3C1,youtube_shorts,9:16,master,15,H3,Zero sugar. Full zing.,C1,Find it cold near you.,1.1,draft
-sunpeel-peelback-15s_youtube_shorts_H3C2,youtube_shorts,9:16,master,15,H3,Zero sugar. Full zing.,C2,Try the summer 3-pack.,1.1,draft
-sunpeel-peelback-15s_meta_feed_H1C1,meta_feed,4:5,reframe from 9:16,15,H1,Peel back summer.,C1,Find it cold near you.,1.1,draft
-sunpeel-peelback-15s_meta_feed_H1C2,meta_feed,4:5,reframe from 9:16,15,H1,Peel back summer.,C2,Try the summer 3-pack.,1.1,draft
-sunpeel-peelback-15s_meta_feed_H2C1,meta_feed,4:5,reframe from 9:16,15,H2,"Soda, but make it summer.",C1,Find it cold near you.,1.1,draft
-sunpeel-peelback-15s_meta_feed_H2C2,meta_feed,4:5,reframe from 9:16,15,H2,"Soda, but make it summer.",C2,Try the summer 3-pack.,1.1,draft
-sunpeel-peelback-15s_meta_feed_H3C1,meta_feed,4:5,reframe from 9:16,15,H3,Zero sugar. Full zing.,C1,Find it cold near you.,1.1,draft
-sunpeel-peelback-15s_meta_feed_H3C2,meta_feed,4:5,reframe from 9:16,15,H3,Zero sugar. Full zing.,C2,Try the summer 3-pack.,1.1,draft
+variant_id,type,platform,aspect,source,length_s,hook_id,hook,cta_id,cta,lock_version,status
+sunpeel-peelback-15s_tiktok_H1C1,video,tiktok,9:16,master,15,H1,Peel back summer.,C1,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_tiktok_H1C2,video,tiktok,9:16,master,15,H1,Peel back summer.,C2,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_tiktok_H2C1,video,tiktok,9:16,master,15,H2,"Soda, but make it summer.",C1,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_tiktok_H2C2,video,tiktok,9:16,master,15,H2,"Soda, but make it summer.",C2,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_tiktok_H3C1,video,tiktok,9:16,master,15,H3,Zero sugar. Full zing.,C1,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_tiktok_H3C2,video,tiktok,9:16,master,15,H3,Zero sugar. Full zing.,C2,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_meta_vertical_H1C1,video,meta_vertical,9:16,master,15,H1,Peel back summer.,C1,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_meta_vertical_H1C2,video,meta_vertical,9:16,master,15,H1,Peel back summer.,C2,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_meta_vertical_H2C1,video,meta_vertical,9:16,master,15,H2,"Soda, but make it summer.",C1,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_meta_vertical_H2C2,video,meta_vertical,9:16,master,15,H2,"Soda, but make it summer.",C2,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_meta_vertical_H3C1,video,meta_vertical,9:16,master,15,H3,Zero sugar. Full zing.,C1,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_meta_vertical_H3C2,video,meta_vertical,9:16,master,15,H3,Zero sugar. Full zing.,C2,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_youtube_shorts_H1C1,video,youtube_shorts,9:16,master,15,H1,Peel back summer.,C1,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_youtube_shorts_H1C2,video,youtube_shorts,9:16,master,15,H1,Peel back summer.,C2,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_youtube_shorts_H2C1,video,youtube_shorts,9:16,master,15,H2,"Soda, but make it summer.",C1,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_youtube_shorts_H2C2,video,youtube_shorts,9:16,master,15,H2,"Soda, but make it summer.",C2,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_youtube_shorts_H3C1,video,youtube_shorts,9:16,master,15,H3,Zero sugar. Full zing.,C1,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_youtube_shorts_H3C2,video,youtube_shorts,9:16,master,15,H3,Zero sugar. Full zing.,C2,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_meta_feed_H1C1,video,meta_feed,4:5,reframe from 9:16,15,H1,Peel back summer.,C1,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_meta_feed_H1C2,video,meta_feed,4:5,reframe from 9:16,15,H1,Peel back summer.,C2,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_meta_feed_H2C1,video,meta_feed,4:5,reframe from 9:16,15,H2,"Soda, but make it summer.",C1,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_meta_feed_H2C2,video,meta_feed,4:5,reframe from 9:16,15,H2,"Soda, but make it summer.",C2,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_meta_feed_H3C1,video,meta_feed,4:5,reframe from 9:16,15,H3,Zero sugar. Full zing.,C1,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_meta_feed_H3C2,video,meta_feed,4:5,reframe from 9:16,15,H3,Zero sugar. Full zing.,C2,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_A1_meta_feed_4x5,static,meta_feed,4:5,"plate 4:5, 1080x1350",,A1,Zero sugar. All zing.,,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_A1_meta_feed_1x1,static,meta_feed,1:1,"plate 4:5, 1080x1080",,A1,Zero sugar. All zing.,,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_A1_meta_vertical_9x16,static,meta_vertical,9:16,"plate 9:16, 1080x1920",,A1,Zero sugar. All zing.,,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_A1_tiktok_9x16,static,tiktok,9:16,"plate 9:16, 1080x1920",,A1,Zero sugar. All zing.,,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_A2_meta_feed_4x5,static,meta_feed,4:5,"plate 4:5, 1080x1350",,A2,Peel back summer.,,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_A2_meta_feed_1x1,static,meta_feed,1:1,"plate 4:5, 1080x1080",,A2,Peel back summer.,,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_A2_meta_vertical_9x16,static,meta_vertical,9:16,"plate 9:16, 1080x1920",,A2,Peel back summer.,,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_A2_tiktok_9x16,static,tiktok,9:16,"plate 9:16, 1080x1920",,A2,Peel back summer.,,Try the summer 3-pack.,1.2,draft
+sunpeel-peelback-15s_A3_meta_feed_4x5,static,meta_feed,4:5,"plate 4:5, 1080x1350",,A3,Blood orange. Yuzu. Grapefruit.,,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_A3_meta_feed_1x1,static,meta_feed,1:1,"plate 4:5, 1080x1080",,A3,Blood orange. Yuzu. Grapefruit.,,Find it cold near you.,1.2,draft
+sunpeel-peelback-15s_A3_meta_vertical_9x16,static,meta_vertical,9:16,"plate 9:16, 1080x1920",,A3,Blood orange. Yuzu. Grapefruit.,,Find it cold near you.,1.2,draft

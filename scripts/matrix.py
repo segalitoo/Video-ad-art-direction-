@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Expand one approved base ad into its variant matrix: hooks x CTAs x platforms.
+"""Expand one approved base ad into its variant matrix: hooks x CTAs x platforms,
+plus one row per static ad per platform size.
 
     python scripts/matrix.py examples/sunpeel/storyboard.yml -o matrix.csv
 
@@ -12,9 +13,9 @@ import argparse
 import csv
 import sys
 
-from common import load_specs, load_storyboard
+from common import load_specs, load_storyboard, parse_aspect
 
-REVIEW_LIMIT = 24
+REVIEW_LIMIT = 36
 
 
 def rows(board, lock, specs):
@@ -30,6 +31,7 @@ def rows(board, lock, specs):
             for cta in ctas:
                 yield {
                     "variant_id": f"{ad['id']}_{pid}_{hook['id']}{cta['id']}",
+                    "type": "video",
                     "platform": pid,
                     "aspect": aspect,
                     "source": source,
@@ -41,6 +43,30 @@ def rows(board, lock, specs):
                     "lock_version": lock["meta"]["version"],
                     "status": "draft",
                 }
+
+    for st in board.get("statics") or []:
+        for pid in st.get("platforms") or []:
+            for ratio, (w, h) in specs["platforms"][pid]["static"]["sizes"].items():
+                yield {
+                    "variant_id": f"{ad['id']}_{st['id']}_{pid}_{ratio.replace(':', 'x')}",
+                    "type": "static",
+                    "platform": pid,
+                    "aspect": ratio,
+                    "source": f"plate {nearest_plate(ratio, st.get('plates') or [])}, {w}x{h}",
+                    "length_s": "",
+                    "hook_id": st["id"],
+                    "hook": st.get("headline", ""),
+                    "cta_id": "",
+                    "cta": st.get("cta", ""),
+                    "lock_version": lock["meta"]["version"],
+                    "status": "draft",
+                }
+
+
+def nearest_plate(ratio, plates):
+    """The generated plate whose shape is closest to the target, so the crop loses least."""
+    w, h = parse_aspect(ratio)
+    return min(plates, key=lambda p: abs(parse_aspect(p)[0] / parse_aspect(p)[1] - w / h)) if plates else "?"
 
 
 def main():

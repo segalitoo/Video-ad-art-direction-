@@ -7,7 +7,7 @@ ad:
   master_aspect: "9:16"
   platforms: [tiktok, meta_vertical, youtube_shorts, meta_feed]
   tools: [figma-weave, higgsfield, midjourney, kling, runway]
-  candidates: {keyframe: 8, motion: 3}
+  candidates: {keyframe: 8, motion: 2, static: 4}
 
 shots:
   - id: S01
@@ -76,6 +76,39 @@ shots:
     generate: false
     super: Find it cold near you.
     sound: fizz tail, sound logo
+
+# Static ads. Plates are generated at each ratio in `plates` with empty space where the
+# headline goes; scripts/static_compose.py sets the type and sizes each platform from them.
+statics:
+  - id: A1
+    concept: the can, ice cold
+    subject: the can standing on the terracotta rooftop ledge, a halved blood orange beside it
+    hero: true
+    copy_space: top
+    headline: "Zero sugar. All zing."
+    cta: "Find it cold near you."
+    plates: ["4:5", "9:16"]
+    platforms: [meta_feed, meta_vertical, tiktok]
+
+  - id: A2
+    concept: the peel
+    subject: a single long orange peel spiral curling around the can in mid-air against a blush sky
+    hero: true
+    copy_space: bottom
+    headline: "Peel back summer."
+    cta: "Try the summer 3-pack."
+    plates: ["4:5", "9:16"]
+    platforms: [meta_feed, meta_vertical, tiktok]
+
+  - id: A3
+    concept: three flavours
+    subject: three cans in a row on the ledge, sunset orange, yuzu yellow and grapefruit pink, each with its halved fruit in front
+    hero: false
+    copy_space: top
+    headline: "Blood orange. Yuzu. Grapefruit."
+    cta: "Find it cold near you."
+    plates: ["4:5", "9:16"]
+    platforms: [meta_feed, meta_vertical]
 
 # Quote every line: a comma inside {...} breaks YAML.
 variants:

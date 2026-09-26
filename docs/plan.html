@@ -327,7 +327,7 @@ footer { margin-top: 88px; padding-top: 20px; border-top: 1px solid var(--hair);
       </li>
       <li class="row row--c">
         <div class="row__n">08<span>Ship</span></div>
-        <div><h3>Edit <span class="new">new</span></h3><p class="row__d">Clips, sound and type come together from an edit sheet built from the storyboard. Type and end cards are set by hand, never generated.</p><p class="gate"><b>Human gate</b>The editor or art director owns the cut.</p></div>
+        <div><h3>Edit <span class="new">new</span></h3><p class="row__d">Clips, sound and type come together from an edit sheet built from the storyboard. Static ads get their type from <code>static_compose.py</code>, sized for every placement inside its safe zone. Type is never generated.</p><p class="gate"><b>Human gate</b>The editor or art director owns the cut.</p></div>
         <dl class="facts"><div><dt>Tools</dt><dd>CapCut, Premiere, DaVinci Resolve, After Effects</dd></div><div><dt>Automated</dt><dd>Caption drafts, the edit sheet</dd></div><div><dt>Stays manual</dt><dd>Rhythm, cut points, type</dd></div></dl>
         <p class="jam"><b>Bottleneck</b>Patching a bad clip in the edit. Send it back to stage 5.</p>
       </li>
@@ -355,20 +355,21 @@ footer { margin-top: 88px; padding-top: 20px; border-top: 1px solid var(--hair);
 
     <div class="two">
       <div class="file">
-        <div class="file__h"><span>examples/sunpeel/sunpeel.dna.yml</span><span>v1.0</span></div>
+        <div class="file__h"><span>examples/sunpeel/sunpeel.dna.yml</span><span>v1.2</span></div>
 <pre><span class="c"># Pilot: Sunpeel, a fictional zero-sugar citrus soda</span>
-<span class="t">mode</span>    3d-stylized
-<span class="t">STYLE</span>   glossy stylized 3D render,
-        premium animated drinks commercial
+<span class="t">mode</span>    live-action · people: false
+<span class="t">STYLE</span>   hyper-real premium beverage commercial,
+        photoreal product cinematography
 <span class="t">WORLD</span>   sun-bleached rooftop at golden hour,
         terracotta tiles, potted citrus trees
-<span class="t">LIGHT</span>   low golden-hour sun, warm rim light
-<span class="t">MOTION</span>  juicy springy motion, bubbles rising
-        in slow motion, weighty landings
+<span class="t">LIGHT</span>   low golden-hour backlight, warm rim light
+<span class="t">MOTION</span>  real-world physics, high-speed slow
+        motion for fizz, liquid and fruit
 <span class="t">SOUND</span>   sunny indie pop · 104 bpm
 <span class="t">HERO</span>    slim 330ml can, sunset orange,
         white peeling-rind stripe
-<span class="c"># CAMERA, GRADE, FORM, TECH: mode defaults</span></pre>
+<span class="t">MARK</span>    SUNPEEL, the only text in frame
+<span class="c"># v1.1 was 3D stylized: a real drink sells on taste cues</span></pre>
         <div class="swatches" aria-label="Sunpeel palette">
           <span class="sw"><i style="background:#FF7A1A"></i>FF7A1A</span>
           <span class="sw"><i style="background:#FFC93C"></i>FFC93C</span>
@@ -477,10 +478,10 @@ footer { margin-top: 88px; padding-top: 20px; border-top: 1px solid var(--hair);
     <p class="k sec__k">Status</p>
     <h2 class="sec__t">What exists, and what comes next.</h2>
     <div class="road">
-      <div class="step step--done"><span class="step__s">Done</span><h3>The system</h3><p>Lock and four modes, specs, adapters, templates, and scripts with a self-test.</p></div>
+      <div class="step step--done"><span class="step__s">Done</span><h3>The system</h3><p>Lock and four modes, specs, adapters, a prompt lint, video and static ads, and scripts with a self-test.</p></div>
       <div class="step step--done"><span class="step__s">Done</span><h3>The Claude skill</h3><p>Runs all ten stages in Claude and stops at every gate.</p></div>
       <div class="step step--done"><span class="step__s">Done</span><h3>Video brief generator</h3><p>Intake in; brief, lock and storyboard out, with live platform checks and the credit budget.</p></div>
-      <div class="step step--next"><span class="step__s">In progress</span><h3>Sunpeel pilot</h3><p>Stages 1 to 3 are written. Stage 4 starts with the hero reference on Figma Weave, then shots, motion, edit and QA.</p></div>
+      <div class="step step--next"><span class="step__s">In progress</span><h3>Sunpeel pilot</h3><p>Photoreal product look, a 15s video and 3 static ads. Stages 1 to 3 are written and linted. Stage 4 starts with a 14-credit smoke test on Higgsfield.</p></div>
     </div>
   </section>
 

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Check an exported video against platforms/specs.yml before a person reviews it.
+"""Check an exported video or static ad against platforms/specs.yml before a person reviews it.
+
+    python scripts/spec_check.py A1_meta_feed_1080x1350.jpg --platform meta_feed --overlay
 
     python scripts/spec_check.py ad.mp4 --platform tiktok
     python scripts/spec_check.py ad.mp4 --platform tiktok meta_vertical --overlay
@@ -42,7 +44,7 @@ def probe(path):
         "width": int(video["width"]),
         "height": int(video["height"]),
         "fps": float(num) / float(den) if float(den) else 0.0,
-        "duration": float(info["format"]["duration"]),
+        "duration": float(info["format"].get("duration") or 0),
         "size_mb": int(info["format"]["size"]) / 1_000_000,
         "codec": video["codec_name"],
         "audio": audio is not None,
@@ -124,6 +126,42 @@ def check_platform(pid, spec, media, loud, rules):
     return results
 
 
+IMAGE_EXT = {".jpg", ".jpeg", ".png", ".webp"}
+
+
+def is_image(path):
+    return Path(path).suffix.lower() in IMAGE_EXT
+
+
+def check_static(pid, spec, media, path):
+    """A static ad against the platform's `static` block in specs.yml."""
+    results = []
+    add = lambda level, msg: results.append((level, msg))
+    static = spec.get("static")
+    if not static:
+        return [("FAIL", "this platform does not run static ads")]
+    match = next(((r, wh) for r, wh in static["sizes"].items()
+                  if matches_aspect(media["width"], media["height"], r)), None)
+    if not match:
+        add("FAIL", f"{media['width']}x{media['height']} is not one of {', '.join(static['sizes'])}")
+    else:
+        ratio, (tw, th) = match
+        if media["width"] < tw or media["height"] < th:
+            add("WARN", f"{media['width']}x{media['height']}, recommended {tw}x{th} for {ratio}")
+        else:
+            add("PASS", f"{ratio} at {media['width']}x{media['height']}")
+    ext = Path(path).suffix.lower().lstrip(".").replace("jpeg", "jpg")
+    if ext not in static.get("formats", [ext]):
+        add("FAIL", f".{ext} is not accepted ({', '.join(static['formats'])})")
+    else:
+        add("PASS", f".{ext}")
+    if media["size_mb"] > static["max_file_mb"]:
+        add("FAIL", f"{media['size_mb']:.1f} MB, maximum {static['max_file_mb']} MB")
+    else:
+        add("PASS", f"{media['size_mb']:.2f} MB (max {static['max_file_mb']} MB)")
+    return results
+
+
 def overlay(path, pid, spec, media, out_dir):
     """Save the hook frame and the last frame: unsafe margins darkened, safe area outlined."""
     z = spec["safe_zone_pct"]
@@ -140,11 +178,12 @@ def overlay(path, pid, spec, media, out_dir):
              f":w=iw*{1 - (z['left'] + z['right']) / 100}:h=ih*{1 - (z['top'] + z['bottom']) / 100}"
              ":color=cyan@0.9:t=6")
     saved = []
-    for label, t in (("hook", 0.5), ("end", max(media["duration"] - 0.5, 0))):
+    frames = [("static", None)] if is_image(path) else [("hook", 0.5), ("end", max(media["duration"] - 0.5, 0))]
+    for label, t in frames:
         target = out_dir / f"{Path(path).stem}_{pid}_{label}.png"
+        seek = [] if t is None else ["-ss", f"{min(t, media['duration']):.2f}"]
         subprocess.run(
-            ["ffmpeg", "-y", "-v", "error", "-ss", f"{min(t, media['duration']):.2f}", "-i", str(path),
-             "-frames:v", "1", "-vf", draw, str(target)],
+            ["ffmpeg", "-y", "-v", "error", *seek, "-i", str(path), "-frames:v", "1", "-vf", draw, str(target)],
             check=True,
         )
         saved.append(target)
@@ -173,22 +212,29 @@ def main():
             fail(f"unknown platform(s): {', '.join(unknown)}")
         targets = args.platform
     else:
+        image = is_image(args.video)
         targets = [pid for pid, s in specs["platforms"].items()
-                   if any(matches_aspect(media["width"], media["height"], a) for a in s["aspects"])]
+                   if any(matches_aspect(media["width"], media["height"], a)
+                          for a in ((s.get("static") or {}).get("sizes", {}) if image else s["aspects"]))]
         if not targets:
             fail(f"no platform takes {media['width']}x{media['height']}")
 
-    loud = loudness(args.video) if media["audio"] else None
+    image = is_image(args.video)
+    loud = loudness(args.video) if media["audio"] and not image else None
     out_dir = Path(args.out_dir or Path(args.video).parent)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"{Path(args.video).name} · {media['width']}x{media['height']} · {media['duration']:.1f}s · "
-          f"{media['fps']:.2f} fps · {media['codec']} · {media['size_mb']:.1f} MB")
+    if image:
+        print(f"{Path(args.video).name} · static · {media['width']}x{media['height']} · {media['size_mb']:.2f} MB")
+    else:
+        print(f"{Path(args.video).name} · {media['width']}x{media['height']} · {media['duration']:.1f}s · "
+              f"{media['fps']:.2f} fps · {media['codec']} · {media['size_mb']:.1f} MB")
     failed = False
     for pid in targets:
         spec = specs["platforms"][pid]
         print(f"\n{spec['name']} ({pid})")
-        for level, msg in check_platform(pid, spec, media, loud, specs["loudness"]):
+        checks = check_static(pid, spec, media, args.video) if image else check_platform(pid, spec, media, loud, specs["loudness"])
+        for level, msg in checks:
             print(f"  {level:<4}  {msg}")
             failed |= level == "FAIL"
         if args.overlay:

@@ -11,7 +11,8 @@
 | Budget (generation credits) | Set before stage 4, logged per clip |
 | Platforms | TikTok · Reels/Stories · Shorts · Meta feed |
 | Lengths | 15s master, 6s cut-down |
-| Style mode | 3d-stylized (master); UGC as a test cell |
+| Statics | 3 static ads (4:5 feed, 9:16 stories, 1:1 / LinkedIn from the same plates) |
+| Style mode | live-action: photoreal product, no people (changed from 3D in lock v1.2: a real drink sells on taste cues) |
 
 ## 1. The one thing
 Sunpeel tastes like summer, with zero sugar.
@@ -30,7 +31,7 @@ Sunpeel tastes like summer, with zero sugar.
 | 3 | The number | A big "0 g" made of bubbles | A clear claim for people who compare labels |
 
 ## 5. Mandatories
-"Zero sugar" must match the label. Include the sweetener disclosure where the market requires it. Show the can in 3 of 5 shots. Add the AI-generated content label where the platform requires it. No hands in 3D mode (the lock excludes them).
+"Zero sugar" must match the label. Include the sweetener disclosure where the market requires it. Show the can in 3 of 5 shots. Add the AI-generated content label where the platform requires it. No people or hands (the lock excludes them).
 
 ## 6. Success metric
 Hook rate (3-second views / impressions). The 3 hooks are tested against each other with the same body.

@@ -95,7 +95,44 @@ def check(board, lock, specs, tools):
         if words > max_words:
             warnings.append(f"hook {variant['id']}: {words} words, the lock allows {max_words}")
 
+    e, w = check_statics(board, lock, specs)
+    errors += e
+    warnings += w
     warnings += lint(board, lock)
+    return errors, warnings
+
+
+def check_statics(board, lock, specs):
+    errors, warnings = [], []
+    rules = specs.get("static_text", {})
+    seen = set()
+    for st in board.get("statics") or []:
+        sid = st.get("id", "?")
+        if sid in seen:
+            errors.append(f"duplicate static id {sid}")
+        seen.add(sid)
+        for key in ("subject", "headline", "plates", "platforms"):
+            if not st.get(key):
+                errors.append(f"static {sid}: missing {key}")
+        if st.get("copy_space") not in ("top", "bottom"):
+            errors.append(f"static {sid}: copy_space must be top or bottom")
+        for ratio in st.get("plates") or []:
+            try:
+                parse_aspect(ratio)
+            except ValueError:
+                errors.append(f"static {sid}: plate ratio '{ratio}' is not like 4:5")
+        for pid in st.get("platforms") or []:
+            if pid not in specs["platforms"]:
+                errors.append(f"static {sid}: unknown platform '{pid}'")
+            elif not specs["platforms"][pid].get("static"):
+                errors.append(f"static {sid}: {pid} does not run static ads")
+        head = str(st.get("headline", ""))
+        if len(head.split()) > rules.get("max_headline_words", 99):
+            warnings.append(f"static {sid}: headline has {len(head.split())} words; keep to {rules['max_headline_words']}")
+        if len(head) > rules.get("max_headline_chars", 999):
+            warnings.append(f"static {sid}: headline is {len(head)} characters; keep under {rules['max_headline_chars']}")
+        if st.get("hero") and not (lock.get("hero") or {}).get("description"):
+            errors.append(f"static {sid}: uses the hero, but the lock has no hero description")
     return errors, warnings
 
 
@@ -165,6 +202,11 @@ def lint(board, lock):
                     out.append(f'tokens: "{ph}" is in both {seen[ph]} and {key}; say it once')
                 seen.setdefault(ph, key)
 
+    for st in board.get("statics") or []:
+        moving = sorted(set(_motion_words(st.get("subject", ""))))
+        if moving:
+            out.append(f"static {st.get('id')}: subject has movement ({', '.join(moving)}); a static is one frozen frame")
+
     for shot in board["shots"]:
         if not shot.get("generate", True):
             continue
@@ -232,6 +274,10 @@ def negatives_for(lock, kind):
         items = text_rules[:1] + own + lock["negative_video"]
     else:
         items = lock["negative"] + lock["negative_image"]
+    if lock.get("meta", {}).get("people") is False:
+        # Product-only ads: naming body parts in a negative can invite them. One rule replaces them all.
+        body = ("skin", "face", "finger", "hand", "teeth", "eye", "people", "person")
+        items = [n for n in items if not any(b in n.lower() for b in body)] + ["people or body parts"]
     own_heads = {n.split()[-1].lower() for n in own}
     items = [n for n in items if n in own or n.split()[-1].lower() not in own_heads]
     mark = (lock.get("hero") or {}).get("wordmark")
@@ -274,6 +320,32 @@ def hero_prompt(lock):
         "product reference shot, centred, whole product in frame, three-quarter view, "
         "clean neutral soft-gradient background for easy cutout",
     ]
+    return ". ".join(p.strip().rstrip(".") for p in parts) + "."
+
+
+def static_prompt(item, lock, ratio):
+    """A plate for a static ad: the image with an empty band where the headline will be set."""
+    t = lock["tokens"]
+    w, h = parse_aspect(ratio)
+    shape = "vertical" if h > w else "square" if h == w else "horizontal"
+    copy = item.get("copy_space", "top")
+    parts = [t["STYLE"], f"[STATIC: {item['subject']}]"]
+    if item.get("hero"):
+        parts.append(f"featuring {hero_words(lock)}")
+    if t.get("WORLD"):
+        parts.append(t["WORLD"])
+    parts += [t["FORM"], t["LIGHT"], t["GRADE"]]
+    palette = scene_palette(lock)
+    if palette:
+        parts.append(f"colour palette of {palette}")
+    if h / w > 1.5 or copy == "top":
+        # 9:16 always takes the headline on top: the platform's own UI covers the bottom third.
+        layout = ("the subject in the middle of the frame, not too large, the top third left as clean, "
+                  "simple, empty background, and a simple uncluttered strip along the bottom edge")
+    else:
+        layout = ("the subject in the upper middle of the frame, not too large, the bottom third left as "
+                  "clean, simple, empty background")
+    parts += [t["TECH"], f"{shape} {w}:{h} frame, {layout}"]
     return ". ".join(p.strip().rstrip(".") for p in parts) + "."
 
 
@@ -330,7 +402,7 @@ def render_group(label, results):
     return out
 
 
-DEFAULT_CANDIDATES = {"keyframe": 8, "motion": 3}
+DEFAULT_CANDIDATES = {"keyframe": 8, "motion": 3, "static": 4}
 
 
 def budget(board, lock, tools, tool_names):
@@ -357,18 +429,21 @@ def budget(board, lock, tools, tool_names):
             mot_c = secs * vid["credits_per_s"] * (cands["motion"] if mot_n else 0)
         elif vid:
             mot_c = mot_n * vid["credits"]
-        total = (key_c or 0) + (mot_c or 0)
+        st_n = sum(len(st.get("plates") or []) for st in board.get("statics") or []) * cands["static"]
+        st_c = st_n * img["credits"] if img else None
+        total = (key_c or 0) + (mot_c or 0) + (st_c or 0)
         rows.append(
             f"| {name} | {key_n} × {img['name']} ≈ {key_c:g} | " if img else f"| {name} | n/a | "
         )
         rows[-1] += (f"{mot_n} × {vid['name']} ≈ {mot_c:g} | " if vid else "n/a | ")
+        rows[-1] += (f"{st_n} × {img['name']} ≈ {st_c:g} | " if img and st_n else "0 | ")
         rows[-1] += f"**{total:g}** {tools[name].get('cost_unit', 'credits')} |"
         usd = tools[name].get("usd_per_credit")
         rows[-1] += f" ≈ ${total * usd:,.0f} |" if usd else " n/a |"
     if not rows:
         return []
     return [
-        "## Budget · one round of stages 4 and 5",
+        "## Budget · one round of stages 4 and 5, plus static plates",
         "",
         f"{len(shots)} generated shots{' + the hero reference' if hero else ''}, "
         f"{cands['keyframe']} keyframe candidates each, {cands['motion']} motion candidates per kept frame. "
@@ -376,8 +451,8 @@ def budget(board, lock, tools, tool_names):
         "before each run, and nothing runs without approval. USD uses `usd_per_credit` (the plan "
         "noted beside it); a Weave credit and a Higgsfield credit are not the same money.",
         "",
-        "| Tool | Keyframes | Motion | Total | USD |",
-        "|---|---|---|---|---|",
+        "| Tool | Keyframes | Motion | Static plates | Total | USD |",
+        "|---|---|---|---|---|---|",
         *rows,
         "",
     ]
@@ -456,6 +531,21 @@ def build(board, lock, specs, tools, tool_names):
             motions.append((name, text, extra))
         out += render_group(f"{shot['id']}-K · keyframe", keyframes)
         out += render_group(f"{shot['id']}-M · motion", motions)
+
+    statics = board.get("statics") or []
+    if statics:
+        out += ["## Static ads", "",
+                "Plates only: the headline band is left empty on purpose. Type, CTA and wordmark are set by "
+                "`scripts/static_compose.py` from the kept plate, never generated.", ""]
+        for st in statics:
+            out += [f"### {st['id']} · {st.get('concept', '')}", "",
+                    f"- **Headline ({st.get('copy_space')}):** {st.get('headline')}",
+                    f"- **CTA:** {st.get('cta', '')}",
+                    f"- **Platforms:** {', '.join(st.get('platforms') or [])}", ""]
+            for ratio in st.get("plates") or []:
+                prompt = static_prompt(st, lock, ratio)
+                out += render_group(f"{st['id']}-{ratio} · static plate",
+                                    [(n, *for_tool(prompt, tools[n], neg_image, ratio)) for n in image_tools])
 
     return "\n".join(out).rstrip() + "\n"
 

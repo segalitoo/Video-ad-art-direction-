@@ -41,6 +41,23 @@ if command -v ffmpeg >/dev/null; then
   if python3 scripts/crop.py "$tmp/good.mp4" 1:1 -o "$tmp/sq.mp4" >/dev/null 2>&1; then
     echo "FAIL 1:1 crop into the safe area not caught"; exit 1; fi
   ok "1:1 crop that cuts the safe area is refused"
+
+  # Static ads: compose from stand-in plates, then QA each export.
+  python3 - "$tmp" <<'PY'
+import sys
+from PIL import Image
+for name, size in (("p45.png", (1080, 1350)), ("p916.png", (1080, 1920))):
+    Image.new("RGB", size, (240, 170, 140)).save(f"{sys.argv[1]}/{name}")
+PY
+  python3 scripts/static_compose.py examples/sunpeel/storyboard.yml A1 \
+    --plate 4:5="$tmp/p45.png" --plate 9:16="$tmp/p916.png" --out-dir "$tmp/static" >/dev/null
+  n=$(ls "$tmp/static" | wc -l)
+  [ "$n" -eq 4 ] && ok "static A1 composed for 4 placement sizes" || { echo "FAIL static compose made $n files"; exit 1; }
+  for f in "$tmp"/static/*.jpg; do python3 scripts/spec_check.py "$f" >/dev/null || { echo "FAIL static QA $f"; exit 1; }; done
+  ok "every static export passes its platform spec"
+  if python3 scripts/spec_check.py "$tmp/static/A1_tiktok_1080x1920.jpg" --platform youtube_shorts >/dev/null; then
+    echo "FAIL static on a platform without statics not caught"; exit 1; fi
+  ok "static on a platform that has no static ads is refused"
 else
   echo "skip spec_check tests (ffmpeg not installed)"
 fi

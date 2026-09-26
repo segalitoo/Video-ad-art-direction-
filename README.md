@@ -7,6 +7,7 @@ It extends the [Bingo Bay AI production workflow](https://segalitoo.github.io/ra
 
 **Platforms:** TikTok · Instagram/Facebook Reels and Stories · YouTube Shorts · Meta feed · LinkedIn
 **Looks:** 3D stylized · live action · UGC · motion graphics
+**Formats:** motion ads (9:16 master, free 4:5 cut) and static ads (4:5, 1:1, 9:16, LinkedIn sizes) from the same lock
 **Tools:** any. One master prompt, adapted for Figma Weave and Higgsfield (both inside Claude), Nano Banana, Midjourney, Veo in Google Flow, Kling, Runway, Suno, ElevenLabs. You can add more.
 
 **Inside Claude, two engines split by strength.** The video model is **Seedance 2.5**, on either engine. Figma Weave runs keyframes and motion behind one connector and keeps the lock as a saved workflow the art director can open. Higgsfield is the cheaper route for Seedance, holds the hero as an extra reference in motion, and also reframes, runs Marketing Studio, predicts virality and publishes to TikTok. Every paid run is quoted and approved first; `assemble.py` prints the budget for a full round before stage 4.
@@ -45,6 +46,8 @@ python scripts/assemble.py <storyboard.yml> --check              # stage 3 pre-c
 python scripts/assemble.py <storyboard.yml> -o prompts.md        # every prompt, for every tool
 python scripts/matrix.py   <storyboard.yml> -o matrix.csv        # hooks × CTAs × platforms
 python scripts/crop.py master.mp4 4:5                           # free 4:5 feed cut, checks the safe area
+python scripts/static_compose.py <storyboard.yml> A1 --plate 4:5=a.png --plate 9:16=b.png   # static ads, every size
+python scripts/spec_check.py A1_meta_feed_1080x1350.jpg --overlay                             # QA works for statics too
 python scripts/spec_check.py export.mp4 --platform tiktok --overlay   # stage 9 QA
 bash scripts/selftest.sh                                         # test everything
 ```
@@ -60,7 +63,7 @@ bash scripts/selftest.sh                                         # test everythi
 | `adapters/tools.yml` | How each tool wants its prompt (negatives, aspect, clip length) |
 | `templates/` | Brief, storyboard, copy matrix, QA checklist, iteration log |
 | `scripts/` | Scaffold, assemble, matrix, spec check, self-test |
-| `examples/sunpeel/` | The pilot: a fictional zero-sugar citrus soda |
+| `examples/sunpeel/` | The pilot: a fictional zero-sugar citrus soda, photoreal product look (lock v1.2), 15s video + 3 static ads |
 | `docs/brief-generator.html` | Intake form that writes the brief, lock and storyboard ([live](https://claude.ai/artifact/DvdWpJVGGaiz4g3wWVT6h6)) |
 | `docs/plan.html` | The plan as a page, in the portfolio design system ([live](https://claude.ai/artifact/HQm6PR8irg3vVe4BnLf99o)) |
 

@@ -74,13 +74,15 @@ Modes: `3d-stylized`, `live-action`, `ugc`, `motion-graphics` (see `lock/modes/`
 - Mix target: about -14 LUFS, true peak at or below -1 dBTP.
 → Gate: audio direction, including rights for paid social.
 
-**07 Copy.** Fill `copy-matrix.md`: 3 lines per placement, word limits from `lock.type`. Keep the losing lines and their reasons. Flag every claim for legal.
+**Static plates (with stage 4).** For each item in `statics`, generate the `A#-<ratio>` plate prompts from `prompts.md` on the keyframe model, 4 candidates per ratio, with the hero reference on hero statics. Plates carry no text: the headline band stays empty. Same gate as keyframes.
+
+**07 Copy.** Fill `copy-matrix.md`: 3 lines per placement, word limits from `lock.type`. Static headlines: at most 7 words and 40 characters (checked by `--check`). Keep the losing lines and their reasons. Flag every claim for legal.
 → Gate: copy lead.
 
-**08 Edit.** Give the editor an edit sheet, a table built from the storyboard: shot, in/out seconds, clip file, super, sound cue, safe-zone note. Type and end cards are made in the edit, never generated.
+**08 Edit.** Statics: `python scripts/static_compose.py <storyboard> A1 --plate 4:5=<kept> --plate 9:16=<kept> [--font <brand font>]` writes every placement size with headline, wordmark and CTA inside the safe zones. On Stories and TikTok it leaves the CTA out (the platform adds its own) and keeps the headline in the top band. Show the results side by side; the art director can refine them in Figma. Video: give the editor an edit sheet, a table built from the storyboard: shot, in/out seconds, clip file, super, sound cue, safe-zone note. Type and end cards are made in the edit, never generated.
 → Gate: editor / art director.
 
-**09 QA.** For every export: `python scripts/spec_check.py <file> --platform <ids> --overlay`. Show the overlay PNGs to the art director, then walk `qa-checklist.md`. Only files with no FAIL go to human review.
+**09 QA.** For every export, video or static: `python scripts/spec_check.py <file> --platform <ids> --overlay`. Show the overlay PNGs to the art director, then walk `qa-checklist.md`. Only files with no FAIL go to human review.
 → Gate: craft, message, brand/legal sign-off.
 
 **10 Variants and iteration.** Run `python scripts/matrix.py <storyboard> -o matrix.csv`. For 4:5, crop the 9:16 master for free: `python scripts/crop.py master.mp4 4:5` (it checks the safe area survives). Use Higgsfield `reframe` (about 138 credits for 15s at 1080p, quote first) only when the crop fails, as it does for 1:1. After results come in, propose what to change and why. Count the cycle.

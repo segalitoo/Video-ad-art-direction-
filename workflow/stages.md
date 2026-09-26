@@ -99,6 +99,8 @@ Music bed, SFX and voiceover from the lock's sound tokens.
 | **Stays manual** | The mix, the cut points, rights for paid social |
 | **Bottleneck** | Licensing. A pre-cleared kit per brand. |
 
+**Static plates** are generated here too, from the same lock: one plate per ratio in `statics` (4:5, 9:16), 4 candidates each, with the headline band left empty. Same gate: the art director picks.
+
 ## 07 · Produce · Copy and on-screen text
 Hooks, supers, CTAs, captions and platform primary text. Three lines per placement, one ships.
 
@@ -122,6 +124,8 @@ Clips, sound and type come together. Type is set by hand, never generated.
 | **Automated** | Captions draft, the edit sheet from the storyboard |
 | **Stays manual** | Rhythm, cut points, type, the end card |
 | **Bottleneck** | Fixing a bad clip in the edit. Send it back to stage 5 instead. |
+
+**Statics** are set in this stage by `scripts/static_compose.py`: headline, wordmark and CTA on the kept plate, every placement size, inside each platform's safe zone, with contrast checked (WCAG AA 4.5:1, a soft scrim only when needed). Stories and TikTok get no drawn CTA, because the platform adds its own button.
 
 ## 09 · Ship · QA and platform check
 Machines check first, people judge what passed.
