@@ -1,0 +1,389 @@
+round: Fernly test, round 1
+lock: ../fernly.dna.yml
+groups:
+  D:
+    label: 'S05 start: droopy monstera'
+    files: 5
+  L:
+    label: 'S05 end: lush monstera'
+    files: 5
+  P:
+    label: 'S01: pour, from the soil'
+    files: 5
+pairs:
+- a: D
+  b: L
+  relation: first_last
+- a: D
+  b: P
+  relation: same_set
+items:
+  D1:
+    file: out/plant-droopy_1.soul.jpg
+    group: D
+    kind: image
+    model: soul
+  D2:
+    file: out/plant-droopy_2.soul.jpg
+    group: D
+    kind: image
+    model: soul
+  D3:
+    file: out/plant-droopy_3.soul.jpg
+    group: D
+    kind: image
+    model: soul
+  D4:
+    file: out/plant-droopy_4.soul.jpg
+    group: D
+    kind: image
+    model: soul
+  D5:
+    file: out/plant-droopy_5.qwen.jpg
+    group: D
+    kind: image
+    model: qwen
+  L1:
+    file: out/plant-lush_1.soul.jpg
+    group: L
+    kind: image
+    model: soul
+  L2:
+    file: out/plant-lush_2.soul.jpg
+    group: L
+    kind: image
+    model: soul
+  L3:
+    file: out/plant-lush_3.soul.jpg
+    group: L
+    kind: image
+    model: soul
+  L4:
+    file: out/plant-lush_4.soul.jpg
+    group: L
+    kind: image
+    model: soul
+  L5:
+    file: out/plant-lush_5.qwen.jpg
+    group: L
+    kind: image
+    model: qwen
+  P1:
+    file: out/S01-pour_1.soul.jpg
+    group: P
+    kind: image
+    model: soul
+  P2:
+    file: out/S01-pour_2.soul.jpg
+    group: P
+    kind: image
+    model: soul
+  P3:
+    file: out/S01-pour_3.soul.jpg
+    group: P
+    kind: image
+    model: soul
+  P4:
+    file: out/S01-pour_4.soul.jpg
+    group: P
+    kind: image
+    model: soul
+  P5:
+    file: out/S01-pour_5.qwen.jpg
+    group: P
+    kind: image
+    model: qwen
+scores:
+  D1:
+    lock: 4
+    hero: 3
+    craft: 4
+    composition: 3
+    story: 1
+    animatable: 3
+    note: 'Healthy plant, not droopy: misses the beat. Plant sits left, books cut off at the bottom right'
+  D2:
+    lock: 4
+    hero: 3
+    craft: 3
+    composition: 2
+    story: 1
+    animatable: 3
+    note: Healthy, not droopy. Odd black hook at the top left, garbled book titles, busy lower third
+  D3:
+    lock: 4
+    hero: 4
+    craft: 3
+    composition: 4
+    story: 3
+    animatable: 3
+    note: A few hanging leaves read slightly tired. Tangled stems at the base may morph
+  D4:
+    lock: 4
+    hero: 3
+    craft: 4
+    composition: 3
+    story: 4
+    animatable: 3
+    note: Browning leaf reads well, but the frame is a Stories screenshot
+    fail: Instagram Stories interface and a username drawn into the image
+  D5:
+    lock: 4
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 3
+    animatable: 4
+    note: Cleanest frame. Lower leaves wilted, top still perky, so it reads 'unwell', not 'dying'. A little too
+      polished for phone footage
+  L1:
+    lock: 4
+    hero: 4
+    craft: 4
+    composition: 3
+    story: 4
+    animatable: 3
+    note: Lush, but it fills to the top edge and hides the pot; no room for captions
+  L2:
+    lock: 4
+    hero: 4
+    craft: 4
+    composition: 3
+    story: 4
+    animatable: 3
+    note: Lush, but a Stories screenshot
+    fail: Instagram Stories interface and a username drawn into the image
+  L3:
+    lock: 4
+    hero: 5
+    craft: 3
+    composition: 3
+    story: 4
+    animatable: 3
+    note: Most lush and glossy. Gibberish book titles, books and mugs crowd the lower third
+  L4:
+    lock: 4
+    hero: 3
+    craft: 3
+    composition: 3
+    story: 3
+    animatable: 3
+    note: Leaves spread in a messy fan; mugs and books crowd the lower third
+  L5:
+    lock: 4
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 4
+    animatable: 4
+    note: Upright and healthy, centred, calm top. Lusher than D5 but not dramatically so
+  P1:
+    lock: 3
+    hero: 2
+    craft: 2
+    composition: 3
+    story: 3
+    animatable: 3
+    note: A fern, not the monstera. Odd heap of soil in the foreground, cool light
+  P2:
+    lock: 3
+    hero: 2
+    craft: 4
+    composition: 3
+    story: 3
+    animatable: 4
+    note: 'A pothos, not the monstera. Clean, but a thin stream: ''watering'', not ''drowning'''
+  P3:
+    lock: 4
+    hero: 2
+    craft: 3
+    composition: 4
+    story: 3
+    animatable: 4
+    note: Not the monstera. Same yellow-curtain room as D3/L4; floor-level angle, not from the soil
+  P4:
+    lock: 3
+    hero: 2
+    craft: 2
+    composition: 3
+    story: 3
+    animatable: 3
+    note: Not the monstera. Blue fabric at the left edge may be a person on the sofa; pot looks like plastic
+  P5:
+    lock: 4
+    hero: 2
+    craft: 4
+    composition: 4
+    story: 3
+    animatable: 4
+    note: A fern, not the monstera. Best light and matches D5's room; stream too gentle to sell 'drown'
+pair_scores:
+  D5+L5:
+    match: 4
+    note: Same pot, window, curtain, floor and floral mug; left shelf changes shape, white pots vanish, bed edge
+      appears, mug moves up
+  D3+L4:
+    match: 3
+    note: Same yellow curtains, pot and saucer; books and mugs swap sides, plant shape differs
+  D1+L1:
+    match: 2
+    note: Yellow curtain vs yellow wall; only the radiator carries over
+  D2+L3:
+    match: 2
+    note: 'Grey vs yellow curtains: a different room'
+  D3+P3:
+    match: 3
+    note: Same yellow curtains, window, pot and saucer; the plant is a different species
+  D5+P5:
+    match: 3
+    note: Same warm room, window right, books and yellow mug; the plant is a fern
+  D1+P2:
+    match: 2
+    note: Different room, different plant
+  D5+P2:
+    match: 2
+    note: Different light, room and plant
+  D2+P4:
+    match: 2
+    note: Different room, different plant
+fixes:
+- 'S01 shows a fern or pothos in all 5 frames: the plant is the narrator, so S01 must be the monstera. Set hero:
+  true on S01 (storyboard bug).'
+- 'Replace ''a few books and mugs around'' with a fixed set list in the lock: one pale oak shelf left with three
+  paperbacks and one cream floral mug, a tall window right with linen curtains, honey oak floor. Nothing else.'
+- 'Make every end frame (L) as an edit of its kept start frame (D) with Qwen Image 3 Edit: ''same photo, only the
+  plant changes''. Same pot, props and light by construction.'
+- 'Soul drew an Instagram Stories screen twice (D4, L2): ''phone video, vertical'' reads as a screenshot. Add image
+  negatives: social media interface, app buttons, usernames.'
+- 'Droopy is not droopy enough: ''most leaves hang limp, some yellowing edges, stems bending over the pot rim''.'
+- No model gave the view from the soil, and every stream is gentle. Ask for 'a heavy gush of water' and accept a
+  floor-level angle, or build S01 as an edit of the set frame.
+- Qwen won every group on cleanliness and room match; Soul looks more like real phone footage but failed 2 of 12.
+  Keep Qwen, plus its edit model.
+machine:
+  D1:
+    size: 1152x2048
+    sharp: 51.8
+    calm_bands: 45.7
+    palette: 38.6
+  D2:
+    size: 1152x2048
+    sharp: 60.8
+    calm_bands: 64.4
+    palette: 32.1
+  D3:
+    size: 1152x2048
+    sharp: 73.0
+    calm_bands: 58.0
+    palette: 25.7
+  D4:
+    size: 1152x2048
+    sharp: 90.2
+    calm_bands: 56.6
+    palette: 28.5
+  D5:
+    size: 1152x2048
+    sharp: 80.5
+    calm_bands: 50.4
+    palette: 37.4
+  L1:
+    size: 1152x2048
+    sharp: 56.0
+    calm_bands: 52.3
+    palette: 35.2
+  L2:
+    size: 1152x2048
+    sharp: 90.5
+    calm_bands: 68.0
+    palette: 34.0
+  L3:
+    size: 1152x2048
+    sharp: 74.7
+    calm_bands: 67.4
+    palette: 34.8
+  L4:
+    size: 1152x2048
+    sharp: 81.1
+    calm_bands: 62.0
+    palette: 29.2
+  L5:
+    size: 1152x2048
+    sharp: 79.6
+    calm_bands: 54.4
+    palette: 40.8
+  P1:
+    size: 1152x2048
+    sharp: 87.2
+    calm_bands: 67.1
+    palette: 26.9
+  P2:
+    size: 1152x2048
+    sharp: 62.9
+    calm_bands: 63.2
+    palette: 36.8
+  P3:
+    size: 1152x2048
+    sharp: 68.7
+    calm_bands: 65.4
+    palette: 27.5
+  P4:
+    size: 1152x2048
+    sharp: 71.8
+    calm_bands: 62.8
+    palette: 29.1
+  P5:
+    size: 1152x2048
+    sharp: 100.0
+    calm_bands: 69.4
+    palette: 29.8
+pair_machine:
+  D1+L1: 80.9
+  D1+L2: 39.2
+  D1+L3: 39.8
+  D1+L4: 48.1
+  D1+L5: 50.6
+  D2+L1: 40.9
+  D2+L2: 29.3
+  D2+L3: 69.6
+  D2+L4: 29.8
+  D2+L5: 32.3
+  D3+L1: 43.6
+  D3+L2: 37.4
+  D3+L3: 32.4
+  D3+L4: 85.1
+  D3+L5: 37.8
+  D4+L1: 40.5
+  D4+L2: 71.7
+  D4+L3: 36.8
+  D4+L4: 38.5
+  D4+L5: 25.1
+  D5+L1: 45.5
+  D5+L2: 20.9
+  D5+L3: 24.3
+  D5+L4: 38.2
+  D5+L5: 91.9
+  D1+P1: 18.3
+  D1+P2: 51.0
+  D1+P3: 37.0
+  D1+P4: 24.0
+  D1+P5: 29.9
+  D2+P1: 22.3
+  D2+P2: 32.5
+  D2+P3: 25.0
+  D2+P4: 44.2
+  D2+P5: 26.7
+  D3+P1: 26.0
+  D3+P2: 35.2
+  D3+P3: 63.4
+  D3+P4: 28.6
+  D3+P5: 30.1
+  D4+P1: 43.6
+  D4+P2: 28.7
+  D4+P3: 36.4
+  D4+P4: 30.5
+  D4+P5: 17.2
+  D5+P1: 6.6
+  D5+P2: 45.5
+  D5+P3: 36.2
+  D5+P4: 19.2
+  D5+P5: 52.6

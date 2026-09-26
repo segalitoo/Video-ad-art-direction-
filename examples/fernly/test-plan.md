@@ -45,3 +45,12 @@ carry over; about $1.50 is spent, half of it returned as cashback.
 | 3 Growth | | |
 | 4 Voice | | |
 | **Decision** | | |
+
+## Results, round 1 (2026-09-26)
+
+Six requests, 15 images, $0.29 at list. Judge report: [`test/judge-r1.md`](test/judge-r1.md) (sheet: `test/judge-r1.html`).
+
+- **Round score 55 / 100: regenerate.** Best set D5 + L5 + P5, the same set the art director picked.
+- **Model:** Qwen Image 3 won every group (mean 68 vs 53 for Soul 2). Soul looks more like phone footage but drew an Instagram Stories screen twice.
+- **Why it is not ready:** S01 shows a fern or pothos, not the monstera (S01 was not a hero shot: a storyboard bug). Props drift between D5 and L5 (shelf, white pots, bed edge, mug), which would morph in the S05 clip. The droopy plant is only half droopy.
+- **Clips on hold** until round 2 fixes the frames: animating a mismatched pair spends $0.82 to show a morph we can already see.
