@@ -29,7 +29,7 @@ Both run inside Claude. Split by strength, set in `adapters/tools.yml`:
 
 ## Getting the files
 
-Generations live on Higgsfield and appear in the chat widget. This cloud environment's network policy blocks the media hosts (checked 2026-09-26), so files cannot be downloaded into the repo here. Either the user downloads the kept files and runs the scripts locally, or the user adds the host shown in the first result URL to the environment's allowed domains. The log still records job IDs, which is all that later generations need (keyframe job IDs feed motion, clip job IDs feed upscale).
+Generations live on Higgsfield and appear in the chat widget. This cloud environment's network policy blocks the media hosts (checked 2026-09-26), so files cannot be downloaded into the repo here. Either the user downloads the kept files and runs the scripts locally, or the user adds Higgsfield's media host, `d1xarpci4ikg0w.cloudfront.net` (seen in its result URLs, 2026-09-26), to the environment's allowed domains. The log still records job IDs, which is all that later generations need (keyframe job IDs feed motion, clip job IDs feed upscale).
 
 ## Start
 
