@@ -1,0 +1,9 @@
+{
+  "prompt": "authentic phone video, unpolished, real home footage, vertical. [SHOT: the monstera plant with drooping, tired leaves in its pot by the window, soft morning light]. featuring a medium monstera plant with large split leaves in a terracotta pot. a lived-in small apartment, wooden floor, a window with sheer curtains, a few books and mugs around. real everyday objects at true scale, honest textures. available daylight from the window, a little uneven. native phone colour, slightly warm, no heavy grade. colour palette of fern green, terracotta, sunny yellow, linen. phone sensor look, mild compression, natural textures. vertical 9:16 frame, main subject centred, calm uncluttered lower third, open space at the top.",
+  "negative_prompt": "studio lighting, text in the image, people or body parts",
+  "aspect_ratio": "9:16",
+  "resolution": "2k",
+  "prompt_extend": false,
+  "enable_thinking": false,
+  "seed": 4101
+}

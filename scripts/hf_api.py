@@ -25,7 +25,9 @@ key never touches this script. Elsewhere, set HF_KEY to the copied key.
 
 import argparse
 import json
+import math
 import os
+import re
 from pathlib import Path
 import random
 import sys
@@ -102,9 +104,58 @@ def load_input(args):
     return body
 
 
-def estimate(model, body):
+SHORT_SIDE = {"480p": 480, "720p": 720, "1080p": 1080}
+
+
+def rate_for(text, resolution):
+    """First '$X at <resolutions>' in text whose resolutions include this one."""
+    for price, where in re.findall(r"\$([0-9.]+)(?: per second of generated video)? at ([0-9p ,or]+?)(?:,| and|\.)", text):
+        if resolution in where:
+            return float(price)
+    return None
+
+
+def token_price(description, resolution):
+    """The per-1,000-token rate. Only the sentence about tokens is read: the same text also
+    lists per-second prices, and mixing the two once produced a 50x wrong quote."""
+    marker = "1,000 video tokens costs"
+    i = description.find(marker)
+    return rate_for(description[i:], resolution) if i >= 0 else None
+
+
+def second_price(description, resolution):
+    """The approximate per-second price, used to cross-check the token maths."""
+    i = description.find("1,000 video tokens")
+    return rate_for(description[:i] if i >= 0 else description, resolution)
+
+
+def estimate(model, body, aspect=None):
+    """The API's own estimate. Some video models answer with a pricing formula instead of a
+    number; for those the cost is computed from that formula and the output size:
+    tokens = ceil(width x height x seconds x 24 / 1024), priced per 1,000 tokens.
+    That figure is the list price, before any customer discount, so approval errs high."""
     result, _ = request("POST", f"{BASE}/estimate/{model}", body)
-    return result
+    if result.get("type") != "description":
+        return result
+    text = result.get("pricing_description", "")
+    res = str(body.get("resolution", "720p"))
+    rate = token_price(text, res)
+    w, h = (int(x) for x in str(body.get("aspect_ratio") or aspect or "9:16").split(":"))
+    short = SHORT_SIDE.get(res)
+    if not (rate and short):
+        return {"usd": None, "note": text}
+    long_side = round(short * max(w, h) / min(w, h))
+    seconds = float(body.get("duration", 5))
+    tokens = math.ceil(short * long_side * seconds * 24 / 1024)
+    usd = tokens / 1000 * rate
+    note = (f"list price from the model's formula: {tokens} video tokens x ${rate}/1,000 "
+            f"({short}x{long_side}, {seconds:g}s); a customer discount may lower it")
+    per_s = second_price(text, res)
+    if per_s and abs(usd - per_s * seconds) > 0.15 * per_s * seconds:
+        # The two readings disagree: quote the higher one and say so.
+        usd = max(usd, per_s * seconds)
+        note += f"; WARNING the per-second price (${per_s}/s) disagrees, quoting the higher figure"
+    return {"usd": f"{usd:.3f}", "credits": None, "note": note}
 
 
 def log(entry):
@@ -183,6 +234,7 @@ def main():
         p.add_argument("model", help="model id, e.g. bytedance/seedance-2.5/image-to-video")
         p.add_argument("-i", "--input", help="JSON file with the request body")
         p.add_argument("-p", "--param", action="append", help="key=value, JSON values allowed")
+        p.add_argument("--aspect", default="9:16", help="output ratio for formula-priced video models (image-to-video follows the start image)")
         if name == "run":
             p.add_argument("--yes", action="store_true", help="approve the estimated cost and submit")
             p.add_argument("--max-usd", type=float, default=0.0, help="submit without --yes when the estimate is at most this")
@@ -202,14 +254,16 @@ def main():
 
     try:
         if args.cmd == "estimate":
-            est = estimate(args.model, load_input(args))
-            print(f"{args.model}: {est.get('credits')} credits, ${est.get('usd')}")
+            est = estimate(args.model, load_input(args), args.aspect)
+            print(f"{args.model}: ${est.get('usd')}" + (f" ({est['note']})" if est.get("note") else ""))
 
         elif args.cmd == "run":
             body = load_input(args)
-            est = estimate(args.model, body)
-            usd = float(est.get("usd") or 0)
-            print(f"estimate: {est.get('credits')} credits, ${usd:.3f}")
+            est = estimate(args.model, body, args.aspect)
+            if est.get("usd") is None:
+                sys.exit(f"no price could be worked out, so nothing was submitted:\n  {est.get('note')}")
+            usd = float(est["usd"])
+            print(f"estimate: ${usd:.3f}" + (f" ({est['note']})" if est.get("note") else ""))
             if not (args.yes or (args.max_usd and usd <= args.max_usd)):
                 sys.exit("not submitted. Re-run with --yes to approve this cost.")
             result = submit(args.model, body, est, args.note)
