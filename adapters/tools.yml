@@ -48,6 +48,9 @@ tools:
     runs_in_claude: true
     clip_range: [4, 30]        # Seedance 2.5: any whole second from 4 to 30
     hero_reference: true       # Seedance omni_reference takes extra reference images
+    audio_native: true         # Seedance makes SFX from the prompt; the storyboard's sound cue is added
+    max_parallel: {video: 6, image: 8}   # Plus plan; submit batches no larger than this
+    no_music_or_sfx_model: true          # generate_audio is speech only (checked 2026-09-26)
     cost_unit: Higgsfield credits
     usd_per_credit: 0.049      # Plus monthly: $49 for 1,000 credits (annual $39 = 0.039; Ultra annual 0.033)
     models:                    # get_cost quotes, 9:16, 4s clips, sound off
@@ -74,7 +77,7 @@ tools:
       duration: 4
       resolution: 720p
       aspect_ratio: "9:16"
-      generate_audio: false    # sound is stage 6; the edit owns the soundtrack
+      generate_audio: true     # same price with or without (checked); gives a SFX track the edit can keep or mute
       medias: "start_image = the kept keyframe; image_references = the hero reference (hero shots)"
     verify: true
     notes: >
@@ -95,6 +98,7 @@ tools:
     motion_prompt: true
     runs_in_claude: true
     clip_range: [4, 30]
+    audio_native: true
     cost_unit: Weave credits
     usd_per_credit: 0.01125    # Professional: $45 for 4,000 credits (Starter $24 / 1,500 = 0.016; top-up $10 / 1,200)
     models:                    # quotes from weave_find_model; ids can change, look them up again
@@ -112,7 +116,7 @@ tools:
       tweak it visually in Weave. Every run quotes its cost first and needs an explicit
       approval. Download outputs with the curl command the output call returns.
       Use Nano Banana 2 for drafts, Nano Banana Pro for finals, Seedance 2.5 for motion
-      (the kept keyframe as First Frame, generate_audio off). Kling is the cheaper
+      (the kept keyframe as First Frame, generate_audio on: same price). Kling is the cheaper
       fallback; Veo 3.1 when a shot needs native sound.
 
   nano-banana:

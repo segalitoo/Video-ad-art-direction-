@@ -307,6 +307,9 @@ def build(board, lock, specs, tools, tool_names):
         motions = []
         for name in video_tools:
             base = mov if tools[name].get("motion_prompt") else key + " " + mov
+            if tools[name].get("audio_native") and shot.get("sound"):
+                # Native-audio models make SFX from the prompt; music always comes from stage 6.
+                base += f" Sound: {shot['sound']}, no music, no voice."
             text, extra = for_tool(base, tools[name], negatives, aspect, motion=True)
             clip, span = tools[name].get("clip_s"), tools[name].get("clip_range")
             if span:

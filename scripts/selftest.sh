@@ -29,6 +29,11 @@ if command -v ffmpeg >/dev/null; then
   if python3 scripts/spec_check.py "$tmp/bad.mov" --platform youtube_shorts >/dev/null; then
     echo "FAIL long, clipping export not caught"; exit 1; fi
   ok "too long + clipping export fails"
+  python3 scripts/crop.py "$tmp/good.mp4" 4:5 -o "$tmp/feed.mp4" >/dev/null
+  python3 scripts/spec_check.py "$tmp/feed.mp4" --platform meta_feed >/dev/null && ok "free 4:5 crop passes the feed spec"
+  if python3 scripts/crop.py "$tmp/good.mp4" 1:1 -o "$tmp/sq.mp4" >/dev/null 2>&1; then
+    echo "FAIL 1:1 crop into the safe area not caught"; exit 1; fi
+  ok "1:1 crop that cuts the safe area is refused"
 else
   echo "skip spec_check tests (ffmpeg not installed)"
 fi

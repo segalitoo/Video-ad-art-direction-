@@ -27,6 +27,10 @@ Both run inside Claude. Split by strength, set in `adapters/tools.yml`:
 - **Higgsfield:** the cheaper route for Seedance (about 28 credits per 4s 720p clip against about 168 on Weave), and the only one that takes the hero as an extra reference in motion. Also reframe and outpaint, Marketing Studio, the virality predictor, TikTok publishing.
 - If one has no credits, use the other and say so.
 
+## Getting the files
+
+Generations live on Higgsfield and appear in the chat widget. This cloud environment's network policy blocks the media hosts (checked 2026-09-26), so files cannot be downloaded into the repo here. Either the user downloads the kept files and runs the scripts locally, or the user adds the host shown in the first result URL to the environment's allowed domains. The log still records job IDs, which is all that later generations need (keyframe job IDs feed motion, clip job IDs feed upscale).
+
 ## Start
 
 - New project: `python scripts/new_project.py <brand> <campaign> --mode <mode>`. This creates `projects/<brand>-<campaign>/`.
@@ -58,11 +62,16 @@ Modes: `3d-stylized`, `live-action`, `ugc`, `motion-graphics` (see `lock/modes/`
 - Seedance 2.5 settings: 4 seconds minimum (trim in the edit), 720p for candidates, sound off (`generate_audio: false`, sound is stage 6), 9:16.
 - Higgsfield: `generate_video_batch` with the `video_params` in `adapters/tools.yml`: `mode: omni_reference`, the kept keyframe as `start_image`, and on hero shots the hero reference as `image_references`. Then `jobs_wait` and `show_generation_by_ids`.
 - Figma Weave: Seedance 2.5 image-to-video, the kept keyframe as First Frame. Same quote → approve → run loop as stage 4.
-- After the pick, upscale only the kept clip to 1080p (Higgsfield `upscale_video`). Never re-render it at 1080p: without a seed the motion changes.
+- Submit batches of at most 6 videos and 8 images (the Plus plan's parallel limit).
+- After the pick, upscale only the kept clip to 1080p (Higgsfield `upscale_video`, provider `topaz`, resolution `1080p`). Never re-render it at 1080p: without a seed the motion changes. Upscale has no price preview: say so, and ask before running it.
 - Judge each candidate for on-model hero, morphing, physics and continuity with the shots around it. Log the verdicts.
 → Gate: art director picks 1 per shot.
 
-**06 Sound.** Write a music prompt from `lock.sound` (genre, bpm, instruments, length close to the ad). Ask for an instrumental with a set bar count. Draft SFX and VO from the storyboard. The target is about -14 LUFS, true peak at or below -1 dBTP.
+**06 Sound.** Higgsfield has no music or general SFX model inside Claude (its audio tool is speech only).
+- Music: write a Suno prompt from `lock.sound` (genre, bpm, instruments, length close to the ad, instrumental, set bar count). The user runs it in Suno and shares the file.
+- SFX: already in the Seedance clips (`generate_audio` is on, same price); the motion prompts carry each shot's sound cue. Keep or mute per shot in the edit.
+- Voiceover: Higgsfield `generate_audio` (`text2speech_v2`, variant `elevenlabs`) from the approved VO lines.
+- Mix target: about -14 LUFS, true peak at or below -1 dBTP.
 → Gate: audio direction, including rights for paid social.
 
 **07 Copy.** Fill `copy-matrix.md`: 3 lines per placement, word limits from `lock.type`. Keep the losing lines and their reasons. Flag every claim for legal.
@@ -74,7 +83,7 @@ Modes: `3d-stylized`, `live-action`, `ugc`, `motion-graphics` (see `lock/modes/`
 **09 QA.** For every export: `python scripts/spec_check.py <file> --platform <ids> --overlay`. Show the overlay PNGs to the art director, then walk `qa-checklist.md`. Only files with no FAIL go to human review.
 → Gate: craft, message, brand/legal sign-off.
 
-**10 Variants and iteration.** Run `python scripts/matrix.py <storyboard> -o matrix.csv`. Reframe the master for other ratios (Higgsfield `reframe` / `outpaint`, or the edit). After results come in, propose what to change and why. Count the cycle.
+**10 Variants and iteration.** Run `python scripts/matrix.py <storyboard> -o matrix.csv`. For 4:5, crop the 9:16 master for free: `python scripts/crop.py master.mp4 4:5` (it checks the safe area survives). Use Higgsfield `reframe` (about 138 credits for 15s at 1080p, quote first) only when the crop fails, as it does for 1:1. After results come in, propose what to change and why. Count the cycle.
 → Gate: the owner of the winning variant.
 
 ## How to report at a gate

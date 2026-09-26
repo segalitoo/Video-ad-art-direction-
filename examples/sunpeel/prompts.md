@@ -57,7 +57,7 @@ glossy stylized 3D render, premium animated drinks commercial. [SHOT: a whole ri
 **S01-M · motion · figma-weave · higgsfield**
 
 ```
-the peel unzips itself in one clean spiral and the fruit bursts into a cloud of sparkling bubbles. Camera: slow push-in. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the subject exactly as in the start frame. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
+the peel unzips itself in one clean spiral and the fruit bursts into a cloud of sparkling bubbles. Camera: slow push-in. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the subject exactly as in the start frame. Sound: zip, then a fizz crack on the burst, no music, no voice. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
 ```
 - Start frame: the kept keyframe (9:16); the clip inherits its aspect ratio
 - Generate 4s (allowed 4-30s), trim to 1.5s in the edit
@@ -108,7 +108,7 @@ glossy stylized 3D render, premium animated drinks commercial. [SHOT: a cloud of
 **S02-M · motion · figma-weave**
 
 ```
-the can drops, lands on the ledge with a springy bounce, condensation beads roll down its side. Camera: follow the drop, settle into a low hero angle. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the hero exactly as in the start frame. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
+the can drops, lands on the ledge with a springy bounce, condensation beads roll down its side. Camera: follow the drop, settle into a low hero angle. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the hero exactly as in the start frame. Sound: music kicks in on the landing, no music, no voice. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
 ```
 - Start frame: the kept keyframe (9:16); the clip inherits its aspect ratio
 - Generate 4s (allowed 4-30s), trim to 3s in the edit
@@ -116,7 +116,7 @@ the can drops, lands on the ledge with a springy bounce, condensation beads roll
 **S02-M · motion · higgsfield**
 
 ```
-the can drops, lands on the ledge with a springy bounce, condensation beads roll down its side. Camera: follow the drop, settle into a low hero angle. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the hero exactly as in the start frame. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
+the can drops, lands on the ledge with a springy bounce, condensation beads roll down its side. Camera: follow the drop, settle into a low hero angle. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the hero exactly as in the start frame. Sound: music kicks in on the landing, no music, no voice. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
 ```
 - Start frame: the kept keyframe (9:16); the clip inherits its aspect ratio
 - Generate 4s (allowed 4-30s), trim to 3s in the edit
@@ -167,7 +167,7 @@ glossy stylized 3D render, premium animated drinks commercial. [SHOT: macro clos
 **S03-M · motion · figma-weave**
 
 ```
-the ring pull pops open by itself and a fine citrus mist sprays up, catching the sunlight. Camera: static macro. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the hero exactly as in the start frame. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
+the ring pull pops open by itself and a fine citrus mist sprays up, catching the sunlight. Camera: static macro. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the hero exactly as in the start frame. Sound: can crack and rising fizz (the sound signature), no music, no voice. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
 ```
 - Start frame: the kept keyframe (9:16); the clip inherits its aspect ratio
 - Generate 4s (allowed 4-30s), trim to 3s in the edit
@@ -175,7 +175,7 @@ the ring pull pops open by itself and a fine citrus mist sprays up, catching the
 **S03-M · motion · higgsfield**
 
 ```
-the ring pull pops open by itself and a fine citrus mist sprays up, catching the sunlight. Camera: static macro. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the hero exactly as in the start frame. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
+the ring pull pops open by itself and a fine citrus mist sprays up, catching the sunlight. Camera: static macro. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the hero exactly as in the start frame. Sound: can crack and rising fizz (the sound signature), no music, no voice. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
 ```
 - Start frame: the kept keyframe (9:16); the clip inherits its aspect ratio
 - Generate 4s (allowed 4-30s), trim to 3s in the edit
@@ -226,7 +226,7 @@ glossy stylized 3D render, premium animated drinks commercial. [SHOT: three cans
 **S04-M · motion · figma-weave · higgsfield**
 
 ```
-each can hops once in turn, on the beat, left to right. Camera: slow lateral slide. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the subject exactly as in the start frame. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
+each can hops once in turn, on the beat, left to right. Camera: slow lateral slide. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the subject exactly as in the start frame. Sound: three claps on the hops, no music, no voice. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
 ```
 - Start frame: the kept keyframe (9:16); the clip inherits its aspect ratio
 - Generate 4s (allowed 4-30s), trim to 2.5s in the edit
@@ -277,7 +277,7 @@ glossy stylized 3D render, premium animated drinks commercial. [SHOT: the can in
 **S05-M · motion · figma-weave**
 
 ```
-the sun dips, citrus leaves sway, bubbles drift upward like fireflies. Camera: slow orbit around the can. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the hero exactly as in the start frame. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
+the sun dips, citrus leaves sway, bubbles drift upward like fireflies. Camera: slow orbit around the can. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the hero exactly as in the start frame. Sound: music resolves, no music, no voice. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
 ```
 - Start frame: the kept keyframe (9:16); the clip inherits its aspect ratio
 - Generate 4s (allowed 4-30s), trim to 3s in the edit
@@ -285,7 +285,7 @@ the sun dips, citrus leaves sway, bubbles drift upward like fireflies. Camera: s
 **S05-M · motion · higgsfield**
 
 ```
-the sun dips, citrus leaves sway, bubbles drift upward like fireflies. Camera: slow orbit around the can. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the hero exactly as in the start frame. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
+the sun dips, citrus leaves sway, bubbles drift upward like fireflies. Camera: slow orbit around the can. juicy springy motion, bubbles rising in slow motion, weighty bouncy landings. Keep the look, colours and the hero exactly as in the start frame. Sound: music resolves, no music, no voice. Keep it clean: no photoreal skin, no text or letters in the image, no watermark, no deformed hands, no melting or morphing shapes between frames, no human hands, no condensation that looks like sweat, no dull or brown citrus.
 ```
 - Start frame: the kept keyframe (9:16); the clip inherits its aspect ratio
 - Generate 4s (allowed 4-30s), trim to 3s in the edit

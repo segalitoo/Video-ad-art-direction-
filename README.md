@@ -44,6 +44,7 @@ python scripts/new_project.py acme spring-launch --mode ugc      # scaffold proj
 python scripts/assemble.py <storyboard.yml> --check              # stage 3 pre-checks
 python scripts/assemble.py <storyboard.yml> -o prompts.md        # every prompt, for every tool
 python scripts/matrix.py   <storyboard.yml> -o matrix.csv        # hooks × CTAs × platforms
+python scripts/crop.py master.mp4 4:5                           # free 4:5 feed cut, checks the safe area
 python scripts/spec_check.py export.mp4 --platform tiktok --overlay   # stage 9 QA
 bash scripts/selftest.sh                                         # test everything
 ```

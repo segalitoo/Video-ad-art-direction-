@@ -94,7 +94,7 @@ Music bed, SFX and voiceover from the lock's sound tokens.
 |---|---|
 | **Output** | Music bed cut to length, SFX, VO, mixed to about -14 LUFS and -1 dBTP |
 | **Human gate** | Audio direction clears the rights. Everything is judged on a phone speaker. |
-| **Tools** | Suno, ElevenLabs, Higgsfield audio, Veo native sound for SFX |
+| **Tools** | Suno for music (outside Claude); SFX from Seedance native audio (same price); voiceover with Higgsfield text-to-speech (ElevenLabs engine) |
 | **Automated** | Track candidates, VO in several languages, loudness measurement |
 | **Stays manual** | The mix, the cut points, rights for paid social |
 | **Bottleneck** | Licensing. A pre-cleared kit per brand. |
@@ -142,7 +142,7 @@ One approved base becomes the ad matrix, then performance data picks what to fix
 |---|---|
 | **Output** | `matrix.csv`, reframed exports, and the next test batch |
 | **Human gate** | Data proposes, a person decides. Someone owns the winning variant. |
-| **Tools** | `scripts/matrix.py`, Higgsfield reframe / outpaint, platform A/B tests |
+| **Tools** | `scripts/matrix.py`, `scripts/crop.py` for a free 4:5 cut, Higgsfield reframe only when the crop fails, platform A/B tests |
 | **Automated** | Variant expansion, reframes, data pulls, logging |
 | **Stays manual** | Deciding what to fix and why |
 | **Bottleneck** | Endless loops. Two cycles at most, then ship it or kill it. |
