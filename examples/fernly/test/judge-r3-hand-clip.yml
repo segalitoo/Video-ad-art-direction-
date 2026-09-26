@@ -1,0 +1,36 @@
+round: Fernly S01 hand clip (lock v1.2)
+lock: ../fernly.dna.yml
+groups:
+  S01:
+    label: Hand pours, from H1
+    files: 1
+pairs: []
+items:
+  S01-1:
+    file: r2/out/S01-hand.seedance.mp4
+    group: S01
+    kind: clip
+    model: seedance
+scores:
+  S01-1:
+    on_model: 4
+    morph: 2
+    physics: 2
+    motion: 3
+    continuity: 4
+    craft: 3
+    note: Hand, can and plant hold with no finger morph. From 1s the pot gets a brown drip glaze and soil clumps
+      appear on the floor from nowhere
+pair_scores: {}
+fixes:
+- '''floods over the pot rim'' made Seedance paint the pot and the floor with mud. Ask for water that pools on the
+  soil and a pot that stays clean outside (storyboard updated).'
+machine:
+  S01-1:
+    size: 480x854
+    sharp: 100.0
+    calm_bands: 70.9
+    palette: 39.3
+    steady: 99.0
+    strip: r2/out/S01-hand.seedance.strip.png
+pair_machine: {}

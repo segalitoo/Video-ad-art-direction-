@@ -69,6 +69,16 @@ def check(board, lock, specs, tools):
     if not any(s.get("beat") == "end-card" for s in shots):
         warnings.append("no end-card shot")
 
+    frames = {f"{s['id']}-K" for s in shots} | {f"{s['id']}-K-end" for s in shots if s.get("end_subject")}
+    for s in shots:
+        ref = s.get("edit_of")
+        if ref and (ref not in frames or ref.startswith(f"{s['id']}-")):
+            errors.append(f"{s['id']}: edit_of '{ref}' is not another shot's frame. Options: {', '.join(sorted(frames))}")
+
+    people = (lock.get("meta") or {}).get("people", True)
+    if people not in (True, False, "hands"):
+        errors.append(f"meta.people is '{people}'. Options: true, false, hands")
+
     max_words = (lock.get("type") or {}).get("max_words_per_super", 6)
     seen = set()
     for s in shots:
@@ -188,11 +198,13 @@ def lint(board, lock):
                    f'or leave the can blank. Describe the label graphically and set hero.wordmark if the name '
                    f'must appear')
 
-    if lock.get("meta", {}).get("people") is False:
+    people = lock.get("meta", {}).get("people")
+    if people is False or people == "hands":
+        words = ["skin", "face", "person", "people"] + ([] if people == "hands" else ["hand", "finger"])
         for key, value in lock["tokens"].items():
-            found = [b for b in ("skin", "face", "hand", "finger", "person", "people") if b in str(value).lower()]
+            found = [b for b in words if re.search(rf"\b{b}s?\b", str(value), re.I)]
             if found:
-                out.append(f"tokens: {key} mentions {', '.join(found)} but the lock has people: false; "
+                out.append(f"tokens: {key} mentions {', '.join(found)} but the lock has people: {people}; "
                            f"override {key} in the lock")
 
     for n in lock["negative"] + lock["negative_image"] + lock["negative_video"]:
@@ -286,11 +298,17 @@ def negatives_for(lock, kind):
         items = text_rules[:1] + own + lock["negative_video"]
     else:
         items = lock["negative"] + lock["negative_image"]
-    if lock.get("meta", {}).get("people") is False:
-        # Product-only ads: naming body parts in a negative can invite them. One rule replaces them all.
+    people = lock.get("meta", {}).get("people")
+    if people is False or people == "hands":
+        # Naming body parts in a negative can invite them, so one rule replaces them all.
         # Whole words only: "interface" is not a face.
         body = re.compile(r"\b(skin|faces?|fingers?|hands?|teeth|eyes?|people|person)\b", re.I)
-        items = [n for n in items if not body.search(n)] + ["people or body parts"]
+        items = [n for n in items if not body.search(n)]
+        if people == "hands":
+            # One hand and forearm may enter the frame; the negatives guard the fingers and keep faces out.
+            items += ["faces or full people"] + (["morphing fingers"] if kind == "video" else ["extra, missing or fused fingers"])
+        else:
+            items += ["people or body parts"]
     own_heads = {n.split()[-1].lower() for n in own}
     items = [n for n in items if n in own or n.split()[-1].lower() not in own_heads]
     mark = (lock.get("hero") or {}).get("wordmark")
@@ -325,6 +343,12 @@ def end_edit_prompt(shot, lock):
     Two separate generations invent two sets of props; an edit changes only what it is told to,
     and first/last-frame video then has nothing to morph but the change itself.
     """
+    return edit_prompt(shot["end_subject"], shot, lock)
+
+
+def edit_prompt(change, shot, lock, verb="Change"):
+    """Keep everything in the input photo, change one thing. Used for end frames and `edit_of` shots
+    (those usually add something to a kept frame, so they read "Add only this")."""
     hero = ""
     desc = (lock.get("hero") or {}).get("description", "")
     if shot.get("hero") and " in " in desc:
@@ -332,7 +356,7 @@ def end_edit_prompt(shot, lock):
         holder = re.sub(r"^(a|an|the)\s+", "", desc.split(" in ", 1)[1].split(",")[0].strip())
         hero = f" the {holder},"
     return (f"Edit this photo. Keep the camera, framing,{hero} every prop, the room and the light exactly as they are. "
-            f"Change only this: {shot['end_subject']}.")
+            f"{verb} only this: {change}.")
 
 
 def hero_prompt(lock):
@@ -540,7 +564,17 @@ def build(board, lock, specs, tools, tool_names):
 
         key = keyframe_prompt(shot, lock, frame_words)
         mov = motion_prompt(shot, lock)
-        keyframes = [(name, *for_tool(key, tools[name], neg_image, aspect)) for name in image_tools]
+        if shot.get("edit_of"):
+            # Made from another kept frame, so the room, pot and props match that shot by construction.
+            edit = edit_prompt(shot["subject"], shot, lock, verb="Add")
+            keyframes = []
+            for name in image_tools:
+                text, extra = for_tool(edit, tools[name], neg_image, aspect)
+                keyframes.append((name, text, [f"Edit the kept {shot['edit_of']} frame (image input), do not generate from scratch",
+                                               f"No image editing in this tool: use this shot's full keyframe prompt, "
+                                               f"built without edit_of"] + extra))
+        else:
+            keyframes = [(name, *for_tool(key, tools[name], neg_image, aspect)) for name in image_tools]
         motions = []
         for name in video_tools:
             base = mov if tools[name].get("motion_prompt") else key + " " + mov

@@ -1,4 +1,6 @@
-# fernly-reviews.dna.yml · v1.1
+# fernly-reviews.dna.yml · v1.2
+# v1.2 (2026-09-26, art director): one hand may hold the watering can. A can floating in from the
+# top of the frame read as fake; the hand also shows "my human". Faces stay out.
 # v1.1 (2026-09-26, after judge round 1): a fixed set list replaces "a few books and mugs",
 # the pot is named, and image negatives ban app interfaces and book lettering.
 # owner: art director
@@ -12,10 +14,10 @@
 meta:
   brand: Fernly
   campaign: Plant reviews
-  version: "1.1"
+  version: "1.2"
   owner: Art director
   mode: ugc
-  people: false            # no faces, no hands: objects enter the frame on their own
+  people: hands            # one hand and forearm may enter the frame; never a face or a full person
   audience: 24 to 38, renters with 3+ houseplants, half of them quietly dying
   promise: Your plants finally get what they need, when they need it
 

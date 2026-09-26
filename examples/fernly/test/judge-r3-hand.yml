@@ -1,0 +1,83 @@
+round: Fernly S01 with a hand (lock v1.2)
+lock: ../fernly.dna.yml
+groups:
+  H:
+    label: 'S01: hand pours, edited from L1'
+    files: 2
+  L:
+    label: S05 end (kept)
+    files: 1
+pairs:
+- a: H
+  b: L
+  relation: same_set
+items:
+  H1:
+    file: r2/out/pour-hand_1.qwen-edit.jpg
+    group: H
+    kind: image
+    model: qwen-edit
+  H2:
+    file: r2/out/pour-hand_2.qwen-edit.jpg
+    group: H
+    kind: image
+    model: qwen-edit
+  L1:
+    file: r2/out/lush_1.qwen-edit.jpg
+    group: L
+    kind: image
+    model: qwen-edit
+scores:
+  H1:
+    lock: 3
+    hero: 5
+    craft: 4
+    composition: 4
+    story: 3
+    animatable: 4
+    note: 'Natural hand and grip; framing identical to L1. Sprinkler head makes a gentle shower: ''watering'', not
+      ''drowning'''
+  H2:
+    lock: 3
+    hero: 5
+    craft: 4
+    composition: 4
+    story: 4
+    animatable: 4
+    note: Natural hand, plain spout close to the soil, thicker stream. Framed slightly tighter than L1
+  L1:
+    lock: 3
+    hero: 5
+    craft: 4
+    composition: 4
+    story: 5
+    animatable: 4
+    note: Kept frame from round 2 (reference for the room)
+pair_scores:
+  H1+L1:
+    match: 5
+    note: Same framing, room and pot
+  H2+L1:
+    match: 4
+    note: Same room and pot, framed slightly tighter; cuts fine as the opening shot
+fixes:
+- Say 'plain open spout, no sprinkler head' in the S01 subject so every candidate pours a stream.
+machine:
+  H1:
+    size: 1152x2048
+    sharp: 81.3
+    calm_bands: 80.4
+    palette: 40.9
+  H2:
+    size: 1152x2048
+    sharp: 84.7
+    calm_bands: 80.2
+    palette: 43.1
+  L1:
+    size: 1152x2048
+    sharp: 100.0
+    calm_bands: 85.6
+    palette: 42.5
+pair_machine:
+  H1+L1: 94.4
+  H2+L1: 89.3

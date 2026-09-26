@@ -34,6 +34,15 @@ from common import load_storyboard; import assemble as A
 b, l = load_storyboard('../examples/fernly/storyboard.yml')
 assert any('interface' in n for n in A.negatives_for(l, 'image'))") && ok "people filter keeps 'interface'" || { echo "FAIL people filter"; exit 1; }
 
+# edit_of must name another shot's frame; people: hands keeps faces out and guards fingers.
+sed 's/edit_of: S05-K-end/edit_of: S09-K/' examples/fernly/storyboard.yml > "$tmp/editof.yml"; cp examples/fernly/fernly.dna.yml "$tmp/"
+if python3 scripts/assemble.py "$tmp/editof.yml" --check >/dev/null 2>&1; then echo "FAIL bad edit_of not caught"; exit 1; fi
+ok "edit_of pointing at a missing frame is caught"
+(cd scripts && python3 -c "
+from common import load_storyboard; import assemble as A
+b, l = load_storyboard('../examples/fernly/storyboard.yml'); n = A.negatives_for(l, 'image')
+assert 'faces or full people' in n and not any('people or body parts' == x for x in n)") && ok "people: hands bans faces, not the hand" || { echo "FAIL people: hands"; exit 1; }
+
 # Judge pass: a matching pair must beat a mismatched one, a hard fail drops out, an unscored file stops the rank.
 mkdir -p "$tmp/judge/out"
 python3 - "$tmp/judge" <<'PY'

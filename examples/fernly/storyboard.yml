@@ -15,8 +15,9 @@ shots:
   - id: S01
     beat: hook
     duration_s: 2
-    subject: the view from the soil inside the pot looking straight up past the monstera's stems and big split leaves, a sunny yellow watering can tipped far over at the top of the frame, a heavy gush of water mid-air
-    action: a heavy gush of water pours from the spout onto the leaves and into the soil
+    subject: a hand and forearm coming in from the right edge at waist height, holding a sunny yellow watering can with a plain open spout, no sprinkler head, tipped far over the pot, the spout just above the soil, a thick stream of water mid-air
+    edit_of: S05-K-end        # the healthy plant on day one, in the same room (lock v1.2)
+    action: a steady stream of water pours from the spout into the soil and pools on its surface, the outside of the pot stays clean
     camera_move: static
     hero: true
     super: "My human is trying to drown me."
