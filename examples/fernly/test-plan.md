@@ -54,3 +54,12 @@ Six requests, 15 images, $0.29 at list. Judge report: [`test/judge-r1.md`](test/
 - **Model:** Qwen Image 3 won every group (mean 68 vs 53 for Soul 2). Soul looks more like phone footage but drew an Instagram Stories screen twice.
 - **Why it is not ready:** S01 shows a fern or pothos, not the monstera (S01 was not a hero shot: a storyboard bug). Props drift between D5 and L5 (shelf, white pots, bed edge, mug), which would morph in the S05 clip. The droopy plant is only half droopy.
 - **Clips on hold** until round 2 fixes the frames: animating a mismatched pair spends $0.82 to show a morph we can already see.
+
+## Results, round 2 (lock v1.1, 2026-09-26)
+
+Eight requests, $0.60 at list: 4 wilting frames and 2 pour frames on Qwen Image 3, then 2 lush frames made as edits of the best wilting frame (D1) with Qwen Image 3 Edit. Report: [`test/judge-r2.md`](test/judge-r2.md).
+
+- **Round score 66 / 100 (from 55): usable.** Best set D1 + L1 + P2.
+- **The S05 pair now matches 5/5:** the edit kept the room, shelf, books, mug, curtain and light; only the plant changed. This was the main fix.
+- **S01 now shows the monstera,** in the same room. The view from the soil never appeared (0 of 7 across both rounds).
+- **Open:** the room is consistent but bare; the stream is thin. Fixes are in the report.

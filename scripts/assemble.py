@@ -288,8 +288,9 @@ def negatives_for(lock, kind):
         items = lock["negative"] + lock["negative_image"]
     if lock.get("meta", {}).get("people") is False:
         # Product-only ads: naming body parts in a negative can invite them. One rule replaces them all.
-        body = ("skin", "face", "finger", "hand", "teeth", "eye", "people", "person")
-        items = [n for n in items if not any(b in n.lower() for b in body)] + ["people or body parts"]
+        # Whole words only: "interface" is not a face.
+        body = re.compile(r"\b(skin|faces?|fingers?|hands?|teeth|eyes?|people|person)\b", re.I)
+        items = [n for n in items if not body.search(n)] + ["people or body parts"]
     own_heads = {n.split()[-1].lower() for n in own}
     items = [n for n in items if n in own or n.split()[-1].lower() not in own_heads]
     mark = (lock.get("hero") or {}).get("wordmark")
@@ -316,6 +317,22 @@ def keyframe_prompt(shot, lock, frame_words):
         parts.append(f"colour palette of {palette}")
     parts += [t["TECH"], frame_words]
     return ". ".join(p.strip().rstrip(".") for p in parts) + "."
+
+
+def end_edit_prompt(shot, lock):
+    """The last frame as an edit of the kept start frame, so pot, props, room and light carry over.
+
+    Two separate generations invent two sets of props; an edit changes only what it is told to,
+    and first/last-frame video then has nothing to morph but the change itself.
+    """
+    hero = ""
+    desc = (lock.get("hero") or {}).get("description", "")
+    if shot.get("hero") and " in " in desc:
+        # "a monstera ... in a plain terracotta pot with a thin rim, on a saucer" -> "the plain terracotta pot with a thin rim"
+        holder = re.sub(r"^(a|an|the)\s+", "", desc.split(" in ", 1)[1].split(",")[0].strip())
+        hero = f" the {holder},"
+    return (f"Edit this photo. Keep the camera, framing,{hero} every prop, the room and the light exactly as they are. "
+            f"Change only this: {shot['end_subject']}.")
 
 
 def hero_prompt(lock):
@@ -548,9 +565,14 @@ def build(board, lock, specs, tools, tool_names):
         if shot.get("end_subject"):
             # First + last frame: the model interpolates between two approved stills, which keeps a
             # change of state (droopy -> lush, closed -> open) from melting into something else.
-            end = keyframe_prompt({**shot, "subject": shot["end_subject"]}, lock, frame_words)
-            out += render_group(f"{shot['id']}-K-end · last frame",
-                                [(n, *for_tool(end, tools[n], neg_image, aspect)) for n in image_tools])
+            end = end_edit_prompt(shot, lock)
+            results = []
+            for n in image_tools:
+                text, extra = for_tool(end, tools[n], neg_image, aspect)
+                results.append((n, text, [f"Edit the kept {shot['id']}-K keyframe (image input), do not generate from scratch",
+                                          f"No image editing in this tool: use the {shot['id']}-K prompt with this as the [SHOT]: "
+                                          f"{shot['end_subject']}"] + extra))
+            out += render_group(f"{shot['id']}-K-end · last frame, edited from {shot['id']}-K", results)
         out += render_group(f"{shot['id']}-M · motion", motions)
 
     statics = board.get("statics") or []

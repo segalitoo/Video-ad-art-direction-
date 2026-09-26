@@ -28,6 +28,12 @@ lint_out=$(python3 scripts/assemble.py "$tmp/lint.yml" --check 2>&1 || true)
 echo "$lint_out" | grep -q "subject has movement (spinning)" && echo "$lint_out" | grep -q "S02: action has 3" \
   && ok "prompt lint flags movement in a keyframe and an overloaded action" || { echo "FAIL prompt lint"; exit 1; }
 
+# The people filter drops body-part negatives by whole word only ("interface" is not a face).
+(cd scripts && python3 -c "
+from common import load_storyboard; import assemble as A
+b, l = load_storyboard('../examples/fernly/storyboard.yml')
+assert any('interface' in n for n in A.negatives_for(l, 'image'))") && ok "people filter keeps 'interface'" || { echo "FAIL people filter"; exit 1; }
+
 # Judge pass: a matching pair must beat a mismatched one, a hard fail drops out, an unscored file stops the rank.
 mkdir -p "$tmp/judge/out"
 python3 - "$tmp/judge" <<'PY'

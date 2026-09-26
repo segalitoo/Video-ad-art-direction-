@@ -15,10 +15,10 @@ shots:
   - id: S01
     beat: hook
     duration_s: 2
-    subject: very low angle from the soil of a plant pot looking up, the spout of a watering can angled in from the top of the frame, a stream of water mid-air
+    subject: the view from the soil inside the pot looking straight up past the monstera's stems and big split leaves, a sunny yellow watering can tipped far over at the top of the frame, a heavy gush of water mid-air
     action: water pours from the spout straight down toward the camera
     camera_move: static
-    hero: false
+    hero: true
     super: "My human is trying to drown me."
     vo: "My human is trying to drown me."
     sound: none
@@ -54,7 +54,7 @@ shots:
   - id: S04
     beat: product
     duration_s: 3
-    subject: a phone lying face up on a wooden table next to the pot, screen dark
+    subject: a phone lying face up on the pale oak shelf next to the pot, screen dark
     action: the phone screen lights up softly
     camera_move: static
     hero: false
@@ -68,8 +68,8 @@ shots:
   - id: S05
     beat: payoff
     duration_s: 2.5
-    subject: the monstera plant with drooping, tired leaves in its pot by the window, soft morning light
-    end_subject: the same monstera plant, lush and upright, glossy healthy green leaves, same pot, same window, same light
+    subject: the monstera wilting badly by the window, most leaves limp and hanging low, some with yellowing edges, stems bent over the pot rim, soft morning light
+    end_subject: the monstera is now lush and upright, glossy healthy green leaves held high, no wilting or yellowing
     action: the leaves slowly lift and open until the plant stands tall
     camera_move: static
     hero: true

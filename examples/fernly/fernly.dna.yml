@@ -1,4 +1,6 @@
-# fernly-reviews.dna.yml · v1.0
+# fernly-reviews.dna.yml · v1.1
+# v1.1 (2026-09-26, after judge round 1): a fixed set list replaces "a few books and mugs",
+# the pot is named, and image negatives ban app interfaces and book lettering.
 # owner: art director
 # Fictional brand for a portfolio pilot. Name not trademark-checked.
 #
@@ -10,7 +12,7 @@
 meta:
   brand: Fernly
   campaign: Plant reviews
-  version: "1.0"
+  version: "1.1"
   owner: Art director
   mode: ugc
   people: false            # no faces, no hands: objects enter the frame on their own
@@ -19,7 +21,7 @@ meta:
 
 tokens:
   STYLE: authentic phone video, unpolished, real home footage, vertical
-  WORLD: a lived-in small apartment, wooden floor, a window with sheer curtains, a few books and mugs around
+  WORLD: a small apartment corner with honey oak floorboards, a tall window on the right with linen curtains, a low pale oak shelf on the left holding three paperback books and one cream mug with a small floral print, plain warm white walls, nothing else in the room
   FORM: real everyday objects at true scale, honest textures
   LIGHT: available daylight from the window, a little uneven
   GRADE: native phone colour, slightly warm, no heavy grade
@@ -60,7 +62,10 @@ end_card:
 
 negative:
   - studio lighting
+negative_image:
+  - social media interface, app buttons or usernames
+  - lettering on book spines
 
 hero:
-  description: a medium monstera plant with large split leaves in a terracotta pot
+  description: a medium monstera plant with large split leaves in a plain matte terracotta pot with a thin rim, on a matching saucer
   reference: keyframes/hero-plant_v1.png   # set after the H0 gate

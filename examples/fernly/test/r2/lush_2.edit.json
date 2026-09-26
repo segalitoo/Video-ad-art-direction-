@@ -1,0 +1,12 @@
+{
+ "prompt": "Edit this photo. Keep the camera, framing, the plain matte terracotta pot with a thin rim, every prop, the room and the light exactly as they are. Change only this: the monstera is now lush and upright, glossy healthy green leaves held high, no wilting or yellowing.",
+ "image_urls": [
+  "https://d3u0tzju9qaucj.cloudfront.net/2584f776-b711-47aa-8e5e-c821d55e349a/d6c087df-b45c-41ce-87b8-57abf373035e.png"
+ ],
+ "negative_prompt": "studio lighting, text in the image, social media interface, app buttons or usernames, lettering on book spines, people or body parts",
+ "aspect_ratio": "9:16",
+ "resolution": "2k",
+ "prompt_extend": false,
+ "enable_thinking": false,
+ "seed": 4222
+}

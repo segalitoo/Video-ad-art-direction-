@@ -1,0 +1,213 @@
+round: Fernly test, round 2 (lock v1.1)
+lock: ../fernly.dna.yml
+groups:
+  D:
+    label: 'S05 start: wilting monstera'
+    files: 4
+  L:
+    label: 'S05 end: lush, edited from D1'
+    files: 2
+  P:
+    label: 'S01: pour'
+    files: 2
+pairs:
+- a: D
+  b: L
+  relation: first_last
+- a: D
+  b: P
+  relation: same_set
+items:
+  D1:
+    file: r2/out/droopy_1.qwen.jpg
+    group: D
+    kind: image
+    model: qwen
+  D2:
+    file: r2/out/droopy_2.qwen.jpg
+    group: D
+    kind: image
+    model: qwen
+  D3:
+    file: r2/out/droopy_3.qwen.jpg
+    group: D
+    kind: image
+    model: qwen
+  D4:
+    file: r2/out/droopy_4.qwen.jpg
+    group: D
+    kind: image
+    model: qwen
+  L1:
+    file: r2/out/lush_1.qwen-edit.jpg
+    group: L
+    kind: image
+    model: qwen-edit
+  L2:
+    file: r2/out/lush_2.qwen-edit.jpg
+    group: L
+    kind: image
+    model: qwen-edit
+  P1:
+    file: r2/out/pour_1.qwen.jpg
+    group: P
+    kind: image
+    model: qwen
+  P2:
+    file: r2/out/pour_2.qwen.jpg
+    group: P
+    kind: image
+    model: qwen
+scores:
+  D1:
+    lock: 3
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 5
+    animatable: 4
+    note: 'Clearly dying: stems hang over the rim, lower leaves yellow. Clean. Room reads a bit bare for phone footage'
+  D2:
+    lock: 3
+    hero: 4
+    craft: 3
+    composition: 4
+    story: 5
+    animatable: 3
+    note: Strong wilt, but a stem trails to the floor into a dried clump that will likely morph
+  D3:
+    lock: 3
+    hero: 2
+    craft: 2
+    composition: 3
+    story: 4
+    animatable: 3
+    note: Two pots stacked on top of each other
+    fail: 'Broken hero: two terracotta pots stacked'
+  D4:
+    lock: 3
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 3
+    animatable: 4
+    note: 'Centred and clean, but the upper leaves look healthy: reads ''a bit sad'', not ''dying'''
+  L1:
+    lock: 3
+    hero: 5
+    craft: 4
+    composition: 4
+    story: 5
+    animatable: 4
+    note: Same plant grown lush and upright; room identical to D1. Dry stems show at the soil
+  L2:
+    lock: 3
+    hero: 4
+    craft: 3
+    composition: 4
+    story: 4
+    animatable: 4
+    note: Dense and healthy; one leaf crosses the curtain, brown roots at the base
+  P1:
+    lock: 3
+    hero: 4
+    craft: 3
+    composition: 4
+    story: 3
+    animatable: 4
+    note: The monstera now, same room. Eye level, not from the soil; thin stream reads 'watering', not 'drowning'
+  P2:
+    lock: 3
+    hero: 4
+    craft: 3
+    composition: 4
+    story: 3
+    animatable: 4
+    note: Same as P1, can closer to the corner, stream into the leaves; pot looks smaller than in D1
+pair_scores:
+  D1+L1:
+    match: 5
+    note: Everything identical except the plant; the pot shifts a few pixels
+  D1+L2:
+    match: 4
+    note: Room, shelf, books and mug identical; pot moves right and changes shape slightly
+  D2+L2:
+    match: 3
+    note: 'Same room, but L was edited from D1: pot position and the trailing stem differ'
+  D2+L1:
+    match: 3
+    note: 'Same room, but L was edited from D1: pot position and the trailing stem differ'
+  D4+P2:
+    match: 4
+    note: Same room, shelf, mug and curtain; P2's camera is higher and closer
+  D1+P2:
+    match: 4
+    note: Same room, shelf, mug and curtain; P2's camera is higher and closer, pot smaller
+fixes:
+- 'The set now holds, but it is bare: add one or two named lived-in details to WORLD (a folded grey throw on the
+  shelf, a charger cable on the floor) and keep phone_look.py grain in the edit.'
+- 'No frame in either round gave the view from the soil (0 of 7). Accept the eye-level pour: it reads, and a floating
+  can fits people: false. Update S01''s subject to match.'
+- 'Make S01 an edit too: take the kept lush frame (L1) and add the tipped yellow can and a heavy gush. Same room
+  and pot by construction.'
+- The stream is thin in every frame; let the motion prompt carry the 'heavy gush' in S01.
+- Keep Qwen Image 3 plus its edit model for keyframes. The judge caught the stacked pots (D3), the classic failure
+  to watch for.
+machine:
+  D1:
+    size: 1152x2048
+    sharp: 95.8
+    calm_bands: 53.4
+    palette: 44.8
+  D2:
+    size: 1152x2048
+    sharp: 98.5
+    calm_bands: 58.6
+    palette: 46.2
+  D3:
+    size: 1152x2048
+    sharp: 100.0
+    calm_bands: 66.1
+    palette: 43.8
+  D4:
+    size: 1152x2048
+    sharp: 91.5
+    calm_bands: 58.3
+    palette: 43.1
+  L1:
+    size: 1152x2048
+    sharp: 77.0
+    calm_bands: 85.6
+    palette: 42.5
+  L2:
+    size: 1152x2048
+    sharp: 73.5
+    calm_bands: 85.4
+    palette: 43.0
+  P1:
+    size: 1152x2048
+    sharp: 96.4
+    calm_bands: 58.7
+    palette: 37.6
+  P2:
+    size: 1152x2048
+    sharp: 93.1
+    calm_bands: 68.1
+    palette: 42.0
+pair_machine:
+  D1+L1: 82.5
+  D1+L2: 84.4
+  D2+L1: 76.1
+  D2+L2: 76.6
+  D3+L1: 75.1
+  D3+L2: 76.0
+  D4+L1: 73.9
+  D4+L2: 73.4
+  D1+P1: 56.1
+  D1+P2: 65.5
+  D2+P1: 55.7
+  D2+P2: 62.8
+  D3+P1: 63.3
+  D3+P2: 74.7
+  D4+P1: 62.7
+  D4+P2: 69.1
