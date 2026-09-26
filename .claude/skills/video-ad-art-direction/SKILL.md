@@ -31,13 +31,13 @@ Both run inside Claude. Split by strength, set in `adapters/tools.yml`:
 
 When the environment has the Higgsfield API credential connected (or HF_KEY is set):
 - Always `python scripts/hf_api.py estimate <model> -i body.json` first and show the dollar amount; submit with `run ... --yes` only after the user approves that amount. `--max-usd` may cover a batch the user approved as a whole.
-- Every submission is logged to `runs.jsonl` before polling; copy each verdict into the project's `iteration-log.csv`.
+- Every submission is logged to `runs.jsonl` before polling. Set `HF_RUNS_LOG=<project>/runs.jsonl` so each project keeps its own log; copy each verdict into the project's `iteration-log.csv`.
 - Keyframes: `higgsfield-ai/soul/v2/standard` or `alibaba/qwen-image-3/text-to-image` (Nano Banana Pro is not on the API). Motion: `bytedance/seedance-2.5/image-to-video` with the kept keyframe's output URL as `image_url` (and `end_image_url` for first/last-frame shots), 480p for candidates, 720p for finals (the API has no 1080p).
 - Never resubmit a generation after an ambiguous timeout; check the dashboard first.
 
 ## Getting the files
 
-Generations live on Higgsfield and appear in the chat widget. This cloud environment's network policy blocks the media hosts (checked 2026-09-26), so files cannot be downloaded into the repo here. Either the user downloads the kept files and runs the scripts locally, or the user adds Higgsfield's media host, `d1xarpci4ikg0w.cloudfront.net` (seen in its result URLs, 2026-09-26), to the environment's allowed domains. The log still records job IDs, which is all that later generations need (keyframe job IDs feed motion, clip job IDs feed upscale).
+Generations live on Higgsfield and appear in the chat widget. This cloud environment's network policy blocks the media hosts (checked 2026-09-26), so files cannot be downloaded into the repo here. Either the user downloads the kept files and runs the scripts locally, or the user adds Higgsfield's media host, `d1xarpci4ikg0w.cloudfront.net` (seen in its result URLs, 2026-09-26), to the environment's allowed domains. API results come from a different host, `d3u0tzju9qaucj.cloudfront.net` (seen 2026-09-26); allow it too. Until then, build a contact sheet page from the output URLs in `runs.jsonl`: the user's browser can load them even when this container cannot. Output URLs expire after about 7 days, so download kept files before then. The log still records job IDs, which is all that later generations need (keyframe job IDs feed motion, clip job IDs feed upscale).
 
 ## Start
 
