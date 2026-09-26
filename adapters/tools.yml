@@ -119,6 +119,34 @@ tools:
       (the kept keyframe as First Frame, generate_audio on: same price). Kling is the cheaper
       fallback; Veo 3.1 when a shot needs native sound.
 
+  higgsfield-api:
+    role: image+video
+    negative: inline
+    negative_field_models: [alibaba/qwen-image-3/text-to-image]   # these take a negative_prompt field
+    aspect: ui
+    motion_prompt: true
+    runs_in_claude: true
+    clip_range: [4, 30]
+    audio_native: true
+    cost_unit: USD
+    client: scripts/hf_api.py      # estimate -> approve (--yes) -> submit -> wait -> download
+    models:                        # verified in docs 2026-09-26; exact price comes from the estimate endpoint
+      video:       {name: Seedance 2.5 image-to-video, id: bytedance/seedance-2.5/image-to-video, usd_per_s: 0.144, credits: 0.576}
+      video_refs:  {name: Seedance 2.5 reference-to-video, id: bytedance/seedance-2.5/reference-to-video, usd_per_s: 0.1728}
+      image:       {name: Soul 2, id: higgsfield-ai/soul/v2/standard}
+      image_alt:   {name: Qwen Image 3, id: alibaba/qwen-image-3/text-to-image}
+    verify: true
+    notes: >
+      The Higgsfield API is a separate product from the web plan: dollar balance, 100% cashback
+      in API credits until 2026-09-30. Auth header `Authorization: Key <id:secret>`, added by the
+      environment's credential or HF_KEY. Seedance 2.5 image-to-video takes image_url (required),
+      end_image_url, duration 4-30, resolution 480p or 720p only (no 1080p), generate_audio,
+      and follows the start image's aspect ratio. Reference-to-video takes image_urls, video_urls,
+      audio_urls and aspect_ratio, for the hero reference. Nano Banana Pro and GPT Image are not
+      in the API catalog: keyframes run on Soul 2 or Qwen Image 3 (seed and negative_prompt).
+      Outputs are public URLs kept about 7 days, so a kept keyframe URL can go straight into
+      image_url without an upload. The firewall rejects Python's default user agent.
+
   nano-banana:
     role: image
     negative: inline

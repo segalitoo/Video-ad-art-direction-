@@ -47,6 +47,7 @@ python scripts/assemble.py <storyboard.yml> -o prompts.md        # every prompt,
 python scripts/matrix.py   <storyboard.yml> -o matrix.csv        # hooks × CTAs × platforms
 python scripts/crop.py master.mp4 4:5                           # free 4:5 feed cut, checks the safe area
 python scripts/phone_look.py clip.mp4 --shake 1                 # phone-footage feel: drift, grain, flicker
+python scripts/hf_api.py run <model> -i body.json --yes --out clips/   # Higgsfield API: estimate, approve, submit, wait, download
 python scripts/static_compose.py <storyboard.yml> A1 --plate 4:5=a.png --plate 9:16=b.png   # static ads, every size
 python scripts/spec_check.py A1_meta_feed_1080x1350.jpg --overlay                             # QA works for statics too
 python scripts/spec_check.py export.mp4 --platform tiktok --overlay   # stage 9 QA
