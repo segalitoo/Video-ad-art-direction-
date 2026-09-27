@@ -1,0 +1,61 @@
+round: Driftpay test clips
+lock: ../driftpay.dna.yml
+groups:
+  S02:
+    label: The fold, first + last frame
+    files: 1
+  S04:
+    label: The flight over the map
+    files: 1
+pairs: []
+items:
+  S02-1:
+    file: out/S02.seedance.mp4
+    group: S02
+    kind: clip
+    model: seedance
+  S04-1:
+    file: out/S04.seedance.mp4
+    group: S04
+    kind: clip
+    model: seedance
+scores:
+  S02-1:
+    on_model: 4
+    morph: 4
+    physics: 4
+    motion: 5
+    continuity: 5
+    craft: 4
+    note: 'Reads as paper folding itself: crisp creases, it stands up and forms the dart. The stripe hides in the
+      folds and returns on the wing. Desk rock steady'
+  S04-1:
+    on_model: 5
+    morph: 3
+    physics: 3
+    motion: 3
+    continuity: 4
+    craft: 4
+    note: Plane turns and moves right over a steady map, but pivots more than it glides; the coral thread re-routes
+      into a new arc and paper crumbs appear at the right edge
+pair_scores: {}
+fixes:
+- 'S04: add an end frame (the map edited so the plane sits at the end of the route) and run it first + last frame,
+  so the path is fixed and the thread cannot re-route.'
+- Add 'the coral thread stays exactly where it is' to the S04 action.
+machine:
+  S02-1:
+    size: 480x854
+    sharp: 82.8
+    calm_bands: 60.0
+    palette: 63.2
+    steady: 82.1
+    strip: out/S02.seedance.strip.png
+  S04-1:
+    size: 480x854
+    sharp: 100.0
+    calm_bands: 66.3
+    palette: 56.0
+    steady: 97.0
+    strip: out/S04.seedance.strip.png
+pair_machine: {}

@@ -1,0 +1,12 @@
+{
+ "prompt": "Edit this photo. Keep the camera, framing, every prop, the room and the light exactly as they are. Change only this: the invoice is now folded into a crisp paper plane with the coral stripe along its wing, resting on the same spot.",
+ "image_urls": [
+  "https://d3u0tzju9qaucj.cloudfront.net/2584f776-b711-47aa-8e5e-c821d55e349a/96f14c1f-2438-49d9-bb0b-6ddc4aaf1ab7.png"
+ ],
+ "negative_prompt": "text or letters in the image, watermark, glossy plastic or CGI sheen, numbers or writing on the paper, people or body parts",
+ "aspect_ratio": "9:16",
+ "resolution": "2k",
+ "prompt_extend": false,
+ "enable_thinking": false,
+ "seed": 5122
+}

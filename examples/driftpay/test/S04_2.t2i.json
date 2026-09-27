@@ -1,0 +1,9 @@
+{
+ "prompt": "handmade paper-craft miniature, tabletop stop-motion set, tactile and charming. [SHOT: top-down view of a folded paper world map with raised mint paper continents, a thin coral thread tracing a route across the ocean, tiny paper clock faces with hands at different times and no numerals, the paper plane halfway along the route]. featuring a paper plane folded from a crisp white invoice sheet with a thin coral stripe along one edge, grey ruled lines where the numbers would be. a small paper-craft world built on a kraft-paper tabletop, every object cut, folded and glued from paper and card. crisp folded paper with visible fibres, clean scored creases, slightly imperfect cut edges, true paper thickness. soft daylight from a window on the left, gentle contact shadows under every paper edge. warm neutral colour, soft contrast, a little film softness. colour palette of paper white, signal coral, mint, kraft brown. macro photograph of real paper models, fine paper grain, natural depth of field. vertical 9:16 frame, main subject centred, calm uncluttered lower third, open space at the top.",
+ "negative_prompt": "text or letters in the image, watermark, glossy plastic or CGI sheen, numbers or writing on the paper, people or body parts",
+ "aspect_ratio": "9:16",
+ "resolution": "2k",
+ "prompt_extend": false,
+ "enable_thinking": false,
+ "seed": 5142
+}

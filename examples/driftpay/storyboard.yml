@@ -15,7 +15,7 @@ shots:
   - id: S01
     beat: hook
     duration_s: 2
-    subject: a flat white invoice sheet with a thin coral stripe lying on a kraft-paper desk, a small paper-craft laptop and a paper coffee cup behind it, one corner of the sheet curled up
+    subject: a flat white invoice sheet with one thin coral stripe lying on a kraft-paper desk, a small paper-craft laptop and a paper coffee cup behind it, one corner of the sheet curled up
     action: the curled corner of the invoice lifts and flutters in a light draft
     camera_move: static
     hero: false
@@ -54,8 +54,9 @@ shots:
     beat: product
     duration_s: 3.5
     subject: top-down view of a folded paper world map with raised mint paper continents, a thin coral thread tracing a route across the ocean, tiny paper clock faces with hands at different times and no numerals, the paper plane halfway along the route
-    action: the paper plane glides along the coral thread across the map
-    camera_move: slow drift following the plane
+    end_subject: the paper plane now at the far end of the coral thread route, nose along the thread
+    action: the paper plane glides along the coral thread across the map, the thread stays exactly where it is
+    camera_move: static
     hero: true
     super: "Across time zones, same day."
     sound: music

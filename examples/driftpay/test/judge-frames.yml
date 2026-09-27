@@ -1,0 +1,142 @@
+round: Driftpay test frames (lock v1.0)
+lock: ../driftpay.dna.yml
+groups:
+  D:
+    label: S01 desk, invoice (S02 start)
+    files: 2
+  E:
+    label: 'S02 end: folded plane, edited from D2'
+    files: 2
+  M:
+    label: S04 plane over the map
+    files: 2
+pairs:
+- a: D
+  b: E
+  relation: first_last
+items:
+  D1:
+    file: out/S01_1.qwen.jpg
+    group: D
+    kind: image
+    model: qwen
+  D2:
+    file: out/S01_2.qwen.jpg
+    group: D
+    kind: image
+    model: qwen
+  E1:
+    file: out/S02-end_1.qwen-edit.jpg
+    group: E
+    kind: image
+    model: qwen-edit
+  E2:
+    file: out/S02-end_2.qwen-edit.jpg
+    group: E
+    kind: image
+    model: qwen-edit
+  M1:
+    file: out/S04_1.qwen.jpg
+    group: M
+    kind: image
+    model: qwen
+  M2:
+    file: out/S04_2.qwen.jpg
+    group: M
+    kind: image
+    model: qwen
+scores:
+  D1:
+    lock: 5
+    hero: 3
+    craft: 4
+    composition: 3
+    story: 4
+    animatable: 4
+    note: Real paper under real light; two coral stripes where the lock says one; invoice fills the lower third
+  D2:
+    lock: 5
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 5
+    animatable: 4
+    note: One coral stripe, curled corner, laptop and cup behind, calm lower third. Reads 'handmade' at once
+  E1:
+    lock: 5
+    hero: 5
+    craft: 5
+    composition: 4
+    story: 5
+    animatable: 4
+    note: Classic paper dart, stripe along the wing; desk, laptop, cup and window identical to D2
+  E2:
+    lock: 5
+    hero: 3
+    craft: 3
+    composition: 4
+    story: 4
+    animatable: 3
+    note: Odd plane shape, the stripe shrank to a patch
+  M1:
+    lock: 5
+    hero: 4
+    craft: 3
+    composition: 3
+    story: 5
+    animatable: 4
+    note: Big, dramatic plane on the route; faint pseudo-characters on the wing; map fills the lower third
+  M2:
+    lock: 5
+    hero: 5
+    craft: 5
+    composition: 4
+    story: 5
+    animatable: 4
+    note: Clean ruled lines only, clocks with hands and no numerals, coral thread route; reads as the world at once
+pair_scores:
+  D2+E1:
+    match: 5
+    note: Only the invoice changed into the plane; everything else identical
+  D2+E2:
+    match: 5
+    note: Identical desk; plane shape weaker
+fixes:
+- Say 'one thin coral stripe' in the S01 subject so every candidate matches the hero.
+- The edit dropped the invoice's ruled lines from the plane; fine at this size, note for close-ups.
+machine:
+  D1:
+    size: 1152x2048
+    sharp: 73.1
+    calm_bands: 80.4
+    palette: 66.9
+  D2:
+    size: 1152x2048
+    sharp: 66.8
+    calm_bands: 65.1
+    palette: 67.5
+  E1:
+    size: 1152x2048
+    sharp: 60.1
+    calm_bands: 57.5
+    palette: 64.8
+  E2:
+    size: 1152x2048
+    sharp: 57.6
+    calm_bands: 64.4
+    palette: 63.8
+  M1:
+    size: 1152x2048
+    sharp: 100.0
+    calm_bands: 44.0
+    palette: 62.3
+  M2:
+    size: 1152x2048
+    sharp: 86.8
+    calm_bands: 51.2
+    palette: 62.7
+pair_machine:
+  D1+E1: 67.5
+  D1+E2: 64.3
+  D2+E1: 89.3
+  D2+E2: 85.5
