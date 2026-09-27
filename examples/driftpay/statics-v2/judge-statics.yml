@@ -1,0 +1,223 @@
+round: Statics v2 first pass vs v1
+lock: ../driftpay.dna.yml
+groups:
+  A:
+    label: v2 A · One bold word (first pass)
+    files: 5
+  B:
+    label: v2 B · The hand lets go (first pass)
+    files: 5
+  V1:
+    label: v1 delivered, feed 4:5
+    files: 2
+pairs: []
+items:
+  A1:
+    file: review/A-1200x628.png
+    group: A
+    kind: static
+    model: ''
+  A2:
+    file: review/A-1x1.png
+    group: A
+    kind: static
+    model: ''
+  A3:
+    file: review/A-4x5.png
+    group: A
+    kind: static
+    model: ''
+  A4:
+    file: review/A-stories.png
+    group: A
+    kind: static
+    model: ''
+  A5:
+    file: review/A2-4x5.png
+    group: A
+    kind: static
+    model: ''
+  B1:
+    file: review/B-1200x628.png
+    group: B
+    kind: static
+    model: ''
+  B2:
+    file: review/B-1x1.png
+    group: B
+    kind: static
+    model: ''
+  B3:
+    file: review/B-4x5.png
+    group: B
+    kind: static
+    model: ''
+  B4:
+    file: review/B-stories.png
+    group: B
+    kind: static
+    model: ''
+  B5:
+    file: review/B2-4x5.png
+    group: B
+    kind: static
+    model: ''
+  V1-1:
+    file: ../final/statics/A1_meta_feed_1080x1350.jpg
+    group: V1
+    kind: static
+    model: ''
+  V1-2:
+    file: ../final/statics/A2_meta_feed_1080x1350.jpg
+    group: V1
+    kind: static
+    model: ''
+scores:
+  A1:
+    readable: 5
+    hierarchy: 5
+    composition: 4
+    brand: 5
+    craft: 3
+    note: LOCAL. fills the width and still reads with the plane over 'AL'; nose cut by the top edge, shadow faint.
+  A2:
+    readable: 4
+    hierarchy: 4
+    composition: 3
+    brand: 5
+    craft: 3
+    note: Word and plane work; subline and CTA float apart with a dead band above them; nose cut.
+  A3:
+    readable: 4
+    hierarchy: 4
+    composition: 3
+    brand: 5
+    craft: 3
+    note: 'Same as the square: grouping and the cut nose.'
+  A4:
+    readable: 5
+    hierarchy: 5
+    composition: 3
+    brand: 4
+    craft: 4
+    note: The claim reads at once; wordmark in the header zone, coins inside the reply-bar zone.
+  A5:
+    readable: 5
+    hierarchy: 5
+    composition: 4
+    brand: 5
+    craft: 4
+    note: Claim, coins and CTA balance well; the calmest A frame.
+  B1:
+    readable: 5
+    hierarchy: 5
+    composition: 5
+    brand: 5
+    craft: 4
+    note: 'The whole beat in one line: type left, plane off the open hand right; chip sits on the fingers.'
+  B2:
+    readable: 5
+    hierarchy: 5
+    composition: 3
+    brand: 5
+    craft: 3
+    note: Type and fade are right; only fingertips show and the chip covers the wing.
+  B3:
+    readable: 5
+    hierarchy: 5
+    composition: 3
+    brand: 5
+    craft: 3
+    note: As the square.
+  B4:
+    readable: 5
+    hierarchy: 5
+    composition: 5
+    brand: 4
+    craft: 4
+    note: Underlined claim, hand placing the last coin, clean zones; wordmark in the header zone.
+  B5:
+    readable: 5
+    hierarchy: 5
+    composition: 4
+    brand: 5
+    craft: 4
+    note: Strong; CTA sits close to the lifted coin.
+  V1-1:
+    readable: 3
+    hierarchy: 3
+    composition: 3
+    brand: 2
+    craft: 3
+    note: Headline over map detail, fallback font instead of Space Grotesk.
+  V1-2:
+    readable: 4
+    hierarchy: 3
+    composition: 3
+    brand: 2
+    craft: 2
+    note: Readable only thanks to a dark scrim; fallback font; generic centred product.
+pair_scores: {}
+fixes: []
+machine:
+  A1:
+    size: 480x252
+    sharp: 100.0
+    calm_bands: 48.8
+    palette: 80.0
+  A2:
+    size: 480x480
+    sharp: 77.2
+    calm_bands: 33.8
+    palette: 89.7
+  A3:
+    size: 432x540
+    sharp: 69.4
+    calm_bands: 30.1
+    palette: 91.2
+  A4:
+    size: 432x768
+    sharp: 56.1
+    calm_bands: 15.9
+    palette: 90.9
+  A5:
+    size: 432x540
+    sharp: 61.0
+    calm_bands: 26.4
+    palette: 89.9
+  B1:
+    size: 480x252
+    sharp: 93.8
+    calm_bands: 98.1
+    palette: 8.4
+  B2:
+    size: 480x480
+    sharp: 79.9
+    calm_bands: 88.8
+    palette: 9.9
+  B3:
+    size: 432x540
+    sharp: 72.1
+    calm_bands: 64.8
+    palette: 9.6
+  B4:
+    size: 432x768
+    sharp: 54.1
+    calm_bands: 77.9
+    palette: 78.0
+  B5:
+    size: 432x540
+    sharp: 64.0
+    calm_bands: 40.7
+    palette: 80.7
+  V1-1:
+    size: 1080x1350
+    sharp: 69.9
+    calm_bands: 46.2
+    palette: 63.2
+  V1-2:
+    size: 1080x1350
+    sharp: 59.9
+    calm_bands: 12.2
+    palette: 59.2
+pair_machine: {}

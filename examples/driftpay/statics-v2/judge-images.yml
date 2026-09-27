@@ -1,0 +1,153 @@
+round: Statics v2 images
+lock: ../driftpay.dna.yml
+groups:
+  AC:
+    label: A2 coin stack on navy, for cut-out
+    files: 2
+  BC:
+    label: A2 hand + coins, feed 3:4
+    files: 2
+  BS:
+    label: A2 hand + coins, Stories 9:16
+    files: 2
+  BP:
+    label: A1 hand lets go of the plane
+    files: 1
+pairs: []
+items:
+  AC1:
+    file: out/A-coins_1.png
+    group: AC
+    kind: image
+    model: ''
+  AC2:
+    file: out/A-coins_2.png
+    group: AC
+    kind: image
+    model: ''
+  BC1:
+    file: out/B-coins-34_1.png
+    group: BC
+    kind: image
+    model: ''
+  BC2:
+    file: out/B-coins-34_2.png
+    group: BC
+    kind: image
+    model: ''
+  BS1:
+    file: out/B-coins-916_1.png
+    group: BS
+    kind: image
+    model: ''
+  BS2:
+    file: out/B-coins-916_2.png
+    group: BS
+    kind: image
+    model: ''
+  BP1:
+    file: out/B-plane_2.png
+    group: BP
+    kind: image
+    model: ''
+scores:
+  AC1:
+    lock: 5
+    hero: 4
+    craft: 5
+    composition: 4
+    story: 4
+    animatable: 4
+    note: Real card texture, clear layers, five coins; the key cuts it clean (tested on light and dark).
+  AC2:
+    lock: 5
+    hero: 4
+    craft: 4
+    composition: 3
+    story: 3
+    animatable: 4
+    note: Same stack, smaller and flatter; the layers read less at feed size.
+  BC1:
+    lock: 4
+    hero: 3
+    craft: 2
+    composition: 4
+    story: 4
+    animatable: 3
+    fail: 'Coin edges melt: coral and mint patches mixed on the same coin (AI tell)'
+    note: Good grip and space for type, but the stack is broken.
+  BC2:
+    lock: 5
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 5
+    animatable: 4
+    note: Clean card layers, natural thumb and index grip, top half empty for the claim.
+  BS1:
+    lock: 4
+    hero: 3
+    craft: 2
+    composition: 4
+    story: 4
+    animatable: 3
+    fail: Smeared coin edge low on the stack (AI tell)
+    note: Hand low in frame leaves a big type zone, but the stack is damaged.
+  BS2:
+    lock: 5
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 5
+    animatable: 4
+    note: Clean stack, crisp grip; the hand sits right, the Stories type zone (16-60%) stays clear on the left.
+  BP1:
+    lock: 4
+    hero: 4
+    craft: 5
+    composition: 4
+    story: 5
+    animatable: 4
+    note: 'The hand has just let go and the plane glides off: the idea reads in a second. Ruled lines only, no fake
+      glyphs. Thumb and four fingers correct. The coral stripe crosses the wing instead of running along one edge
+      (small drift from the lock hero). The plane sits in the upper half, so type needs the frame''s own navy above
+      the photo.'
+pair_scores: {}
+fixes: []
+machine:
+  AC1:
+    size: 1296x1728
+    sharp: 95.5
+    calm_bands: 22.6
+    palette: 8.6
+  AC2:
+    size: 1296x1728
+    sharp: 100.0
+    calm_bands: 22.2
+    palette: 5.6
+  BC1:
+    size: 1296x1728
+    sharp: 85.8
+    calm_bands: 4.1
+    palette: 83.2
+  BC2:
+    size: 1296x1728
+    sharp: 93.2
+    calm_bands: 3.8
+    palette: 84.8
+  BS1:
+    size: 1152x2048
+    sharp: 81.0
+    calm_bands: 0.0
+    palette: 85.5
+  BS2:
+    size: 1152x2048
+    sharp: 76.0
+    calm_bands: 22.0
+    palette: 81.9
+  BP1:
+    size: 1296x1728
+    sharp: 94.9
+    calm_bands: 47.6
+    palette: 11.9
+pair_machine: {}

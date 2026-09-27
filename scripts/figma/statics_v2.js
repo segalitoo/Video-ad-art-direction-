@@ -7,7 +7,7 @@
 
 const CONFIG = {
   font: "Space Grotesk",
-  c: { paper: "#F4F1EA", navy: "#1E2A44", coral: "#FF6B4A", white: "#FFFFFF", muted: "#5B6478", mutedDark: "#B8C0D2" },
+  c: { paper: "#F4F1EA", navy: "#1E2A44", night: "#111A27", coral: "#FF6B4A", white: "#FFFFFF", muted: "#5B6478" },   // night: the B-plane photo backdrop
   y0: 2300,                                  // below the v1 frames
   cta: "Open a free account",
   A: [
@@ -28,21 +28,21 @@ const CONFIG = {
       hero: { slot: "coins", w: 420, x: 600, y: 780, rot: 0 } },
   ],
   B: [
-    { name: "v2 B · A1 LinkedIn 1200×1200", w: 1200, h: 1200, field: "navy", photo: { slot: "B-plane", w: 1200, h: 1600, x: 0, y: -200 },
-      lines: ["Send the invoice.", "Get paid |tomorrow.|"], size: 92, pad: 90, top: 90, mark: 38, ctaSize: 30,
-      chip: { x: 150, y: 760 } },
-    { name: "v2 B · A1 LinkedIn 1200×628", w: 1200, h: 628, field: "navy", photo: { slot: "B-plane", w: 600, h: 800, x: 600, y: -60 },
-      lines: ["Send the invoice.", "Get paid |tomorrow.|"], size: 60, pad: 64, top: 64, mark: 30, ctaSize: 24, column: 580,
-      chip: { x: 640, y: 420 } },
-    { name: "v2 B · A1 Meta feed 1080×1350", w: 1080, h: 1350, field: "navy", photo: { slot: "B-plane", w: 1080, h: 1440, x: 0, y: -40 },
-      lines: ["Send the invoice.", "Get paid |tomorrow.|"], size: 88, pad: 80, top: 90, mark: 36, ctaSize: 30,
-      chip: { x: 120, y: 860 } },
+    { name: "v2 B · A1 LinkedIn 1200×1200", w: 1200, h: 1200, field: "night", photo: { slot: "B-plane", w: 1200, h: 1600, x: 0, y: 150, fadeTop: 260 },
+      lines: ["Send the invoice.", "Get paid |tomorrow.|"], size: 84, pad: 90, top: 70, mark: 38, ctaSize: 28,
+      chip: { x: 760, y: 860 } },
+    { name: "v2 B · A1 LinkedIn 1200×628", w: 1200, h: 628, field: "night", photo: { slot: "B-plane", w: 640, h: 853, x: 560, y: -130, fadeLeft: 200 },
+      lines: ["Send the invoice.", "Get paid |tomorrow.|"], size: 58, pad: 64, top: 40, mark: 30, ctaSize: 24,
+      chip: { x: 860, y: 470 } },
+    { name: "v2 B · A1 Meta feed 1080×1350", w: 1080, h: 1350, field: "night", photo: { slot: "B-plane", w: 1080, h: 1440, x: 0, y: 200, fadeTop: 240 },
+      lines: ["Send the invoice.", "Get paid |tomorrow.|"], size: 80, pad: 80, top: 80, mark: 36, ctaSize: 28,
+      chip: { x: 680, y: 1000 } },
     { name: "v2 B · A2 Stories 1080×1920", w: 1080, h: 1920, field: "paper", photo: { slot: "B-coins-916", w: 1080, h: 1920, x: 0, y: 0 },
       lines: ["Paid in", "|1 day.|", "Not 5."], size: 150, pad: 86, top: 330, mark: 36, cta: false },
     { name: "v2 B · A2 Meta feed 1080×1350", w: 1080, h: 1350, field: "paper", photo: { slot: "B-coins-34", w: 1080, h: 1440, x: 0, y: -60 },
-      lines: ["Paid in", "|1 day.|", "Not 5."], size: 120, pad: 80, top: 90, mark: 34, ctaSize: 28 },
+      lines: ["Paid in", "|1 day.|", "Not 5."], size: 120, pad: 80, top: 60, mark: 34, ctaSize: 28 },
   ],
-  heroAspect: { plane: 1, coins: 1 },      // w/h of each cut-out, set from the files before running
+  heroAspect: { plane: 1.481, coins: 0.839 },   // w/h of cut/hero-plane.png and cut/A-coins_1.png
 };
 
 await Promise.all(["Bold", "Medium"].map(style => figma.loadFontAsync({ family: CONFIG.font, style })));
@@ -64,13 +64,28 @@ function text(parent, chars, style, size, color, o = {}) {
   if (o.x !== undefined) { t.x = o.x; t.y = o.y; }
   return t;
 }
-// "Get paid |tomorrow.|" : the part between bars is the one coral phrase
+// "Get paid |tomorrow.|" : the part between bars is the one coral phrase. On a dark field it is set
+// in coral; on a light field coral text fails contrast (about 2.6:1), so the phrase stays in the ink
+// and gets a coral underline instead (T0024 Dropcard). Underlines are drawn for whole-line accents.
 function accentText(parent, line, style, size, base, accent, o = {}) {
   const plain = line.replace(/\|/g, "");
-  const t = text(parent, plain, style, size, base, o);
   const a = line.indexOf("|"), b = line.lastIndexOf("|");
-  if (a >= 0 && b > a) t.setRangeFills(a, b - 1, solid(accent));
-  return t;
+  if (!o.underline || a < 0) {
+    const t = text(parent, plain, style, size, base, o);
+    if (a >= 0 && b > a) t.setRangeFills(a, b - 1, solid(accent));
+    return t;
+  }
+  const box = figma.createFrame();
+  box.name = "Accent line"; box.fills = []; box.clipsContent = false;
+  parent.appendChild(box);
+  const t = text(box, plain, style, size, base, o);
+  box.resize(t.width, t.height);
+  const bar = figma.createRectangle();
+  bar.name = "Underline"; bar.fills = solid(accent);
+  bar.resize(t.width * 0.96, Math.max(6, size * 0.09));
+  bar.x = t.width * 0.02; bar.y = t.height * 0.93;
+  box.insertChild(0, bar);
+  return box;
 }
 function wordmark(parent, size, ink, x, y) {
   const row = figma.createAutoLayout("HORIZONTAL", { name: "Wordmark", itemSpacing: Math.round(size * 0.3), counterAxisAlignItems: "CENTER" });
@@ -120,6 +135,8 @@ for (const s of CONFIG.A) {
   if (s.kind === "word") {
     const word = text(f, s.word, "Bold", s.wordSize, C.navy, { ls: -5, lh: 90, x: s.pad * 0.6, y: s.wordY });
     word.name = "Big word";
+    word.fontSize = Math.floor(s.wordSize * (s.w - 1.2 * s.pad) / word.width);   // fill the width, edge to edge
+    word.x = (s.w - word.width) / 2;
     slot(f, s.hero.slot, hw, hh, s.hero.x, s.hero.y, { shadow: 40, rot: s.hero.rot });   // above the word: it crosses it
     text(f, s.sub, "Medium", s.subSize, C.navy, { ls: -1, width: Math.min(s.w - 2 * s.pad, s.subSize * 14), x: s.pad, y: s.subY });
     pill(f, CONFIG.cta, s.ctaSize, s.ctaX ?? s.pad, s.ctaY);
@@ -137,14 +154,27 @@ for (const s of CONFIG.A) {
 // Direction B
 X = 0;
 for (const s of CONFIG.B) {
-  const dark = s.field === "navy";
-  const f = frame(s, X, CONFIG.y0 + 2100, dark ? C.navy : C.paper); X += s.w + 100;
+  const dark = s.field !== "paper";
+  const f = frame(s, X, CONFIG.y0 + 2100, C[s.field]); X += s.w + 100;
   slot(f, s.photo.slot, s.photo.w, s.photo.h, s.photo.x, s.photo.y);
+  // Fade the photo's edge into the field, so the type area and the photo read as one surface
+  for (const [edge, size] of [["top", s.photo.fadeTop], ["left", s.photo.fadeLeft]]) {
+    if (!size) continue;
+    const g = figma.createRectangle();
+    g.name = "Fade " + edge;
+    if (edge === "top") { g.resize(s.photo.w, size); g.x = s.photo.x; g.y = s.photo.y; }
+    else { g.resize(size, s.h); g.x = s.photo.x; g.y = 0; }
+    const t = edge === "top" ? [[0, 1, 0], [-1, 0, 1]] : [[1, 0, 0], [0, 1, 0]];
+    g.fills = [{ type: "GRADIENT_LINEAR", gradientTransform: t, gradientStops: [
+      { position: 0, color: { ...C[s.field], a: 1 } }, { position: 1, color: { ...C[s.field], a: 0 } }] }];
+    f.appendChild(g);
+  }
   const ink = dark ? C.white : C.navy;
   wordmark(f, s.mark, ink, s.pad, s.pad * 0.8);
   const col = figma.createAutoLayout("VERTICAL", { name: "Headline", itemSpacing: 0 });
   col.fills = []; f.appendChild(col); col.x = s.pad; col.y = s.top + s.mark * 2.2;
-  for (const line of s.lines) accentText(col, line, "Bold", s.size, ink, C.coral, { ls: -3, lh: 104 });
+  col.itemSpacing = dark ? 0 : Math.round(s.size * 0.12);
+  for (const line of s.lines) accentText(col, line, "Bold", s.size, ink, C.coral, { ls: -3, lh: 104, underline: !dark });
   if (s.cta !== false) pill(f, CONFIG.cta, s.ctaSize, s.pad, col.y + col.height + s.size * 0.45);
   if (s.chip) {
     const chip = figma.createAutoLayout("HORIZONTAL", { name: "Proof chip", itemSpacing: 14, paddingLeft: 22, paddingRight: 26, paddingTop: 16, paddingBottom: 16, cornerRadius: 16, counterAxisAlignItems: "CENTER" });
@@ -152,7 +182,7 @@ for (const s of CONFIG.B) {
     chip.effects = [{ type: "DROP_SHADOW", color: { r: 0, g: 0, b: 0, a: 0.25 }, offset: { x: 0, y: 10 }, radius: 28, spread: 0, visible: true, blendMode: "NORMAL" }];
     const dot = figma.createEllipse(); dot.resize(16, 16); dot.fills = solid(C.coral); chip.appendChild(dot);
     text(chip, "Invoice", "Medium", 26, C.navy, { ls: -1 });
-    text(chip, "Paid", "Bold", 26, C.coral, { ls: -1 });
+    text(chip, "Paid", "Bold", 26, C.navy, { ls: -1 });   // coral text on white fails contrast; the dot carries the coral
     f.appendChild(chip); chip.x = s.chip.x; chip.y = s.chip.y;
   }
 }
