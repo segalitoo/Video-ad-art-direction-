@@ -41,3 +41,8 @@ Rules learned from real results. Each one names its evidence and where it is enf
 - **Evidence:** S05 bent the plane into a V before the coins; picking the in-point frame by frame saved the shot.
 - **Enforced in:** cut.py in-points from kept.yml; board.py motion strips
 - **Added:** 2026-09-27
+
+### L009 · The amount of text follows the job: a hook or brand card carries one line; an explainer, offer or native format (a Notes page) may carry more, as long as the hierarchy still reads at a glance
+- **Evidence:** Art director on the first reference batch: 'some have too much text but its ok and depend on the need'; T0008 (Notes format) works with long copy
+- **Enforced in:** templates/design-review.md §3
+- **Added:** 2026-09-27

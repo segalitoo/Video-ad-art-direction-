@@ -119,3 +119,186 @@ entries:
   by: claude (draft, art director to confirm)
   external: true
   copy: Wide-Toe Box Design
+- id: T0007
+  kind: exemplar
+  medium: static
+  file: refs/external/T0007.jpg
+  original: fleava-dark.png
+  tags:
+  - offer
+  - proof
+  - hand-holds-product
+  - dark-field
+  - type-column
+  - dtc
+  why: 'An offer ad in three steps: a promise headline, three short facts, then the offer in bold. The hand holds
+    the bottle at the corner, so the type column stays on a clean dark field. Stars and a review count replace a
+    long testimonial.'
+  source: Fleava. Screenshot shared by the art director, 2026-09-27; original source not given
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: FLEAVA / Finally, hair regrowth that doesn't shed first. / No shedding phase. No side effects. Applied in
+    60 seconds. / Get 60% OFF + 4 free gift / Try it risk-free / 4,800+ Reviews
+  watch: The small outlined 'Try it risk-free' button is weak for the only CTA.
+- id: T0008
+  kind: exemplar
+  medium: static
+  file: refs/external/T0008.jpg
+  original: fleava-notes.png
+  tags:
+  - native-format
+  - notes-app
+  - ugc
+  - callout-arrows
+  - dense-copy
+  - dtc
+  why: 'A native format: it looks like an iPhone Notes page, so it reads as a person''s note, not an ad. Emoji bullets
+    and hand-drawn arrows fit that voice. The long copy works because the frame makes long text feel normal.'
+  source: Fleava. Screenshot shared by the art director, 2026-09-27; original source not given
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: How I stopped my thinning at the root cause... / Copper peptides clinically shown to reactivate dormant
+    follicles. / Works at the follicle level, not just the surface. / Most users see baby hairs in 60-90 days. /
+    No shedding phase. No side effects. Nothing to lose. / 90 Day Money Back Guarantee
+  watch: The bottle is a clean studio render, which breaks the 'my own note' illusion a little.
+- id: T0009
+  kind: exemplar
+  medium: static
+  file: refs/external/T0009.jpg
+  original: viko-arctic.png
+  tags:
+  - visual-metaphor
+  - composite
+  - logo-only
+  - no-headline
+  why: 'One visual metaphor carries the whole ad: the air conditioner sinks into arctic water under a polar bear,
+    so ''cold'' is shown, not said. The only text is the logo.'
+  source: 'Vikoclima (likely a portfolio concept: the set uses a placeholder phone number). Screenshot shared by
+    the art director, 2026-09-27; original source not given'
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: VIKOCLIMA / Системи за климатизация (air-conditioning systems)
+  watch: Visible composite seams; the logo is bigger than the idea needs.
+- id: T0010
+  kind: exemplar
+  medium: static
+  file: refs/external/T0010.jpg
+  original: viko-set.png
+  tags:
+  - campaign-set
+  - visual-metaphor
+  - dense-copy
+  why: 'Three posters, three metaphors for one product: a glass dome over the family (protection), arctic water
+    (cold), a woman floating on clouds (comfort). Learn the one-metaphor-per-card idea.'
+  source: Vikoclima (likely a portfolio concept). Screenshot shared by the art director, 2026-09-27; original source
+    not given
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: Smart Cooling Solutions for Modern Living / Efficient. Reliable. Energy Saving Air Conditioning Systems.
+    / Energy Efficient Technology / Premium Cooling Performance / Long-lasting Durability / Contact us for installation
+    & support
+  watch: Stock family and stock poses, a centred all-caps headline with a tagline box, a clip-art icon row, a placeholder
+    phone number.
+- id: T0011
+  kind: exemplar
+  medium: static
+  file: refs/external/T0011.jpg
+  original: delights-watch.png
+  tags:
+  - visual-pun
+  - food
+  - script-type
+  - one-idea
+  why: 'A visual pun: the biryani plate is the face of a watch, and the script line ''its time to order your food''
+    finishes the joke. One image, one idea.'
+  source: Indian Delights (restaurant, Saudi Arabia). Screenshot shared by the art director, 2026-09-27; original
+    source not given
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: its time to order your food / Order Now / phone number / delivery app logos
+  watch: A block of eight delivery-app logos plus a phone number on every card; the script and serif fight.
+- id: T0012
+  kind: exemplar
+  medium: static
+  file: refs/external/T0012.jpg
+  original: delights-naan.png
+  tags:
+  - type-behind-product
+  - overlap
+  - big-type
+  - food
+  why: 'Giant type behind the food, with the bread overlapping the letters: it gives depth and the word still reads.
+    The headline is the product''s name.'
+  source: Indian Delights (restaurant, Saudi Arabia). Screenshot shared by the art director, 2026-09-27; original
+    source not given
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: طبق نان مشكل (mixed naan platter) / MIX / NAAN PLATTER / Order Now
+  watch: Four type voices on one card (Arabic, huge serif-less caps, slanted italic caps, the logo), plus the app-logo
+    block.
+- id: T0013
+  kind: anti
+  medium: static
+  file: refs/external/T0013.jpg
+  original: sneakers.png
+  tags:
+  - template
+  - type-behind-product
+  - clip-art
+  - generic
+  why: 'A stock template: outline ''NEW COLLECTION'' repeated, 3D clip-art triangles, ''Exclusive'' in a second
+    italic, a placeholder phone. The shoe crossing the word is the one good device, and the naan card does it better.'
+  source: Unbranded social-media template (placeholder phone number). Screenshot shared by the art director, 2026-09-27;
+    original source not given
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: NEW COLLECTION / EXCLUSIVE SNEAKERS / Call for more 0001-2345-6789 / BOOK NOW
+- id: T0014
+  kind: exemplar
+  medium: static
+  file: refs/external/T0014.jpg
+  original: stoggles.png
+  tags:
+  - feature-diagram
+  - callout-lines
+  - product-cutout
+  - conversational
+  why: 'A clean feature diagram: labelled callouts with thin leader lines around a large product cutout. The subline
+    sounds like a person talking (''Trust me, you''ll thank us later.'').'
+  source: Stoggles (safety glasses). Screenshot shared by the art director, 2026-09-27; original source not given
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: Get Yourself a Pair of Stoggles. / Trust me, you'll thank us later. / Multiple Colors / Stylish / Shatter
+    Proof / Made to Last / Prescription Available
+  watch: Boxed labels are generic; five callouts is the upper limit.
+- id: T0015
+  kind: exemplar
+  medium: static
+  file: refs/external/T0015.jpg
+  original: rosie-strip.png
+  tags:
+  - carousel
+  - story-arc
+  - sequence
+  - saas
+  - highlight-word
+  - ui-fragments
+  why: 'A five-card carousel with a story: the problem, what it costs, the wrong fix, the product, the promise.
+    The CTA is only on the last card. One highlighted word per headline, dark and light cards alternate, and small
+    UI fragments are the illustrations.'
+  source: Rosie AI (AI phone answering). Screenshot shared by the art director, 2026-09-27; original source not
+    given
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: Not Able to Answer Every Call? / Missed Calls = Missed Customers / Hiring More Staff Isn't Always the Answer
+    / Let Rosie AI Handle Every Call / Never Miss a Customer Again, Even When You Are Busy. / See Rosie AI in action
+    / Start Free Trial

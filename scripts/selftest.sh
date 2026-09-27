@@ -85,8 +85,8 @@ if python3 scripts/taste.py add examples/driftpay/test/out/S04_2.qwen.jpg --kind
   echo "FAIL taste entry without a reason not refused"; exit 1; fi
 ok "taste library refuses an example without a reason"
 python3 scripts/taste.py add examples/driftpay/test/out/S04_2.qwen.jpg --kind exemplar --medium static --why "ext" \
-  --source "someone else" --external --copy "Headline" >/dev/null
-test -f "$TASTE_DIR/refs/external/T0003.jpg" && grep -q 'external: true' "$TASTE_DIR/library.yml" \
+  --source "someone else" --external --copy "Headline" --watch "clip art" >/dev/null
+test -f "$TASTE_DIR/refs/external/T0003.jpg" && grep -q 'external: true' "$TASTE_DIR/library.yml" && grep -q 'watch: clip art' "$TASTE_DIR/library.yml" \
   && git check-ignore -q taste/refs/external/T0003.jpg \
   && ok "external references stay out of git" || { echo "FAIL taste external"; exit 1; }
 rm "$TASTE_DIR/refs/external/T0003.jpg"

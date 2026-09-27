@@ -84,7 +84,7 @@ def likeness(a, b):
     return 0.5 * structure_match(a["gray"], b["gray"]) + 0.5 * colour_match(a, b)
 
 
-def add_entry(src, kind, medium, tags, why, source, by, external=False, copy=None):
+def add_entry(src, kind, medium, tags, why, source, by, external=False, copy=None, watch=None):
     if kind not in ("exemplar", "anti"):
         fail("kind is exemplar or anti")
     if medium not in MEDIA:
@@ -109,6 +109,8 @@ def add_entry(src, kind, medium, tags, why, source, by, external=False, copy=Non
         entry["external"] = True
     if copy:
         entry["copy"] = copy
+    if watch:
+        entry["watch"] = watch
     entries.append(entry)
     save_lib(entries)
     print(f"added {eid} ({kind}, {medium}): {why}")
@@ -117,7 +119,7 @@ def add_entry(src, kind, medium, tags, why, source, by, external=False, copy=Non
 
 def cmd_add(args):
     add_entry(args.file, args.kind, args.medium, split_tags(args.tags), args.why, args.source, args.by,
-              args.external, args.copy)
+              args.external, args.copy, args.watch)
 
 
 def split_tags(text):
@@ -164,6 +166,8 @@ def cmd_nearest(args):
         print(f"{'Closest exemplars' if kind == 'exemplar' else 'Closest anti-examples'}:")
         for s, e in rows:
             print(f"  {e['id']} {s:5.1f}  {TASTE / e['file']}  · {e['why']}")
+            if e.get("watch"):
+                print(f"        don't copy: {e['watch']}")
     if args.sheet:
         cards = [f'<figure class="cand"><img src="{embedded_img(cand)}"><figcaption>candidate · {html.escape(str(args.file))}</figcaption></figure>']
         for kind, rows in picks.items():
@@ -205,7 +209,7 @@ h1{{font-size:22px;margin:0 0 16px}}h2{{font-size:15px;margin:24px 0 10px;color:
 figure{{margin:0;background:var(--card);border-radius:8px;overflow:hidden;border:3px solid transparent}}
 figure img{{display:block;width:100%}}figcaption{{padding:8px 10px;font-size:13px}}
 .gone{{aspect-ratio:1;display:grid;place-items:center;color:var(--muted);font-size:13px}}
-q{{display:block;margin-top:6px;color:var(--muted)}}
+q{{display:block;margin-top:6px;color:var(--muted)}}.watch{{color:var(--bad)}}
 .exemplar{{border-color:var(--good)}}.anti{{border-color:var(--bad)}}.cand{{border-color:var(--ink)}}
 </style><div class="wrap"><h1>{html.escape(title)}</h1><div class="grid">{body}</div></div>"""
 
@@ -219,6 +223,7 @@ def cmd_sheet(args):
 
     body = "".join(f'<figure class="{e["kind"]}">{picture(e)}<figcaption><b>{e["id"]}</b> '
                    f'{e["kind"]} · {e["medium"]}<br>{html.escape(e["why"])}'
+                   + (f'<br><span class="watch">Don’t copy: {html.escape(e["watch"])}</span>' if e.get("watch") else "")
                    + (f'<br><q>{html.escape(e["copy"])}</q>' if e.get("copy") else "")
                    + f'<br><small>{html.escape(", ".join(e.get("tags") or []))}'
                    f' · {html.escape(e.get("source", ""))}</small></figcaption></figure>' for e in entries)
@@ -239,6 +244,7 @@ def main():
     p.add_argument("--by", default="art director")
     p.add_argument("--external", action="store_true", help="third-party work: keep the image out of git")
     p.add_argument("--copy", help="the ad's own text (headline, callouts, CTA), for reference")
+    p.add_argument("--watch", help="what not to copy from an otherwise useful example")
     p = sub.add_parser("from-judge")
     p.add_argument("round")
     p.add_argument("--keep", action="append", help='ID:"why it works"')

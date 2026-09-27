@@ -13,6 +13,8 @@ the art director's taste over time instead of starting from zero on each project
 - **Other brands' ads** (Meta Ad Library screenshots and similar): add `--external --copy "the ad's text"`.
   This repo is public, so the image stays in `refs/external/` (git ignores it) and only the entry, the
   reason, the credit and the text are committed. A fresh clone has the entries without those images.
+- **Mixed examples:** when only one idea in an ad is worth learning, say that idea in `--why` and
+  put what not to copy in `--watch` (clip art, clutter, stock people). The review shows both.
   External work is for internal inspiration only: never published, never used in an ad, always credited.
 - **At every gate:** after the art director picks, file the verdicts with their reasons:
   `python scripts/taste.py from-judge <round.yml> --keep D1:"why it works" --reject D3:"what went wrong"`.

@@ -60,6 +60,9 @@ Answer before proposing any look:
 - The brand's own typeface, set in Figma. **The closest installed font is a failure, not a
   fallback**: stop and get the font.
 - Headline two lines at most, line height about 98%, tracking −2% (never below −4%).
+- **Text amount follows the job** (lesson L009). A hook or brand card carries one line. An
+  explainer, an offer or a native format (a Notes page) may carry more, if the squint test still
+  finds the headline first.
 
 **Layout** (the spatial thesis, stated before building):
 - What leads, what supports, what belongs together, where the eye ends (the CTA).
