@@ -461,8 +461,20 @@ def cmd_rank(args):
         print(f"wrote {args.sheet}")
 
 
+def embedded(path, width=540):
+    """A JPEG thumbnail as a data URI, so the sheet works when downloaded or sent on its own."""
+    import base64, io
+    img = Image.open(path).convert("RGB")
+    if img.width > width:
+        img = img.resize((width, round(img.height * width / img.width)))
+    buf = io.BytesIO()
+    img.save(buf, "JPEG", quality=82)
+    return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+
+
 def write_sheet(path, data, rows, combos, base):
-    """A contact sheet with scores, best set first. Uses output URLs when a file is remote."""
+    """A self-contained contact sheet with scores, best set first. Images are embedded;
+    each one still links to its full-size file next to the round."""
     best = set(combos[0]["files"]) if combos else set()
     rel = Path(path).resolve().parent
 
@@ -478,7 +490,8 @@ def write_sheet(path, data, rows, combos, base):
             tag = " ".join(t for t in ("best" if i in best else "", "fail" if r["fail"] else "",
                                        "clip" if it["kind"] == "clip" else "") if t)
             label = "FAIL" if r["fail"] else f"{r['overall']:.0f}"
-            cells.append(f'<figure class="{tag}"><a href="{html.escape(href)}"><img src="{html.escape(href)}" '
+            width = 1400 if it["kind"] == "clip" else 540
+            cells.append(f'<figure class="{tag}"><a href="{html.escape(href)}"><img src="{embedded(p, width)}" '
                          f'loading="lazy" alt="{i}"></a><figcaption><b>{i}</b> <span>{label}</span> '
                          f'{html.escape(r["model"])}<br><small>{html.escape(r["fail"] or r["note"])}</small>'
                          f'</figcaption></figure>')
