@@ -50,6 +50,13 @@ When the environment has the Higgsfield API credential connected (or HF_KEY is s
 
 Generations live on Higgsfield and appear in the chat widget. This cloud environment's network policy blocks the media hosts (checked 2026-09-26), so files cannot be downloaded into the repo here. Either the user downloads the kept files and runs the scripts locally, or the user adds Higgsfield's media host, `d1xarpci4ikg0w.cloudfront.net` (seen in its result URLs, 2026-09-26), to the environment's allowed domains. API results come from a different host, `d3u0tzju9qaucj.cloudfront.net` (seen 2026-09-26); allow it too. Until then, build a contact sheet page from the output URLs in `runs.jsonl`: the user's browser can load them even when this container cannot. Output URLs expire after about 7 days, so download kept files before then. The log still records job IDs, which is all that later generations need (keyframe job IDs feed motion, clip job IDs feed upscale).
 
+## Design review and the taste library (every gate)
+
+- Before showing any creative at a gate, run `templates/design-review.md`: the brief wins; eyes first, machine second; evidence for every answer; one inspect round, one fix batch, one confirm.
+- Compare with the taste library: `python scripts/taste.py nearest <candidate> --medium ... --tags ...` and open the sheet; say which exemplar it is closest to and which anti-example it risks. Read `taste/lessons.md` once per session and apply it.
+- After the art director picks, file the verdicts with their reasons: `python scripts/taste.py from-judge <round.yml> --keep ID:"why" --reject ID:"why"`. When a result teaches a rule, add it with `taste.py lesson`. This is how the system learns their taste.
+- Skills to pull in: `taste-brandkit` and `staff-design` at the lock (strategy first, one core metaphor); `impeccable` (critique, typeset, layout) for statics, supers and any page; `canvas-design` for static direction. The Design plugin's critique and accessibility review, when it is enabled.
+
 ## Judge pass (scripts/judge.py)
 
 Runs between generation and the gate in stages 4 and 5 and for static plates. It needs the files on disk (see Getting the files).

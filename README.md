@@ -53,6 +53,7 @@ python scripts/judge.py rank judge/r1.yml -o report.md --sheet sheet.html   # ro
 python scripts/board.py <storyboard.yml> -o board.html            # the visual storyboard: frames, supers, motion strips, a join score per cut
 python scripts/cut.py <storyboard.yml> -o master.mp4             # stage 8 from kept.yml: cut, supers, end card, loudness (--aspect 4:5 for the feed)
 python scripts/img_api.py --provider gemini --prompt-file p.txt --ref prev.jpg --yes   # own-keys route: Nano Banana Pro / GPT Image
+python scripts/taste.py nearest <candidate> --medium frame --sheet compare.html   # nearest exemplars and anti-examples in the taste library
 python scripts/crop.py master.mp4 4:5                           # free 4:5 feed cut, checks the safe area
 python scripts/phone_look.py clip.mp4 --shake 1                 # phone-footage feel: drift, grain, flicker
 python scripts/hf_api.py run <model> -i body.json --yes --out clips/   # Higgsfield API: estimate, approve, submit, wait, download
@@ -71,7 +72,9 @@ bash scripts/selftest.sh                                         # test everythi
 | `lock/modes/` | Defaults for the four looks. A lock picks one and overrides what it needs |
 | `platforms/specs.yml` | Ratios, lengths, safe zones and loudness per platform, with sources |
 | `adapters/tools.yml` | How each tool wants its prompt (negatives, aspect, clip length) |
-| `templates/` | Brief, storyboard, copy matrix, QA checklist, iteration log, and the static design system (`static-design.md`) |
+| `taste/` | The taste library: exemplars and anti-examples with the reason for each, and the lessons learned. Every gate compares with it and adds to it (`scripts/taste.py`) |
+| `.claude/skills/` | Our skill, plus Impeccable and Taste Skill (see `THIRD_PARTY.md`) |
+| `templates/` | Brief, storyboard, copy matrix, QA checklist, iteration log, the static design system (`static-design.md`) and the design review every gate runs (`design-review.md`) |
 | `scripts/` | Scaffold, assemble, matrix, judge, spec check, crop, statics, Higgsfield API client, self-test |
 | `examples/sunpeel/` | The pilot: a fictional zero-sugar citrus soda, photoreal product look (lock v1.2), 15s video + 3 static ads |
 | `examples/driftpay/` | **The finished pilot:** a fictional payments app in handmade paper craft, 15s video in 9:16 and 4:5 + 7 statics, made for $11.94 on the Higgsfield API. See `final/README.md` |

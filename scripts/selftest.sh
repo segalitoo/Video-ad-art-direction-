@@ -75,6 +75,17 @@ python3 scripts/assemble.py "$tmp/chain.yml" 2>/dev/null | grep -q "S03-K · sta
 if python3 scripts/assemble.py "$tmp/chain-broken.yml" --check >/dev/null 2>&1; then echo "FAIL broken chain not caught"; exit 1; fi
 ok "a chain with a missing end frame is refused"
 
+# Taste library: file examples, find the nearest, record a lesson (in a scratch library).
+export TASTE_DIR="$tmp/taste"
+python3 scripts/taste.py add examples/driftpay/test/out/S04_2.qwen.jpg --kind exemplar --medium frame --tags paper --why "clean map" --source test >/dev/null
+python3 scripts/taste.py add examples/driftpay/test/out/S01_2.qwen.jpg --kind anti --medium frame --tags desk --why "test anti" --source test >/dev/null
+python3 scripts/taste.py nearest examples/driftpay/test/out/S04_1.qwen.jpg --medium frame --tags paper -k 1 | grep -q "T0001" \
+  && ok "taste library ranks the matching exemplar first" || { echo "FAIL taste nearest"; exit 1; }
+if python3 scripts/taste.py add examples/driftpay/test/out/S04_2.qwen.jpg --kind exemplar --medium frame --why "" --source x >/dev/null 2>&1; then
+  echo "FAIL taste entry without a reason not refused"; exit 1; fi
+ok "taste library refuses an example without a reason"
+unset TASTE_DIR
+
 # Judge pass: a matching pair must beat a mismatched one, a hard fail drops out, an unscored file stops the rank.
 mkdir -p "$tmp/judge/out"
 python3 - "$tmp/judge" <<'PY'
