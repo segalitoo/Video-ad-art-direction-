@@ -20,6 +20,8 @@ J = judge pass: Claude scores every batch and names the best matching set before
 - The lock is frozen before the first generation. Changing a token raises the version.
 - Prompts are assembled from the lock (`scripts/assemble.py`), never written freehand.
 - Keyframe first, motion second. Only a kept frame gets animated.
+- One chain of frames: each shot starts where the last one ends (`chain: true`); a hard cut is a decision, not an accident.
+- Every gate from stage 3 on shows the visual storyboard (`board.py`).
 - Every generation is logged with a verdict and a reason (`iteration-log.csv`).
 - Claude judges every batch before a person does (`judge.py`): a score and a reason per file, and the best matching set. People pick.
 - Two iteration cycles, then ship it or kill it.

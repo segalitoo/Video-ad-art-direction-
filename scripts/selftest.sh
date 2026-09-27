@@ -130,13 +130,20 @@ if command -v ffmpeg >/dev/null; then
       -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "$tmp/c$n.mp4"
   done
   cl=""; for n in 1 2 3 4 5; do cl="$cl --clip S0$n=$tmp/c$n.mp4@0.2"; done
-  python3 scripts/cut.py examples/driftpay/storyboard.yml $cl -o "$tmp/cut.mp4" >/dev/null
+  python3 scripts/cut.py examples/driftpay/storyboard.yml --kept "$tmp/none.yml" $cl -o "$tmp/cut.mp4" >/dev/null
   python3 scripts/spec_check.py "$tmp/cut.mp4" --platform meta_vertical linkedin_feed >/dev/null && ok "cut master passes its specs"
-  python3 scripts/cut.py examples/driftpay/storyboard.yml $cl --aspect 4:5 -o "$tmp/cut45.mp4" >/dev/null
+  python3 scripts/cut.py examples/driftpay/storyboard.yml --kept "$tmp/none.yml" $cl --aspect 4:5 -o "$tmp/cut45.mp4" >/dev/null
   python3 scripts/spec_check.py "$tmp/cut45.mp4" --platform meta_feed >/dev/null && ok "4:5 feed cut passes its specs"
-  if python3 scripts/cut.py examples/driftpay/storyboard.yml --clip S01=$tmp/c1.mp4 -o "$tmp/x.mp4" >/dev/null 2>&1; then
+  if python3 scripts/cut.py examples/driftpay/storyboard.yml --kept "$tmp/none.yml" --clip S01=$tmp/c1.mp4 -o "$tmp/x.mp4" >/dev/null 2>&1; then
     echo "FAIL cut with missing clips not caught"; exit 1; fi
   ok "cut refuses a storyboard with missing clips"
+
+  # The visual storyboard: stage 3 (nothing generated: sketch boxes) and after the cut (frames, strips, joins).
+  python3 scripts/board.py examples/driftpay/storyboard.yml --kept "$tmp/none.yml" -o "$tmp/board0.html" >/dev/null
+  grep -q 'class="frame missing"' "$tmp/board0.html" && ok "board draws sketch boxes before anything is generated" || { echo "FAIL board sketch"; exit 1; }
+  printf 'clips:\n' > "$tmp/kept.yml"; for n in 1 2 3 4 5; do printf '  S0%s: c%s.mp4@0.2\n' $n $n >> "$tmp/kept.yml"; done
+  python3 scripts/board.py examples/driftpay/storyboard.yml --kept "$tmp/kept.yml" -o "$tmp/board1.html" >/dev/null
+  grep -q "join [0-9]*%" "$tmp/board1.html" && ok "board scores every join from the kept clips" || { echo "FAIL board joins"; exit 1; }
 
   # Static ads: compose from stand-in plates, then QA each export.
   python3 - "$tmp" <<'PY'

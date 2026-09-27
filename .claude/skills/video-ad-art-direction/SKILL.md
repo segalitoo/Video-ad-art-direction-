@@ -20,6 +20,16 @@ The full stage descriptions are in `workflow/stages.md`. Read it once per sessio
 8. **Judge before every pick.** After each keyframe, clip or static plate round, run the judge pass below and lead the gate with its report. You recommend; the art director picks, and can overrule any score.
 9. **Specs can be out of date.** Values marked `verify: true` in `platforms/specs.yml` or `adapters/tools.yml` are not official. Say so for real client work.
 
+## Routes: who does each job
+
+`adapters/tools.yml` has four routes: `higgsfield-web` (the default: Nano Banana Pro, GPT Image, Seedance 2.5 through the Higgsfield connector), `own-keys` (Nano Banana Pro on the Gemini API and GPT Image on the OpenAI API via `scripts/img_api.py`, Seedance on the Higgsfield API), `weave` and `higgsfield-api`. The storyboard's `ad.route` picks one; when the user says "use the <name> route", set it there and rebuild. The prompts file opens with the route table, and the budget shows the same round on the other routes.
+
+## The chain and the visual storyboard
+
+- Set `chain: true` in the storyboard: every shot then starts on the previous shot's end frame, and each end frame is an edit of the frame before it (Nano Banana Pro with the previous frame as the reference). Clips always run first + last frame. Use `cut: hard` only where the story wants a jump, and say so at the storyboard gate.
+- Keep `kept.yml` next to the storyboard: every kept frame id and every kept clip with its in-point. `board.py` and `cut.py` both read it.
+- Show `python scripts/board.py <storyboard> -o board.html` at every gate from stage 3 on (sketch boxes before generation, frames and motion strips after), and publish it so the art director can scan it on a phone. Every join under 70% is a visible jump: fix it before the edit.
+
 ## Tools: Figma Weave and Higgsfield
 
 Both run inside Claude. Split by strength, set in `adapters/tools.yml`:
@@ -67,7 +77,7 @@ Modes: `3d-stylized`, `live-action`, `ugc`, `motion-graphics` (see `lock/modes/`
 **02 The lock.** Propose 3 directions in words: mode, world, light, palette, camera and motion language. If the user wants pictures, generate style frames per direction on GPT Image 2.5 medium (`draft_params`, 0.5 credits each). Write the chosen direction into `<brand>.dna.yml`, set only the tokens that differ from the mode, and define the hero. Run `assemble.py --check`.
 → Gate: art director signs the lock.
 
-**03 Storyboard.** Write `storyboard.yml`: beats, durations, subject (the [SHOT] slot), action, camera move, supers, sound, variants. Quote every line in `variants`. Run `assemble.py --check` and fix every FAIL. Fix every prompt-lint WARN (movement in a keyframe subject, more than 2 movements per short clip, brand name vs the text ban, too many scene colours, a music cue with no `sfx`), or explain why it stays. Then read the assembled prompts once, whole, as the model will: the lint catches patterns, not contradictions.
+**03 Storyboard.** Write `storyboard.yml` (with `chain: true` and an `end_subject` on every shot): beats, durations, subject (the [SHOT] slot), action, camera move, supers, sound, variants. Quote every line in `variants`. Run `assemble.py --check` and fix every FAIL. Fix every prompt-lint WARN (movement in a keyframe subject, more than 2 movements per short clip, brand name vs the text ban, too many scene colours, a music cue with no `sfx`), or explain why it stays. Then read the assembled prompts once, whole, as the model will: the lint catches patterns, not contradictions.
 → Gate: creative lead.
 
 **04 Keyframes.** Run `assemble.py <storyboard> -o prompts.md` and show its **Budget** table first; that is the spend being approved. Generate the `H0` hero reference first: 8 to 12 candidates. When the hero is kept, set `hero.reference` in the lock and attach it to every `hero: true` shot.

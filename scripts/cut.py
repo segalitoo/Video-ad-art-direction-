@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Stage 8: cut the master from the kept clips, with supers and the end card set from the lock.
 
-    python scripts/cut.py examples/driftpay/storyboard.yml \\
-        --clip S01=clips/S01.mp4 --clip S02=clips/S02.mp4@0.4 ... -o master.mp4
+    python scripts/cut.py examples/driftpay/storyboard.yml -o master.mp4      # clips from kept.yml
+    python scripts/cut.py <storyboard> --clip S01=clips/S01.mp4 --clip S02=clips/S02.mp4@0.4 ... -o master.mp4
 
 - Shots run in storyboard order, each trimmed to its `duration_s` (from an optional
   in-point: `@0.4` starts 0.4 s into the clip) and scaled to the master size.
@@ -24,7 +24,7 @@ import tempfile
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-from common import fail, load_specs, load_storyboard, parse_aspect, safe_union
+from common import fail, load_specs, load_storyboard, load_yaml, parse_aspect, safe_union
 import static_compose as sc
 
 FPS = 24
@@ -157,7 +157,8 @@ def loudnorm(src, out, target, total):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("storyboard")
-    ap.add_argument("--clip", action="append", default=[], help="SHOT=path.mp4[@in_seconds]")
+    ap.add_argument("--clip", action="append", default=[], help="SHOT=path.mp4[@in_seconds]; overrides kept.yml")
+    ap.add_argument("--kept", help="kept.yml with the kept clips (default: kept.yml next to the storyboard)")
     ap.add_argument("--font", help="brand font file; falls back to the lock's family, then a system bold sans")
     ap.add_argument("--aspect", help="cut another ratio (e.g. 4:5) from the same clips; supers move into its safe zone")
     ap.add_argument("-o", "--out", required=True)
@@ -179,6 +180,11 @@ def main():
         print(f"note: brand font not installed; set in {Path(font_path).name}. Pass --font to use the brand font.")
 
     clips = {}
+    kept_path = Path(args.kept) if args.kept else Path(args.storyboard).parent / "kept.yml"
+    if kept_path.exists():
+        for sid, spec in ((load_yaml(kept_path) or {}).get("clips") or {}).items():
+            path, _, start = str(spec).partition("@")
+            clips[sid] = (kept_path.parent / path, float(start or 0))
     for spec in args.clip:
         sid, _, rest = spec.partition("=")
         path, _, start = rest.partition("@")

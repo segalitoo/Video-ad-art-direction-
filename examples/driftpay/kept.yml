@@ -1,0 +1,15 @@
+# The frames and clips the art director kept, for scripts/board.py and scripts/cut.py.
+# Paths are relative to this file. A clip's @ is the in-point used in the cut.
+frames:
+  S01-K: test/out/S01_2.qwen.jpg
+  S02-K-end: test/out/S02-end_1.qwen-edit.jpg
+  S03-K: final/out/S03_1.qwen-edit.jpg
+  S04-K: test/out/S04_2.qwen.jpg
+  S04-K-end: final/out/S04-end_2.qwen-edit.jpg
+  S05-K-end: final/out/S05-end_1.qwen-edit.jpg
+clips:
+  S01: final/out/S01.seedance720.mp4@0
+  S02: final/out/S02.seedance720.mp4@0.9
+  S03: final/out/S03.seedance720.mp4@1.0
+  S04: final/out/S04.seedance720.mp4@0.3
+  S05: final/out/S05.seedance720.mp4@1.54

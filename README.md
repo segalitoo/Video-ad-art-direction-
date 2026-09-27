@@ -8,6 +8,7 @@ It extends the [Bingo Bay AI production workflow](https://segalitoo.github.io/ra
 **Platforms:** TikTok · Instagram/Facebook Reels and Stories · YouTube Shorts · Meta feed · LinkedIn
 **Looks:** 3D stylized · live action · UGC · motion graphics
 **Formats:** motion ads (9:16 master, free 4:5 cut) and static ads (4:5, 1:1, 9:16, LinkedIn sizes) from the same lock
+**Engines:** a route toggle (`ad.route`) picks who does each job: `higgsfield-web` (default: Nano Banana Pro, GPT Image and Seedance in the Higgsfield connector), `own-keys` (Gemini and OpenAI APIs), `weave` (Figma Weave) or `higgsfield-api`. The budget shows the same round on every route.
 **Tools:** any. One master prompt, adapted for Figma Weave and Higgsfield (both inside Claude), Nano Banana, Midjourney, Veo in Google Flow, Kling, Runway, Suno, ElevenLabs. You can add more.
 
 **Inside Claude, two engines split by strength.** The video model is **Seedance 2.5**, on either engine. Figma Weave runs keyframes and motion behind one connector and keeps the lock as a saved workflow the art director can open. Higgsfield is the cheaper route for Seedance, holds the hero as an extra reference in motion, and also reframes, runs Marketing Studio, predicts virality and publishes to TikTok. Every paid run is quoted and approved first; `assemble.py` prints the budget for a full round before stage 4.
@@ -23,12 +24,13 @@ DEFINE                      PRODUCE (in parallel)                SHIP
 
 Ten stages, one human gate each, two iteration cycles at most. **J** is the judge pass: before each pick, Claude scores every image or clip against a fixed rubric, gives the round one score, and names the best matching set (`scripts/judge.py`). Full detail: [`workflow/stages.md`](workflow/stages.md).
 
-Five ideas carry the whole system:
+Six ideas carry the whole system:
 1. **The lock.** The look is written as tokens before the first generation (`<brand>.dna.yml`). A moodboard gets interpreted; a token gets pasted.
 2. **Assembled prompts.** `STYLE + [SHOT] + WORLD + FORM + LIGHT + GRADE + PALETTE + TECH + FRAME`. Only the bracketed slot changes between shots, so every shot reads as one film.
-3. **Keyframe first.** Each shot starts as a still (pick 1 of 8 to 12). Only a kept frame gets animated, and its motion prompt says only what moves. This keeps paid video generations low.
-4. **Machines check first.** Pre-checks on the storyboard, a judge pass on every batch, and spec checks on every export, so people only review what passed, ranked.
-5. **Everything logged.** Each generation records its verdict, reason and lock version.
+3. **A chain of frames.** With `chain: true` every shot starts on the previous shot's end frame, and the end frame is an edit of the one before. Clips run first frame to last frame, so nothing jumps between them. The visual storyboard scores every join.
+4. **Keyframe first.** Each shot starts as a still (pick 1 of 8 to 12). Only a kept frame gets animated, and its motion prompt says only what moves. This keeps paid video generations low.
+5. **Machines check first.** Pre-checks on the storyboard, a judge pass on every batch, and spec checks on every export, so people only review what passed, ranked.
+6. **Everything logged.** Each generation records its verdict, reason and lock version.
 
 ## Using it with Claude
 
@@ -48,7 +50,9 @@ python scripts/matrix.py   <storyboard.yml> -o matrix.csv        # hooks × CTAs
 python scripts/judge.py new judge/r1.yml --lock ../x.dna.yml D="out/droopy*" L="out/lush*" --pair D:L:first_last
 python scripts/judge.py measure judge/r1.yml                    # machine pass; then Claude scores by eye
 python scripts/judge.py rank judge/r1.yml -o report.md --sheet sheet.html   # round score, best matching sets
-python scripts/cut.py <storyboard.yml> --clip S01=a.mp4@0.4 ... -o master.mp4   # stage 8: cut, supers, end card, loudness (--aspect 4:5 for the feed)
+python scripts/board.py <storyboard.yml> -o board.html            # the visual storyboard: frames, supers, motion strips, a join score per cut
+python scripts/cut.py <storyboard.yml> -o master.mp4             # stage 8 from kept.yml: cut, supers, end card, loudness (--aspect 4:5 for the feed)
+python scripts/img_api.py --provider gemini --prompt-file p.txt --ref prev.jpg --yes   # own-keys route: Nano Banana Pro / GPT Image
 python scripts/crop.py master.mp4 4:5                           # free 4:5 feed cut, checks the safe area
 python scripts/phone_look.py clip.mp4 --shake 1                 # phone-footage feel: drift, grain, flicker
 python scripts/hf_api.py run <model> -i body.json --yes --out clips/   # Higgsfield API: estimate, approve, submit, wait, download
