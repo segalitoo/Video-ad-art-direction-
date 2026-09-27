@@ -92,6 +92,20 @@ if command -v ffmpeg >/dev/null; then
     echo "FAIL 1:1 crop into the safe area not caught"; exit 1; fi
   ok "1:1 crop that cuts the safe area is refused"
 
+  # The cut: five stand-in clips become a master and a 4:5 feed cut that pass their specs.
+  for n in 1 2 3 4 5; do
+    ffmpeg -y -v error -f lavfi -i "testsrc2=size=720x1280:rate=24:duration=4" -f lavfi -i "sine=frequency=$((300+n*50)):duration=4" \
+      -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "$tmp/c$n.mp4"
+  done
+  cl=""; for n in 1 2 3 4 5; do cl="$cl --clip S0$n=$tmp/c$n.mp4@0.2"; done
+  python3 scripts/cut.py examples/driftpay/storyboard.yml $cl -o "$tmp/cut.mp4" >/dev/null
+  python3 scripts/spec_check.py "$tmp/cut.mp4" --platform meta_vertical linkedin_feed >/dev/null && ok "cut master passes its specs"
+  python3 scripts/cut.py examples/driftpay/storyboard.yml $cl --aspect 4:5 -o "$tmp/cut45.mp4" >/dev/null
+  python3 scripts/spec_check.py "$tmp/cut45.mp4" --platform meta_feed >/dev/null && ok "4:5 feed cut passes its specs"
+  if python3 scripts/cut.py examples/driftpay/storyboard.yml --clip S01=$tmp/c1.mp4 -o "$tmp/x.mp4" >/dev/null 2>&1; then
+    echo "FAIL cut with missing clips not caught"; exit 1; fi
+  ok "cut refuses a storyboard with missing clips"
+
   # Static ads: compose from stand-in plates, then QA each export.
   python3 - "$tmp" <<'PY'
 import sys

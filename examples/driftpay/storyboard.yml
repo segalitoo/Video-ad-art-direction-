@@ -100,8 +100,9 @@ statics:
 
   - id: A2
     concept: the stack of coins
-    subject: the stack of paper coins on the desk
-    from_frame: S05-K-end
+    subject: the laptop and the coffee cup are gone, only the coin stack stands on the empty kraft-paper desk under the window
+    edit_of: S05-K-end        # the kept coin frame, cleared so the headline has room
+    edit_verb: Change
     hero: false
     copy_space: top
     headline: "Paid in 1 day. Not 5."

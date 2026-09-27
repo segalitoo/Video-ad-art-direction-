@@ -644,7 +644,7 @@ def build(board, lock, specs, tools, tool_names):
                         f"{st.get('copy_space', 'top')} band.", ""]
                 continue
             if st.get("edit_of"):
-                prompt = edit_prompt(st["subject"], st, lock, verb="Add")
+                prompt = edit_prompt(st["subject"], st, lock, verb=st.get("edit_verb", "Add"))
                 results = [(n, *for_tool(prompt, tools[n], neg_image, master)) for n in image_tools]
                 results = [(n, t, [f"Edit the kept {st['edit_of']} frame (image input); crop the other ratios "
                                    f"from the kept plate, keeping the {st.get('copy_space', 'top')} band"] + e)

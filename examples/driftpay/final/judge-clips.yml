@@ -1,0 +1,126 @@
+round: Driftpay final clips (720p)
+lock: ../driftpay.dna.yml
+groups:
+  S01:
+    label: Corner flutter
+    files: 1
+  S02:
+    label: The fold
+    files: 1
+  S03:
+    label: Take-off
+    files: 1
+  S04:
+    label: Across the map
+    files: 1
+  S05:
+    label: Plane to coins
+    files: 1
+pairs: []
+items:
+  S01-1:
+    file: out/S01.seedance720.mp4
+    group: S01
+    kind: clip
+    model: seedance720
+  S02-1:
+    file: out/S02.seedance720.mp4
+    group: S02
+    kind: clip
+    model: seedance720
+  S03-1:
+    file: out/S03.seedance720.mp4
+    group: S03
+    kind: clip
+    model: seedance720
+  S04-1:
+    file: out/S04.seedance720.mp4
+    group: S04
+    kind: clip
+    model: seedance720
+  S05-1:
+    file: out/S05.seedance720.mp4
+    group: S05
+    kind: clip
+    model: seedance720
+scores:
+  S01-1:
+    on_model: 5
+    morph: 5
+    physics: 5
+    motion: 5
+    continuity: 5
+    craft: 4
+    note: The corner lifts, flutters and settles like paper in a draft; the desk is rock steady
+  S02-1:
+    on_model: 4
+    morph: 4
+    physics: 4
+    motion: 5
+    continuity: 5
+    craft: 4
+    note: Clean origami steps into the dart; the sheet briefly flips up on its tip mid-fold
+  S03-1:
+    on_model: 5
+    morph: 5
+    physics: 4
+    motion: 5
+    continuity: 5
+    craft: 4
+    note: The plane lifts and glides out of the top left; light and floaty, true to the lock
+  S04-1:
+    on_model: 5
+    morph: 4
+    physics: 4
+    motion: 5
+    continuity: 4
+    craft: 4
+    note: 'The end frame fixed it: the plane follows the thread to the end frame and the thread stays put'
+  S05-1:
+    on_model: 4
+    morph: 3
+    physics: 3
+    motion: 4
+    continuity: 5
+    craft: 4
+    note: 'From 1.54s: the plane settles, dissolves into falling coins that stack. A magic beat, not physics'
+pair_scores: {}
+fixes:
+- 'S05: a dissolve replaces ''unfolds into coins''; fine as a payoff, but the transformation is not shown.'
+machine:
+  S01-1:
+    size: 720x1280
+    sharp: 84.3
+    calm_bands: 66.1
+    palette: 56.1
+    steady: 94.8
+    strip: out/S01.seedance720.strip.png
+  S02-1:
+    size: 720x1280
+    sharp: 84.6
+    calm_bands: 65.9
+    palette: 57.9
+    steady: 79.6
+    strip: out/S02.seedance720.strip.png
+  S03-1:
+    size: 720x1280
+    sharp: 77.0
+    calm_bands: 65.5
+    palette: 60.8
+    steady: 97.3
+    strip: out/S03.seedance720.strip.png
+  S04-1:
+    size: 720x1280
+    sharp: 100.0
+    calm_bands: 63.2
+    palette: 58.1
+    steady: 95.7
+    strip: out/S04.seedance720.strip.png
+  S05-1:
+    size: 720x1280
+    sharp: 72.6
+    calm_bands: 58.5
+    palette: 61.9
+    steady: 92.3
+    strip: out/S05.seedance720.strip.png
+pair_machine: {}

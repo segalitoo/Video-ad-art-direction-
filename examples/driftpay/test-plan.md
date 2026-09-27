@@ -36,8 +36,8 @@ Back to Fernly with the POV look, if that test passed, or to Sunpeel. The system
 | 1 Fold | Pass | Clip judged 82: crisp creases, the sheet stands up and becomes the dart; the desk never moves |
 | 2 Flight | Pass, weak | Clip judged 68: reads as a plane over the world at phone speed, but it pivots more than it glides and the thread re-routes. Fix: first + last frame |
 | 3 Handmade | Pass | Frames judged 87 (best set D2 + E1 + M2): real paper under real light, clocks without numerals, no writing |
-| 4 Stop-scroll | | The art director's call |
-| **Decision** | | 3 of 3 judged items pass; item 4 is the art director's |
+| 4 Stop-scroll | Pass | The art director went ahead with the full round (2026-09-27) |
+| **Decision** | **Go** | 4 of 4. Delivered: see `final/README.md` |
 
 ## Spend
 

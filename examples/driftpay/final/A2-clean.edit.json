@@ -1,0 +1,12 @@
+{
+ "prompt": "Edit this photo. Keep the camera, framing, every prop, the room and the light exactly as they are. Change only this: the laptop and the coffee cup are gone, only the coin stack stands on the empty kraft-paper desk under the window.",
+ "image_urls": [
+  "https://d3u0tzju9qaucj.cloudfront.net/2584f776-b711-47aa-8e5e-c821d55e349a/5894cb1c-1c43-4106-8225-c408ca4b7138.png"
+ ],
+ "negative_prompt": "text or letters in the image, watermark, glossy plastic or CGI sheen, numbers or writing on the paper, people or body parts",
+ "aspect_ratio": "9:16",
+ "resolution": "2k",
+ "prompt_extend": false,
+ "enable_thinking": false,
+ "seed": 5402
+}

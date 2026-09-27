@@ -48,6 +48,7 @@ python scripts/matrix.py   <storyboard.yml> -o matrix.csv        # hooks × CTAs
 python scripts/judge.py new judge/r1.yml --lock ../x.dna.yml D="out/droopy*" L="out/lush*" --pair D:L:first_last
 python scripts/judge.py measure judge/r1.yml                    # machine pass; then Claude scores by eye
 python scripts/judge.py rank judge/r1.yml -o report.md --sheet sheet.html   # round score, best matching sets
+python scripts/cut.py <storyboard.yml> --clip S01=a.mp4@0.4 ... -o master.mp4   # stage 8: cut, supers, end card, loudness (--aspect 4:5 for the feed)
 python scripts/crop.py master.mp4 4:5                           # free 4:5 feed cut, checks the safe area
 python scripts/phone_look.py clip.mp4 --shake 1                 # phone-footage feel: drift, grain, flicker
 python scripts/hf_api.py run <model> -i body.json --yes --out clips/   # Higgsfield API: estimate, approve, submit, wait, download
@@ -69,6 +70,7 @@ bash scripts/selftest.sh                                         # test everythi
 | `templates/` | Brief, storyboard, copy matrix, QA checklist, iteration log |
 | `scripts/` | Scaffold, assemble, matrix, judge, spec check, crop, statics, Higgsfield API client, self-test |
 | `examples/sunpeel/` | The pilot: a fictional zero-sugar citrus soda, photoreal product look (lock v1.2), 15s video + 3 static ads |
+| `examples/driftpay/` | **The finished pilot:** a fictional payments app in handmade paper craft, 15s video in 9:16 and 4:5 + 7 statics, made for $11.94 on the Higgsfield API. See `final/README.md` |
 | `examples/fernly/` | Pilot candidate: a plant-care app, UGC from the plant's point of view, voice by Arthur; run `test-plan.md` first |
 | `docs/brief-generator.html` | Intake form that writes the brief, lock and storyboard ([live](https://claude.ai/artifact/DvdWpJVGGaiz4g3wWVT6h6)) |
 | `docs/plan.html` | The plan as a page, in the portfolio design system ([live](https://claude.ai/artifact/HQm6PR8irg3vVe4BnLf99o)) |
