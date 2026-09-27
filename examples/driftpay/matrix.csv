@@ -1,0 +1,26 @@
+variant_id,type,platform,aspect,source,length_s,hook_id,hook,cta_id,cta,lock_version,status
+driftpay-planes-15s_linkedin_feed_H1C1,video,linkedin_feed,9:16,master,15,H1,Your invoice is leaving.,C1,Open a free account,1.0,draft
+driftpay-planes-15s_linkedin_feed_H1C2,video,linkedin_feed,9:16,master,15,H1,Your invoice is leaving.,C2,Get paid faster,1.0,draft
+driftpay-planes-15s_linkedin_feed_H2C1,video,linkedin_feed,9:16,master,15,H2,This invoice gets paid tomorrow.,C1,Open a free account,1.0,draft
+driftpay-planes-15s_linkedin_feed_H2C2,video,linkedin_feed,9:16,master,15,H2,This invoice gets paid tomorrow.,C2,Get paid faster,1.0,draft
+driftpay-planes-15s_linkedin_feed_H3C1,video,linkedin_feed,9:16,master,15,H3,Watch an invoice cross the world.,C1,Open a free account,1.0,draft
+driftpay-planes-15s_linkedin_feed_H3C2,video,linkedin_feed,9:16,master,15,H3,Watch an invoice cross the world.,C2,Get paid faster,1.0,draft
+driftpay-planes-15s_meta_feed_H1C1,video,meta_feed,4:5,reframe from 9:16,15,H1,Your invoice is leaving.,C1,Open a free account,1.0,draft
+driftpay-planes-15s_meta_feed_H1C2,video,meta_feed,4:5,reframe from 9:16,15,H1,Your invoice is leaving.,C2,Get paid faster,1.0,draft
+driftpay-planes-15s_meta_feed_H2C1,video,meta_feed,4:5,reframe from 9:16,15,H2,This invoice gets paid tomorrow.,C1,Open a free account,1.0,draft
+driftpay-planes-15s_meta_feed_H2C2,video,meta_feed,4:5,reframe from 9:16,15,H2,This invoice gets paid tomorrow.,C2,Get paid faster,1.0,draft
+driftpay-planes-15s_meta_feed_H3C1,video,meta_feed,4:5,reframe from 9:16,15,H3,Watch an invoice cross the world.,C1,Open a free account,1.0,draft
+driftpay-planes-15s_meta_feed_H3C2,video,meta_feed,4:5,reframe from 9:16,15,H3,Watch an invoice cross the world.,C2,Get paid faster,1.0,draft
+driftpay-planes-15s_meta_vertical_H1C1,video,meta_vertical,9:16,master,15,H1,Your invoice is leaving.,C1,Open a free account,1.0,draft
+driftpay-planes-15s_meta_vertical_H1C2,video,meta_vertical,9:16,master,15,H1,Your invoice is leaving.,C2,Get paid faster,1.0,draft
+driftpay-planes-15s_meta_vertical_H2C1,video,meta_vertical,9:16,master,15,H2,This invoice gets paid tomorrow.,C1,Open a free account,1.0,draft
+driftpay-planes-15s_meta_vertical_H2C2,video,meta_vertical,9:16,master,15,H2,This invoice gets paid tomorrow.,C2,Get paid faster,1.0,draft
+driftpay-planes-15s_meta_vertical_H3C1,video,meta_vertical,9:16,master,15,H3,Watch an invoice cross the world.,C1,Open a free account,1.0,draft
+driftpay-planes-15s_meta_vertical_H3C2,video,meta_vertical,9:16,master,15,H3,Watch an invoice cross the world.,C2,Get paid faster,1.0,draft
+driftpay-planes-15s_A1_linkedin_feed_1x1,static,linkedin_feed,1:1,"plate 1:1, 1200x1200",,A1,Get paid like it's local.,,Open a free account,1.0,draft
+driftpay-planes-15s_A1_linkedin_feed_1.91x1,static,linkedin_feed,1.91:1,"plate 1.91:1, 1200x628",,A1,Get paid like it's local.,,Open a free account,1.0,draft
+driftpay-planes-15s_A1_meta_feed_4x5,static,meta_feed,4:5,"plate 4:5, 1080x1350",,A1,Get paid like it's local.,,Open a free account,1.0,draft
+driftpay-planes-15s_A1_meta_feed_1x1,static,meta_feed,1:1,"plate 1:1, 1080x1080",,A1,Get paid like it's local.,,Open a free account,1.0,draft
+driftpay-planes-15s_A2_meta_vertical_9x16,static,meta_vertical,9:16,"plate 9:16, 1080x1920",,A2,Paid in 1 day. Not 5.,,Open a free account,1.0,draft
+driftpay-planes-15s_A2_meta_feed_4x5,static,meta_feed,4:5,"plate 4:5, 1080x1350",,A2,Paid in 1 day. Not 5.,,Open a free account,1.0,draft
+driftpay-planes-15s_A2_meta_feed_1x1,static,meta_feed,1:1,"plate 4:5, 1080x1080",,A2,Paid in 1 day. Not 5.,,Open a free account,1.0,draft

@@ -1,0 +1,63 @@
+# driftpay.dna.yml · v1.0
+# owner: art director
+# Fictional brand for a portfolio pilot. Name not trademark-checked.
+#
+# The look is a handmade paper-craft miniature: real cut, folded and glued paper,
+# shot like a tabletop macro. It should feel made by hand, never like glossy CGI.
+# No figure is ever printed on the paper: amounts, dates and the brand are set in the edit.
+
+meta:
+  brand: Driftpay
+  campaign: Paper planes
+  version: "1.0"
+  owner: Art director
+  mode: 3d-stylized
+  people: false            # a paper world; nobody on screen
+  audience: freelancers and small studios, 25 to 45, billing clients in other countries
+  promise: Get paid from abroad as fast as from next door
+
+tokens:
+  STYLE: handmade paper-craft miniature, tabletop stop-motion set, tactile and charming
+  WORLD: a small paper-craft world built on a kraft-paper tabletop, every object cut, folded and glued from paper and card
+  FORM: crisp folded paper with visible fibres, clean scored creases, slightly imperfect cut edges, true paper thickness
+  LIGHT: soft daylight from a window on the left, gentle contact shadows under every paper edge
+  GRADE: warm neutral colour, soft contrast, a little film softness
+  CAMERA: tabletop macro, 50mm lens, shallow depth of field
+  MOTION: paper moves like paper, light and floaty in the air, settles softly, creases stay crisp, nothing stretches
+  TECH: macro photograph of real paper models, fine paper grain, natural depth of field
+
+palette:
+  - {hex: "#F4F1EA", name: paper white, role: background}
+  - {hex: "#FF6B4A", name: signal coral, role: hero}
+  - {hex: "#7FD1B9", name: mint, role: accent}
+  - {hex: "#C9A57A", name: kraft brown, role: accent}
+  - {hex: "#1E2A44", name: ink navy, role: type on light}
+  - {hex: "#FFFFFF", name: white, role: type on dark}
+
+type:
+  family: "Space Grotesk (numbers set large, like a receipt)"
+  weight: Medium
+  case: sentence
+  max_words_per_super: 7
+  min_size_pct_of_height: 3.5
+
+sound:
+  genre: light playful pizzicato strings with paper foley, upbeat, never cute
+  bpm: 112
+  instruments: pizzicato strings, soft marimba, paper rustles and folds as rhythm
+  voice: none
+  signature: a single crisp paper fold
+
+end_card:
+  duration_s: 1.5
+  logo: driftpay wordmark in ink navy on paper white, a small coral paper plane
+  cta_style: super plus platform button
+
+negative:
+  - glossy plastic or CGI sheen
+  - numbers or writing on the paper
+negative_video:
+  - paper stretching like rubber
+
+hero:
+  description: a paper plane folded from a crisp white invoice sheet with a thin coral stripe along one edge, grey ruled lines where the numbers would be

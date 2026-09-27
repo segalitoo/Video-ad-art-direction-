@@ -1,0 +1,116 @@
+# Driftpay · "Paper planes" · 15s · stage 3 output
+# A round trip: the invoice leaves the desk as a paper plane, crosses the world, and comes back as money.
+# S02 starts on the kept S01 frame and S05 is an edit of it, so the desk is the same at the start and the end.
+
+ad:
+  id: driftpay-planes-15s
+  lock: driftpay.dna.yml
+  length_s: 15
+  master_aspect: "9:16"
+  platforms: [linkedin_feed, meta_feed, meta_vertical]
+  tools: [higgsfield, figma-weave]
+  candidates: {keyframe: 4, motion: 2, static: 2}
+
+shots:
+  - id: S01
+    beat: hook
+    duration_s: 2
+    subject: a flat white invoice sheet with a thin coral stripe lying on a kraft-paper desk, a small paper-craft laptop and a paper coffee cup behind it, one corner of the sheet curled up
+    action: the curled corner of the invoice lifts and flutters in a light draft
+    camera_move: static
+    hero: false
+    super: "Your invoice is leaving."
+    sound: music starts
+    sfx: a soft paper flutter
+    generate: true
+
+  - id: S02
+    beat: build
+    duration_s: 3
+    subject: the invoice on the desk, one corner curled up (the kept S01 frame)
+    from_frame: S01-K
+    end_subject: the invoice is now folded into a crisp paper plane with the coral stripe along its wing, resting on the same spot
+    action: the invoice folds itself along crisp creases into a paper plane
+    camera_move: static
+    hero: true
+    super: "Sent to a client 6,000 km away."
+    sound: music
+    sfx: three crisp paper folds
+    generate: true
+
+  - id: S03
+    beat: build
+    duration_s: 2.5
+    subject: the paper plane in the air just past the edge of the kraft-paper desk, nose up, window light behind it
+    action: the paper plane glides up and out of the top of the frame
+    camera_move: static
+    hero: true
+    super: "No three-day wait."
+    sound: music
+    sfx: a light whoosh
+    generate: true
+
+  - id: S04
+    beat: product
+    duration_s: 3.5
+    subject: top-down view of a folded paper world map with raised mint paper continents, a thin coral thread tracing a route across the ocean, tiny paper clock faces with hands at different times and no numerals, the paper plane halfway along the route
+    action: the paper plane glides along the coral thread across the map
+    camera_move: slow drift following the plane
+    hero: true
+    super: "Across time zones, same day."
+    sound: music
+    sfx: a soft paper glide
+    generate: true
+
+  - id: S05
+    beat: payoff
+    duration_s: 2.5
+    subject: the paper plane resting on the kraft-paper desk on the spot where the invoice was
+    edit_of: S01-K
+    end_subject: a small neat stack of coral and mint paper coins on the same spot, the paper plane gone
+    action: the paper plane unfolds and turns into a neat stack of paper coins
+    camera_move: static
+    hero: true
+    super: "Paid in 1 day."
+    sound: music peaks
+    sfx: a cheerful paper click
+    generate: true
+
+  - id: S99
+    beat: end-card
+    duration_s: 1.5
+    super: "Driftpay. Get paid like it's local."
+    sound: music ends on the fold sound
+    generate: false
+
+statics:
+  - id: A1
+    concept: the plane over the map
+    subject: the paper plane in mid-air above a folded paper world map with raised mint continents and a coral thread route
+    hero: true
+    copy_space: top
+    headline: "Get paid like it's local."
+    cta: "Open a free account"
+    plates: ["1:1", "1.91:1", "4:5"]
+    platforms: [linkedin_feed, meta_feed]
+
+  - id: A2
+    concept: the stack of coins
+    subject: the stack of paper coins on the desk
+    from_frame: S05-K-end
+    hero: false
+    copy_space: top
+    headline: "Paid in 1 day. Not 5."
+    cta: "Open a free account"
+    plates: ["9:16", "4:5"]
+    platforms: [meta_vertical, meta_feed]
+
+# Quote every line: a comma inside {...} breaks YAML.
+variants:
+  hooks:
+    - {id: H1, super: "Your invoice is leaving."}
+    - {id: H2, super: "This invoice gets paid tomorrow."}
+    - {id: H3, super: "Watch an invoice cross the world."}
+  ctas:
+    - {id: C1, text: "Open a free account"}
+    - {id: C2, text: "Get paid faster"}

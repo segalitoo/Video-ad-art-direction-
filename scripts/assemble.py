@@ -71,9 +71,12 @@ def check(board, lock, specs, tools):
 
     frames = {f"{s['id']}-K" for s in shots} | {f"{s['id']}-K-end" for s in shots if s.get("end_subject")}
     for s in shots:
-        ref = s.get("edit_of")
-        if ref and (ref not in frames or ref.startswith(f"{s['id']}-")):
-            errors.append(f"{s['id']}: edit_of '{ref}' is not another shot's frame. Options: {', '.join(sorted(frames))}")
+        for key in ("edit_of", "from_frame"):
+            ref = s.get(key)
+            if ref and (ref not in frames or ref.startswith(f"{s['id']}-")):
+                errors.append(f"{s['id']}: {key} '{ref}' is not another shot's frame. Options: {', '.join(sorted(frames))}")
+        if s.get("edit_of") and s.get("from_frame"):
+            errors.append(f"{s['id']}: use edit_of or from_frame, not both")
 
     people = (lock.get("meta") or {}).get("people", True)
     if people not in (True, False, "hands"):
@@ -180,8 +183,11 @@ def _forms(verb):
 MOTION_FORMS = {f: v for v in MOTION_VERBS for f in _forms(v)} | {"rose": "rise", "flew": "fly", "fell": "fall"}
 
 
-def _motion_words(text):
-    return [w for w in re.findall(r"[a-z]+(?:-[a-z]+)?", str(text).lower()) if w in MOTION_FORMS]
+def _motion_words(text, states_ok=False):
+    """Movement words in a line. With states_ok, past participles are skipped: in a still,
+    "a folded map" or "a tilted can" is a state the frame can show, not a movement."""
+    words = [w for w in re.findall(r"[a-z]+(?:-[a-z]+)?", str(text).lower()) if w in MOTION_FORMS]
+    return [w for w in words if not (states_ok and w.endswith("ed"))]
 
 
 MAX_EVENTS_PER_CLIP = 2
@@ -233,7 +239,7 @@ def lint(board, lock):
                 seen.setdefault(ph, key)
 
     for st in board.get("statics") or []:
-        moving = sorted(set(_motion_words(st.get("subject", ""))))
+        moving = sorted(set(_motion_words(st.get("subject", ""), states_ok=True)))
         if moving:
             out.append(f"static {st.get('id')}: subject has movement ({', '.join(moving)}); a static is one frozen frame")
 
@@ -241,7 +247,7 @@ def lint(board, lock):
         if not shot.get("generate", True):
             continue
         sid = shot["id"]
-        moving = sorted(set(_motion_words(f"{shot.get('subject', '')} {shot.get('end_subject', '')}")))
+        moving = sorted(set(_motion_words(f"{shot.get('subject', '')} {shot.get('end_subject', '')}", states_ok=True)))
         if moving:
             out.append(f"{sid}: subject has movement ({', '.join(moving)}). A keyframe is one frozen frame: "
                        f"describe the first frame, put the movement in `action`")
@@ -479,7 +485,7 @@ def budget(board, lock, tools, tool_names):
         if not (img or vid):
             continue
         ends = sum(1 for s in shots if s.get("end_subject"))
-        key_n = (len(shots) + hero + ends) * cands["keyframe"]
+        key_n = (len([s for s in shots if not s.get("from_frame")]) + hero + ends) * cands["keyframe"]
         mot_n = len(shots) * cands["motion"] if lock["_mode"].get("keyframe_first") else 0
         key_c = key_n * img["credits"] if img else None
         mot_c = None
@@ -572,7 +578,10 @@ def build(board, lock, specs, tools, tool_names):
 
         key = keyframe_prompt(shot, lock, frame_words)
         mov = motion_prompt(shot, lock)
-        if shot.get("edit_of"):
+        if shot.get("from_frame"):
+            keyframes = []
+            out += [f"**{shot['id']}-K · start frame:** the kept {shot['from_frame']} frame. Nothing to generate.", ""]
+        elif shot.get("edit_of"):
             # Made from another kept frame, so the room, pot and props match that shot by construction.
             edit = edit_prompt(shot["subject"], shot, lock, verb="Add")
             keyframes = []
@@ -603,7 +612,8 @@ def build(board, lock, specs, tools, tool_names):
             if shot.get("end_subject"):
                 extra.append(f"Last frame: the kept {shot['id']}-K-end keyframe (role end_image); the model fills the change between")
             motions.append((name, text, extra))
-        out += render_group(f"{shot['id']}-K · keyframe", keyframes)
+        if keyframes:
+            out += render_group(f"{shot['id']}-K · keyframe", keyframes)
         if shot.get("end_subject"):
             # First + last frame: the model interpolates between two approved stills, which keeps a
             # change of state (droopy -> lush, closed -> open) from melting into something else.
