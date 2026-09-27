@@ -55,6 +55,26 @@ python3 scripts/img_api.py --provider gemini --prompt x --ref examples/driftpay/
 if python3 scripts/img_api.py --provider openai --prompt x >/dev/null 2>&1; then echo "FAIL unapproved spend not refused"; exit 1; fi
 ok "own-keys client refuses to spend without approval"
 
+# Chain: every shot starts on the previous end frame; a missing end frame breaks it loudly.
+python3 - "$tmp" <<'PY'
+import sys, yaml
+b = yaml.safe_load(open("examples/driftpay/storyboard.yml"))
+b["ad"]["chain"] = True
+for s in b["shots"]:
+    for k in ("from_frame", "edit_of", "edit_verb"):
+        s.pop(k, None)
+    s.setdefault("end_subject", "the same scene a moment later")
+b["statics"] = []
+yaml.safe_dump(b, open(f"{sys.argv[1]}/chain.yml", "w"), sort_keys=False)
+del b["shots"][1]["end_subject"]
+yaml.safe_dump(b, open(f"{sys.argv[1]}/chain-broken.yml", "w"), sort_keys=False)
+PY
+cp examples/driftpay/driftpay.dna.yml "$tmp/"
+python3 scripts/assemble.py "$tmp/chain.yml" 2>/dev/null | grep -q "S03-K · start frame:\*\* the kept S02-K-end frame (the chain" \
+  && ok "chained shots start on the previous shot's end frame" || { echo "FAIL chain"; exit 1; }
+if python3 scripts/assemble.py "$tmp/chain-broken.yml" --check >/dev/null 2>&1; then echo "FAIL broken chain not caught"; exit 1; fi
+ok "a chain with a missing end frame is refused"
+
 # Judge pass: a matching pair must beat a mismatched one, a hard fail drops out, an unscored file stops the rank.
 mkdir -p "$tmp/judge/out"
 python3 - "$tmp/judge" <<'PY'

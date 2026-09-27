@@ -10,7 +10,10 @@ ad:
   length_s: 15
   master_aspect: "9:16"          # generate once in this ratio, reframe the rest
   platforms: [tiktok, meta_vertical, youtube_shorts, meta_feed]
-  tools: [higgsfield, nano-banana, google-flow-veo, kling]
+  tools: [higgsfield, nano-banana, google-flow-veo, kling]   # extra prompt blocks; the route's tools always come first
+  route: higgsfield-web          # which engine does each job; see routes in adapters/tools.yml
+  chain: true                    # each shot starts on the previous shot's end frame: no jumps between clips
+                                 # (every shot then needs an end_subject; `cut: hard` on a shot breaks the chain on purpose)
 
 # Beats: hook | build | product | proof | payoff | end-card
 # The hook shot must land inside the first 2 seconds, with sound off.

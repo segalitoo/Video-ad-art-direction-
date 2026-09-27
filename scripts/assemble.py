@@ -622,7 +622,8 @@ def build(board, lock, specs, tools, tool_names):
         mov = motion_prompt(shot, lock)
         if shot.get("from_frame"):
             keyframes = []
-            out += [f"**{shot['id']}-K · start frame:** the kept {shot['from_frame']} frame. Nothing to generate.", ""]
+            how = "the chain: the previous shot ends here" if shot.get("_chained") else "reused"
+            out += [f"**{shot['id']}-K · start frame:** the kept {shot['from_frame']} frame ({how}). Nothing to generate.", ""]
         elif shot.get("edit_of"):
             # Made from another kept frame, so the room, pot and props match that shot by construction.
             edit = edit_prompt(shot["subject"], shot, lock, verb=shot.get("edit_verb", "Add"))
@@ -663,10 +664,11 @@ def build(board, lock, specs, tools, tool_names):
             results = []
             for n in image_tools:
                 text, extra = for_tool(end, tools[n], neg_image, aspect)
-                results.append((n, text, [f"Edit the kept {shot['id']}-K keyframe (image input), do not generate from scratch",
+                start = shot.get("from_frame") or f"{shot['id']}-K"
+                results.append((n, text, [f"Edit the kept {start} frame (image input), do not generate from scratch",
                                           f"No image editing in this tool: use the {shot['id']}-K prompt with this as the [SHOT]: "
                                           f"{shot['end_subject']}"] + extra))
-            out += render_group(f"{shot['id']}-K-end · last frame, edited from {shot['id']}-K", results)
+            out += render_group(f"{shot['id']}-K-end · last frame, edited from {shot.get('from_frame') or shot['id'] + '-K'}", results)
         out += render_group(f"{shot['id']}-M · motion", motions)
 
     statics = board.get("statics") or []

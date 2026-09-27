@@ -58,7 +58,31 @@ def load_storyboard(path):
     lock_path = (path.parent / board["ad"]["lock"]).resolve()
     if not lock_path.exists():
         fail(f"lock file not found: {lock_path}")
+    apply_chain(board)
     return board, load_lock(lock_path)
+
+
+def apply_chain(board):
+    """With `ad.chain: true`, every generated shot starts on the previous shot's end frame, so
+    each cut matches and the motion never jumps. `cut: hard` on a shot breaks the chain there
+    (it needs its own start: a subject, or edit_of). Every chained shot needs an end_subject."""
+    if not board["ad"].get("chain"):
+        return
+    prev = None
+    for shot in board["shots"]:
+        if not shot.get("generate", True):
+            prev = None
+            continue
+        if prev and shot.get("cut") != "hard":
+            if not prev.get("end_subject"):
+                fail(f"{prev['id']}: chain needs an end_subject, so {shot['id']} can start where it ends "
+                     f"(or mark {shot['id']} with cut: hard)")
+            if shot.get("from_frame") or shot.get("edit_of"):
+                fail(f"{shot['id']}: in a chain the start frame is {prev['id']}'s end frame; "
+                     "remove from_frame/edit_of, or mark the shot cut: hard")
+            shot["from_frame"] = f"{prev['id']}-K-end"
+            shot["_chained"] = True
+        prev = shot
 
 
 def load_lock(path):
