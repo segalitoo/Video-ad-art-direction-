@@ -10,3 +10,6 @@ __pycache__/
 projects/*/clips/
 projects/*/exports/
 .selftest/
+
+# Raw API downloads; the repo keeps JPEG copies of images (keeps it light)
+examples/**/out/*.png
