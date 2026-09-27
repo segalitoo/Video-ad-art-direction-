@@ -63,6 +63,8 @@ Answer before proposing any look:
 - **Text amount follows the job** (lesson L009). A hook or brand card carries one line. An
   explainer, an offer or a native format (a Notes page) may carry more, if the squint test still
   finds the headline first.
+- **One bold word may be played with** (lesson L010): hidden behind the product, cropped or
+  overlapped, if it is a single well-known word. Never a sentence, a price or a claim.
 
 **Layout** (the spatial thesis, stated before building):
 - What leads, what supports, what belongs together, where the eye ends (the CTA).

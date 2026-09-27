@@ -136,7 +136,7 @@ entries:
     long testimonial.'
   source: Fleava. Screenshot shared by the art director, 2026-09-27; original source not given
   added: '2026-09-27'
-  by: claude (draft, art director to confirm)
+  by: 'art director (verdict: good); claude (reason, draft)'
   external: true
   copy: FLEAVA / Finally, hair regrowth that doesn't shed first. / No shedding phase. No side effects. Applied in
     60 seconds. / Get 60% OFF + 4 free gift / Try it risk-free / 4,800+ Reviews
@@ -157,7 +157,7 @@ entries:
     and hand-drawn arrows fit that voice. The long copy works because the frame makes long text feel normal.'
   source: Fleava. Screenshot shared by the art director, 2026-09-27; original source not given
   added: '2026-09-27'
-  by: claude (draft, art director to confirm)
+  by: 'art director (verdict: good); claude (reason, draft)'
   external: true
   copy: How I stopped my thinning at the root cause... / Copper peptides clinically shown to reactivate dormant
     follicles. / Works at the follicle level, not just the surface. / Most users see baby hairs in 60-90 days. /
@@ -178,7 +178,7 @@ entries:
   source: 'Vikoclima (likely a portfolio concept: the set uses a placeholder phone number). Screenshot shared by
     the art director, 2026-09-27; original source not given'
   added: '2026-09-27'
-  by: claude (draft, art director to confirm)
+  by: 'art director (verdict: good); claude (reason, draft)'
   external: true
   copy: VIKOCLIMA / Системи за климатизация (air-conditioning systems)
   watch: Visible composite seams; the logo is bigger than the idea needs.
@@ -196,7 +196,7 @@ entries:
   source: Vikoclima (likely a portfolio concept). Screenshot shared by the art director, 2026-09-27; original source
     not given
   added: '2026-09-27'
-  by: claude (draft, art director to confirm)
+  by: 'art director (verdict: good); claude (reason, draft)'
   external: true
   copy: Smart Cooling Solutions for Modern Living / Efficient. Reliable. Energy Saving Air Conditioning Systems.
     / Energy Efficient Technology / Premium Cooling Performance / Long-lasting Durability / Contact us for installation
@@ -218,7 +218,7 @@ entries:
   source: Indian Delights (restaurant, Saudi Arabia). Screenshot shared by the art director, 2026-09-27; original
     source not given
   added: '2026-09-27'
-  by: claude (draft, art director to confirm)
+  by: 'art director (verdict: good); claude (reason, draft)'
   external: true
   copy: its time to order your food / Order Now / phone number / delivery app logos
   watch: A block of eight delivery-app logos plus a phone number on every card; the script and serif fight.
@@ -237,29 +237,34 @@ entries:
   source: Indian Delights (restaurant, Saudi Arabia). Screenshot shared by the art director, 2026-09-27; original
     source not given
   added: '2026-09-27'
-  by: claude (draft, art director to confirm)
+  by: 'art director (verdict: good); claude (reason, draft)'
   external: true
   copy: طبق نان مشكل (mixed naan platter) / MIX / NAAN PLATTER / Order Now
   watch: Four type voices on one card (Arabic, huge serif-less caps, slanted italic caps, the logo), plus the app-logo
     block.
 - id: T0013
-  kind: anti
+  kind: exemplar
   medium: static
   file: refs/external/T0013.jpg
   original: sneakers.png
   tags:
-  - template
+  - one-bold-word
   - type-behind-product
-  - clip-art
-  - generic
-  why: 'A stock template: outline ''NEW COLLECTION'' repeated, 3D clip-art triangles, ''Exclusive'' in a second
-    italic, a placeholder phone. The shoe crossing the word is the one good device, and the naan card does it better.'
+  - overlap
+  - poster
+  - big-type
+  - branded
+  why: 'A strongly branded, poster-style ad built on one bold word: SNEAKERS set huge, and the shoe cuts through
+    it. The word can be partly hidden because one big word is still recognised at a glance; it plays with the type
+    instead of just placing it.'
   source: Unbranded social-media template (placeholder phone number). Screenshot shared by the art director, 2026-09-27;
     original source not given
   added: '2026-09-27'
-  by: claude (draft, art director to confirm)
+  by: 'art director (verdict: good, ''one bold word that can be played''); claude (reason, draft)'
   external: true
   copy: NEW COLLECTION / EXCLUSIVE SNEAKERS / Call for more 0001-2345-6789 / BOOK NOW
+  watch: 'The hidden letters make it not fully readable, so use it only for a single well-known word. Skip the template
+    extras: outline ''NEW COLLECTION'' repeats, 3D clip-art triangles, a placeholder phone number.'
 - id: T0014
   kind: exemplar
   medium: static
@@ -302,3 +307,108 @@ entries:
   copy: Not Able to Answer Every Call? / Missed Calls = Missed Customers / Hiring More Staff Isn't Always the Answer
     / Let Rosie AI Handle Every Call / Never Miss a Customer Again, Even When You Are Busy. / See Rosie AI in action
     / Start Free Trial
+- id: T0016
+  kind: exemplar
+  medium: static
+  file: refs/external/T0016.jpg
+  original: goli.png
+  tags:
+  - big-type
+  - setup-punchline
+  - two-colour-headline
+  - macro-product
+  - benefit-icons
+  - dtc
+  why: 'Setup and punchline in one headline: ''You don''t swallow.'' in yellow, ''You chew.'' bigger in white. Heavy
+    condensed type fills the width. A macro of one gummy shows the texture the line is about, and three benefit
+    icons split by thin rules close it.'
+  source: Goli Nutrition (gummies). Screenshot shared by the art director, 2026-09-27; original source not given
+  added: '2026-09-27'
+  by: 'art director (verdict: good); claude (reason, draft)'
+  external: true
+  copy: YOU DON'T SWALLOW. YOU CHEW. / goli Gummies with benefits* / Zero sugar* / Supports digestive health* /
+    Easiest daily habit*
+  watch: The pack shot squeezed into the bottom-left corner crowds the icon row.
+- id: T0017
+  kind: exemplar
+  medium: static
+  file: refs/external/T0017.jpg
+  original: levanta-set.png
+  tags:
+  - campaign-set
+  - system
+  - alternating-fields
+  - accent-word
+  - italic-serif
+  - one-cta
+  - ui-proof
+  - b2b
+  why: 'A campaign built as a system: cream and deep green cards alternate, every headline is an italic serif with
+    one key phrase in orange, one orange pill CTA with an arrow, and a real product UI as the proof. Six messages,
+    one look at a glance.'
+  source: Levanta (Amazon creator-affiliate platform). Screenshot shared by the art director, 2026-09-27; original
+    source not given
+  added: '2026-09-27'
+  by: 'art director (verdict: good); claude (reason, draft)'
+  external: true
+  copy: 'Clicks Don''t Pay the Bills. / Not All Traffic is Good Traffic / The Traditional Funnel Is Dead / Falling
+    Behind on Amazon? / Optimize External Traffic. / CTAs: Learn About Levanta, Start Today, Read Report, Read Case
+    Study'
+- id: T0018
+  kind: exemplar
+  medium: static
+  file: refs/external/T0018.jpg
+  original: levanta-clicks.png
+  tags:
+  - system
+  - italic-serif
+  - ui-proof
+  - cream-field
+  - b2b
+  why: A provocative headline, a plain subline that explains it, one CTA, then the dashboard as proof with a real
+    product card breaking out of its frame.
+  source: Levanta. Screenshot shared by the art director, 2026-09-27; original source not given
+  added: '2026-09-27'
+  by: 'art director (verdict: good); claude (reason, draft)'
+  external: true
+  copy: Clicks Don't Pay the Bills. / Turn Creator Traffic into Amazon Sales. / Learn About Levanta
+  watch: Dashboard numbers are too small to read at feed size; they work as texture only.
+- id: T0019
+  kind: exemplar
+  medium: static
+  file: refs/external/T0019.jpg
+  original: levanta-traffic.png
+  tags:
+  - system
+  - accent-word
+  - centred
+  - ui-proof
+  - creator-content
+  - dark-field
+  - b2b
+  why: The accent colour lands on the phrase that carries the argument ('Good Traffic'). A creator video and a ranking
+    card overlap, so the story (creator post leads to rank) reads without words.
+  source: Levanta. Screenshot shared by the art director, 2026-09-27; original source not given
+  added: '2026-09-27'
+  by: 'art director (verdict: good); claude (reason, draft)'
+  external: true
+  copy: Not All Traffic is Good Traffic / Send clicks that convert and lift your organic rank. / Start Today
+- id: T0020
+  kind: exemplar
+  medium: static
+  file: refs/external/T0020.jpg
+  original: levanta-amazon.png
+  tags:
+  - system
+  - question-hook
+  - accent-word
+  - ui-proof
+  - dark-field
+  - b2b
+  why: 'A question hook aimed at the pain (''Falling Behind on Amazon?''), with the brand name in the subline, not
+    the headline. The UI shows the outcome: a search result with ''Top Rank''.'
+  source: Levanta. Screenshot shared by the art director, 2026-09-27; original source not given
+  added: '2026-09-27'
+  by: 'art director (verdict: good); claude (reason, draft)'
+  external: true
+  copy: Falling Behind on Amazon? / Boost Organic Rankings with Levanta. / Read Case Study

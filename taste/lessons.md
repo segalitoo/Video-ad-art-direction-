@@ -46,3 +46,8 @@ Rules learned from real results. Each one names its evidence and where it is enf
 - **Evidence:** Art director on the first reference batch: 'some have too much text but its ok and depend on the need'; T0008 (Notes format) works with long copy
 - **Enforced in:** templates/design-review.md §3
 - **Added:** 2026-09-27
+
+### L010 · One bold word can be played with (hidden behind the product, cropped, overlapped) as long as it stays a single, well-known word; sentences cannot be played with that way
+- **Evidence:** Art director on T0013 (sneaker poster): 'the text is not fully readable but it features 1 bold word that can be played a bit so its ok'; T0012 (MIX naan) uses the same device
+- **Enforced in:** templates/design-review.md §3
+- **Added:** 2026-09-27
