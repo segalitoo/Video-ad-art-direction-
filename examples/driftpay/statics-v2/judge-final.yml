@@ -1,0 +1,187 @@
+round: Statics v2 final
+lock: ../driftpay.dna.yml
+groups:
+  A:
+    label: A · One bold word (final)
+    files: 5
+  B:
+    label: B · The hand lets go (final)
+    files: 5
+pairs: []
+items:
+  A1:
+    file: final/A_A1_linkedin_1200x1200.jpg
+    group: A
+    kind: static
+    model: ''
+  A2:
+    file: final/A_A1_linkedin_1200x628.jpg
+    group: A
+    kind: static
+    model: ''
+  A3:
+    file: final/A_A1_meta_1080x1350.jpg
+    group: A
+    kind: static
+    model: ''
+  A4:
+    file: final/A_A2_meta_1080x1350.jpg
+    group: A
+    kind: static
+    model: ''
+  A5:
+    file: final/A_A2_stories_1080x1920.jpg
+    group: A
+    kind: static
+    model: ''
+  B1:
+    file: final/B_A1_linkedin_1200x1200.jpg
+    group: B
+    kind: static
+    model: ''
+  B2:
+    file: final/B_A1_linkedin_1200x628.jpg
+    group: B
+    kind: static
+    model: ''
+  B3:
+    file: final/B_A1_meta_1080x1350.jpg
+    group: B
+    kind: static
+    model: ''
+  B4:
+    file: final/B_A2_meta_1080x1350.jpg
+    group: B
+    kind: static
+    model: ''
+  B5:
+    file: final/B_A2_stories_1080x1920.jpg
+    group: B
+    kind: static
+    model: ''
+scores:
+  A1:
+    readable: 5
+    hierarchy: 5
+    composition: 4
+    brand: 5
+    craft: 4
+    note: 'LOCAL. reads whole with the plane through the top of the A; subline and CTA grouped. The middle band
+      is very open: poster-quiet, a touch empty.'
+  A2:
+    readable: 5
+    hierarchy: 5
+    composition: 4
+    brand: 5
+    craft: 4
+    note: 'The strongest A: the word is huge and the plane crosses it; plane covers more of ''AL'' here, still reads.'
+  A3:
+    readable: 5
+    hierarchy: 5
+    composition: 4
+    brand: 5
+    craft: 4
+    note: As the square, taller.
+  A4:
+    readable: 5
+    hierarchy: 5
+    composition: 4
+    brand: 5
+    craft: 4
+    note: Setup small, payoff huge; coins and CTA balance the bottom.
+  A5:
+    readable: 5
+    hierarchy: 5
+    composition: 4
+    brand: 4
+    craft: 4
+    note: Everything in the safe area; the coins sit small on the right. Wordmark small at Stories scale.
+  B1:
+    readable: 5
+    hierarchy: 5
+    composition: 4
+    brand: 5
+    craft: 4
+    note: The whole story in one look; chip reads as the plane's status. Lower-left is quiet dark space.
+  B2:
+    readable: 5
+    hierarchy: 5
+    composition: 5
+    brand: 5
+    craft: 4
+    note: 'Type left, plane off the open hand right, chip by the fingers: the best frame of the set.'
+  B3:
+    readable: 5
+    hierarchy: 5
+    composition: 4
+    brand: 5
+    craft: 4
+    note: As the square, taller.
+  B4:
+    readable: 5
+    hierarchy: 5
+    composition: 5
+    brand: 5
+    craft: 4
+    note: Underlined claim, a hand placing the last coin, CTA clear at the bottom.
+  B5:
+    readable: 5
+    hierarchy: 5
+    composition: 5
+    brand: 4
+    craft: 4
+    note: Claim clear of the coin, product lifted out of the reply-bar zone, no seam. Wordmark small.
+pair_scores: {}
+fixes: []
+machine:
+  A1:
+    size: 1200x1200
+    sharp: 78.9
+    calm_bands: 36.5
+    palette: 88.9
+  A2:
+    size: 1200x628
+    sharp: 100.0
+    calm_bands: 47.2
+    palette: 80.1
+  A3:
+    size: 1080x1350
+    sharp: 72.7
+    calm_bands: 30.8
+    palette: 91.0
+  A4:
+    size: 1080x1350
+    sharp: 66.1
+    calm_bands: 11.2
+    palette: 90.7
+  A5:
+    size: 1080x1920
+    sharp: 57.4
+    calm_bands: 100.0
+    palette: 93.6
+  B1:
+    size: 1200x1200
+    sharp: 80.1
+    calm_bands: 95.5
+    palette: 8.1
+  B2:
+    size: 1200x628
+    sharp: 95.8
+    calm_bands: 90.3
+    palette: 9.6
+  B3:
+    size: 1080x1350
+    sharp: 74.6
+    calm_bands: 59.8
+    palette: 9.1
+  B4:
+    size: 1080x1350
+    sharp: 69.5
+    calm_bands: 40.0
+    palette: 81.0
+  B5:
+    size: 1080x1920
+    sharp: 56.7
+    calm_bands: 96.0
+    palette: 79.8
+pair_machine: {}

@@ -51,3 +51,13 @@ Rules learned from real results. Each one names its evidence and where it is enf
 - **Evidence:** Art director on T0013 (sneaker poster): 'the text is not fully readable but it features 1 bold word that can be played a bit so its ok'; T0012 (MIX naan) uses the same device
 - **Enforced in:** templates/design-review.md §3
 - **Added:** 2026-09-27
+
+### L011 · Zoom into every paper prop before picking: image models fill blank forms with fake glyphs. Prefer 'plain ruled lines' over 'lines where the numbers would be' (suspected trigger, not yet proven)
+- **Evidence:** Driftpay statics v2: 2 of 3 plane images from the same prompt (Qwen Image 3, 'grey ruled lines where the numbers would be') had letter-like marks in the cells; the third was clean. Test the plain wording on the next run
+- **Enforced in:** templates/design-review.md §2 (AI tells) and the hero description in the lock
+- **Added:** 2026-09-27
+
+### L012 · Budget Figma MCP calls: the Starter plan allows 20 a month; build in one call, check with one screenshot call, and render locally (scripts/static_render.py, same layout) for fixes and export
+- **Evidence:** Driftpay statics v2: the fix pass hit the limit after build, upload and two screenshot calls
+- **Enforced in:** templates/static-design.md
+- **Added:** 2026-09-27

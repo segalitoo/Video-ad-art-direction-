@@ -47,3 +47,12 @@ and keeps that area simple. Type never sits on photo detail.
 empty photo slots) through the Figma connector's `use_figma`; `upload_assets` then fills the
 photo slots with the kept plates (the environment must allow `mcp.figma.com`). The art
 director refines in Figma; exports go back to `spec_check.py`.
+
+## When Figma is out of reach
+
+Figma stays the design source, but its MCP calls are limited (Starter plan: 20 a month). Build a
+set in one `use_figma` call and check it with one screenshot call. For fixes and exports, write the
+same layout as a layout file and render it with `scripts/static_render.py`: it uses the brand font
+from `assets/fonts/`, Figma's text rules (letter spacing and line height in %), auto-layout stacks,
+pills, fades and shadows. Example: `examples/driftpay/statics-v2/layout.yml`.
+

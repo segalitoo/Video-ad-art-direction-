@@ -1,0 +1,172 @@
+# Driftpay statics v2 · both directions, with the fix list applied (review/fixes.md).
+# Rendered by scripts/static_render.py; the same layout as scripts/figma/statics_v2.js.
+# Taste sources per direction: plan.md.
+fonts:
+  Bold: ../../../assets/fonts/space-grotesk/SpaceGrotesk-Bold.ttf
+  Medium: ../../../assets/fonts/space-grotesk/SpaceGrotesk-Medium.ttf
+colors: {paper: "#F4F1EA", navy: "#1E2A44", night: "#111A27", coral: "#FF6B4A", white: "#FFFFFF", muted: "#5B6478"}
+
+frames:
+  # ---------- A · One bold word ----------
+  - name: A · A1 LinkedIn 1200x1200
+    file: A_A1_linkedin_1200x1200
+    w: 1200
+    h: 1200
+    bg: paper
+    items:
+      - {type: wordmark, x: 90, y: 72, size: 38, ink: navy}
+      - {type: text, text: "LOCAL.", style: Bold, size: 330, fit: 54, center: true, y: 330, ls: -5, lh: 90, color: navy}
+      - {type: image, src: cut/hero-plane.png, x: 600, y: 105, w: 560, h: 378, shadow: {y: 56, blur: 70, opacity: 0.3}}
+      - {type: text, text: "Get paid from abroad like it’s next door.", style: Medium, size: 40, ls: -1, width: 560, x: 90, bottom: 197, color: navy}
+      - {type: cta, label: Open a free account, size: 30, x: 90, bottom: 90}
+  - name: A · A1 LinkedIn 1200x628
+    file: A_A1_linkedin_1200x628
+    w: 1200
+    h: 628
+    bg: paper
+    items:
+      - {type: wordmark, x: 64, y: 51, size: 30, ink: navy}
+      - {type: text, text: "LOCAL.", style: Bold, size: 300, fit: 38, center: true, y: 120, ls: -5, lh: 90, color: navy}
+      - {type: image, src: cut/hero-plane.png, x: 720, y: 18, w: 420, h: 284, shadow: {y: 44, blur: 56, opacity: 0.3}}
+      - {type: text, text: "Get paid from abroad like it’s next door.", style: Medium, size: 30, ls: -1, width: 420, x: 64, y: 470, color: navy}
+      - {type: cta, label: Open a free account, size: 24, x: 790, y: 520}
+  - name: A · A1 Meta feed 1080x1350
+    file: A_A1_meta_1080x1350
+    w: 1080
+    h: 1350
+    bg: paper
+    items:
+      - {type: wordmark, x: 80, y: 64, size: 36, ink: navy}
+      - {type: text, text: "LOCAL.", style: Bold, size: 296, fit: 48, center: true, y: 420, ls: -5, lh: 90, color: navy}
+      - {type: image, src: cut/hero-plane.png, x: 510, y: 190, w: 520, h: 351, shadow: {y: 56, blur: 70, opacity: 0.3}}
+      - {type: text, text: "Get paid from abroad like it’s next door.", style: Medium, size: 40, ls: -1, width: 560, x: 80, bottom: 187, color: navy}
+      - {type: cta, label: Open a free account, size: 30, x: 80, bottom: 80}
+  - name: A · A2 Stories 1080x1920
+    file: A_A2_stories_1080x1920
+    w: 1080
+    h: 1920
+    bg: paper
+    items:
+      - {type: wordmark, x: 86, y: 300, size: 36, ink: navy}
+      - {type: image, src: cut/A-coins_1.png, x: 560, y: 900, w: 380, h: 453, shadow: {y: 40, blur: 60, opacity: 0.28}}
+      - type: stack
+        x: 86
+        y: 400
+        lines:
+          - {text: "Paid in", style: Medium, size: 80, color: navy}
+          - {text: "1 day.", style: Bold, size: 300, ls: -5, lh: 92, color: navy}
+          - {text: "Not 5.", style: Medium, size: 80, color: muted}
+  - name: A · A2 Meta feed 1080x1350
+    file: A_A2_meta_1080x1350
+    w: 1080
+    h: 1350
+    bg: paper
+    items:
+      - {type: wordmark, x: 80, y: 64, size: 34, ink: navy}
+      - {type: image, src: cut/A-coins_1.png, x: 600, y: 780, w: 420, h: 501, shadow: {y: 40, blur: 60, opacity: 0.28}}
+      - type: stack
+        x: 80
+        y: 190
+        lines:
+          - {text: "Paid in", style: Medium, size: 64, color: navy}
+          - {text: "1 day.", style: Bold, size: 250, ls: -5, lh: 92, color: navy}
+          - {text: "Not 5.", style: Medium, size: 64, color: muted}
+      - {type: cta, label: Open a free account, size: 28, x: 80, bottom: 80}
+
+  # ---------- B · The hand lets go ----------
+  - name: B · A1 LinkedIn 1200x1200
+    file: B_A1_linkedin_1200x1200
+    w: 1200
+    h: 1200
+    bg: night
+    items:
+      - {type: image, src: picks/B-plane.jpg, x: 400, y: 190, w: 800, h: 1067}
+      - {type: fade, edge: top, x: 400, y: 190, w: 800, h: 200, color: night}
+      - {type: fade, edge: left, x: 400, y: 0, w: 220, h: 1200, color: night}
+      - {type: wordmark, x: 90, y: 72, size: 38, ink: white}
+      - type: stack
+        id: head
+        x: 90
+        y: 154
+        accent: {color: coral, mode: fill}
+        lines:
+          - {text: "Send the invoice.", style: Bold, size: 84, ls: -3, lh: 104, color: white}
+          - {text: "Get paid |tomorrow.|", style: Bold, size: 84, ls: -3, lh: 104, color: white}
+      - {type: cta, label: Open a free account, size: 28, x: 90, below: head, gap: 38}
+      - {type: chip, x: 300, y: 790, words: [[Invoice, Medium, navy], [Paid, Bold, navy]]}
+  - name: B · A1 LinkedIn 1200x628
+    file: B_A1_linkedin_1200x628
+    w: 1200
+    h: 628
+    bg: night
+    items:
+      - {type: image, src: picks/B-plane.jpg, x: 560, y: -130, w: 640, h: 853}
+      - {type: fade, edge: left, x: 560, y: 0, w: 200, h: 628, color: night}
+      - {type: wordmark, x: 64, y: 51, size: 30, ink: white}
+      - type: stack
+        id: head
+        x: 64
+        y: 106
+        accent: {color: coral, mode: fill}
+        lines:
+          - {text: "Send the invoice.", style: Bold, size: 58, ls: -3, lh: 104, color: white}
+          - {text: "Get paid |tomorrow.|", style: Bold, size: 58, ls: -3, lh: 104, color: white}
+      - {type: cta, label: Open a free account, size: 24, x: 64, below: head, gap: 26}
+      - {type: chip, x: 640, y: 486, words: [[Invoice, Medium, navy], [Paid, Bold, navy]]}
+  - name: B · A1 Meta feed 1080x1350
+    file: B_A1_meta_1080x1350
+    w: 1080
+    h: 1350
+    bg: night
+    items:
+      - {type: image, src: picks/B-plane.jpg, x: 234, y: 222, w: 846, h: 1128}
+      - {type: fade, edge: top, x: 234, y: 222, w: 846, h: 200, color: night}
+      - {type: fade, edge: left, x: 234, y: 0, w: 220, h: 1350, color: night}
+      - {type: wordmark, x: 80, y: 64, size: 36, ink: white}
+      - type: stack
+        id: head
+        x: 80
+        y: 159
+        accent: {color: coral, mode: fill}
+        lines:
+          - {text: "Send the invoice.", style: Bold, size: 80, ls: -3, lh: 104, color: white}
+          - {text: "Get paid |tomorrow.|", style: Bold, size: 80, ls: -3, lh: 104, color: white}
+      - {type: cta, label: Open a free account, size: 28, x: 80, below: head, gap: 36}
+      - {type: chip, x: 240, y: 880, words: [[Invoice, Medium, navy], [Paid, Bold, navy]]}
+  - name: B · A2 Stories 1080x1920
+    file: B_A2_stories_1080x1920
+    w: 1080
+    h: 1920
+    bg: "#E5E5E3"          # the photo's own floor, so lifting the photo leaves no seam
+    items:
+      - {type: image, src: picks/B-coins-916.jpg, x: 0, y: -120, w: 1080, h: 1920}
+      - {type: fade, edge: bottom, x: 0, y: 1500, w: 1080, h: 301, color: "#E5E5E3"}
+      - {type: wordmark, x: 86, y: 300, size: 36, ink: navy}
+      - type: stack
+        x: 86
+        y: 400
+        gap: 18
+        accent: {color: coral, mode: underline}
+        lines:
+          - {text: "Paid in", style: Bold, size: 130, ls: -3, lh: 104, color: navy}
+          - {text: "|1 day.|", style: Bold, size: 130, ls: -3, lh: 104, color: navy}
+          - {text: "Not 5.", style: Bold, size: 130, ls: -3, lh: 104, color: navy}
+  - name: B · A2 Meta feed 1080x1350
+    file: B_A2_meta_1080x1350
+    w: 1080
+    h: 1350
+    bg: paper
+    items:
+      - {type: image, src: picks/B-coins-34.jpg, x: 0, y: -60, w: 1080, h: 1440}
+      - {type: wordmark, x: 80, y: 64, size: 34, ink: navy}
+      - type: stack
+        id: head
+        x: 80
+        y: 135
+        gap: 14
+        accent: {color: coral, mode: underline}
+        lines:
+          - {text: "Paid in", style: Bold, size: 120, ls: -3, lh: 104, color: navy}
+          - {text: "|1 day.|", style: Bold, size: 120, ls: -3, lh: 104, color: navy}
+          - {text: "Not 5.", style: Bold, size: 120, ls: -3, lh: 104, color: navy}
+      - {type: cta, label: Open a free account, size: 28, x: 80, bottom: 80}

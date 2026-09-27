@@ -107,6 +107,31 @@ a = c.getchannel("A")
 assert a.getpixel((w // 2, h // 2)) == 255                             # the seam inside stays solid
 assert a.getpixel((2, h - 3)) == 0                                     # backdrop corner is gone
 PY
+cat > "$tmp/layout.yml" <<YML
+fonts: {Bold: $PWD/assets/fonts/space-grotesk/SpaceGrotesk-Bold.ttf, Medium: $PWD/assets/fonts/space-grotesk/SpaceGrotesk-Medium.ttf}
+colors: {paper: "#F4F1EA", navy: "#1E2A44", coral: "#FF6B4A"}
+frames:
+  - name: t
+    file: t
+    w: 600
+    h: 750
+    bg: paper
+    items:
+      - {type: wordmark, x: 40, y: 40, size: 24, ink: navy}
+      - {type: text, text: "LOCAL.", style: Bold, size: 200, fit: 30, center: true, y: 150, ls: -5, lh: 90, color: navy}
+      - {type: stack, id: s, x: 40, y: 400, accent: {color: coral, mode: underline}, lines: [{text: "|1 day.|", style: Bold, size: 60, color: navy}]}
+      - {type: cta, label: Open a free account, size: 20, x: 40, below: s, gap: 20}
+YML
+python3 scripts/static_render.py "$tmp/layout.yml" -o "$tmp/render" >/dev/null
+python3 - "$tmp" <<'PY' && ok "static renderer fits the big word and draws the accent and CTA" || { echo "FAIL static_render"; exit 1; }
+import sys
+from PIL import Image
+im = Image.open(f"{sys.argv[1]}/render/t.jpg").convert("RGB")
+assert im.size == (600, 750)
+word = im.crop((0, 140, 600, 390)).convert("L").point(lambda v: 255 if v < 70 else 0).getbbox()
+assert word and word[0] < 45 and word[2] > 555, word                        # the word fills the width
+assert any(p[0] > 230 and p[1] < 140 for p in (im.getpixel((x, y)) for x in range(40, 250) for y in range(455, 480)))   # coral underline
+PY
 python3 scripts/taste.py add examples/driftpay/test/out/S04_2.qwen.jpg --kind exemplar --medium static --why "ext" \
   --source "someone else" --external --copy "Headline" --watch "clip art" >/dev/null
 test -f "$TASTE_DIR/refs/external/T0003.jpg" && grep -q 'external: true' "$TASTE_DIR/library.yml" && grep -q 'watch: clip art' "$TASTE_DIR/library.yml" \

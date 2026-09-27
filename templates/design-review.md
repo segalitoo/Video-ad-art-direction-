@@ -50,6 +50,8 @@ Answer before proposing any look:
   does, not a dramatic verb ("pools on the soil", not "floods").
 - **AI tells:** melted or duplicated objects, stacked props, fake text or lettering, extra
   fingers, textures that crawl, UI screens nobody asked for.
+- **Zoom in on paper and forms** (lesson L011): blank ruled lines, receipts and invoices come back
+  with fake glyphs. Check at 100% before picking.
 
 ## 3. Statics and supers (stage 8)
 
