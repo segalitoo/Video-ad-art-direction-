@@ -71,7 +71,7 @@ bash scripts/selftest.sh                                         # test everythi
 | `lock/modes/` | Defaults for the four looks. A lock picks one and overrides what it needs |
 | `platforms/specs.yml` | Ratios, lengths, safe zones and loudness per platform, with sources |
 | `adapters/tools.yml` | How each tool wants its prompt (negatives, aspect, clip length) |
-| `templates/` | Brief, storyboard, copy matrix, QA checklist, iteration log |
+| `templates/` | Brief, storyboard, copy matrix, QA checklist, iteration log, and the static design system (`static-design.md`) |
 | `scripts/` | Scaffold, assemble, matrix, judge, spec check, crop, statics, Higgsfield API client, self-test |
 | `examples/sunpeel/` | The pilot: a fictional zero-sugar citrus soda, photoreal product look (lock v1.2), 15s video + 3 static ads |
 | `examples/driftpay/` | **The finished pilot:** a fictional payments app in handmade paper craft, 15s video in 9:16 and 4:5 + 7 statics, made for $11.94 on the Higgsfield API. See `final/README.md` |

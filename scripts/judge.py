@@ -54,6 +54,13 @@ RUBRIC = {
         "story": (15, "Does its beat and reads in a second with the sound off"),
         "animatable": (10, "Will move cleanly: a clear subject, nothing tangled that will morph"),
     },
+    "static": {   # a finished static ad, type included (templates/static-design.md)
+        "readable": (25, "The headline reads at 25% size on a phone"),
+        "hierarchy": (20, "One thing first, then the next; nothing competes"),
+        "composition": (20, "A deliberate layout; the subject framed; space used on purpose"),
+        "brand": (15, "Lock font, palette and wordmark used correctly"),
+        "craft": (20, "Clean plate, no AI tells, crisp edges, aligned to the grid"),
+    },
     "clip": {
         "on_model": (20, "The hero and set stay the same from first frame to last"),
         "morph": (20, "No morphing, melting, popping or objects appearing from nowhere"),
@@ -249,7 +256,7 @@ def cmd_new(args):
         for n, f in enumerate(files, 1):
             items[f"{gid}-{n}" if gid[-1].isdigit() else f"{gid}{n}"] = {"file": str(Path(f).resolve().relative_to(base.resolve()))
                                   if Path(f).resolve().is_relative_to(base.resolve()) else f,
-                                  "group": gid, "kind": kind_of(f), "model": model_of(f)}
+                                  "group": gid, "kind": args.kind or kind_of(f), "model": model_of(f)}
     pairs = []
     for p in args.pair or []:
         a, b, rel = (p.split(":") + ["same_set"])[:3]
@@ -527,6 +534,7 @@ def main():
     p.add_argument("--lock", help="the lock, relative to the round file (for the palette check)")
     p.add_argument("--pair", action="append", help="GROUP:GROUP:first_last|same_set")
     p.add_argument("--label", action="append", help='GROUP="what it is", e.g. D="S05 start, droopy plant"')
+    p.add_argument("--kind", choices=["static"], help="score finished static ads (type included) on the static rubric")
     p.add_argument("--name")
     p = sub.add_parser("measure", help="machine pass")
     p.add_argument("round")
