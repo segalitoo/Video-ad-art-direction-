@@ -1,0 +1,7 @@
+{
+ "prompt": "A small stack of five round paper coins cut from thick card, alternating coral and mint, blank faces with no symbols, standing alone in the centre on a plain seamless deep ink-navy paper backdrop, seen slightly from above, the whole stack in sharp focus, nothing else in the frame. Handmade paper-craft miniature, crisp folded paper with visible fibres, clean scored creases, true paper thickness, soft daylight from a window on the left, gentle contact shadow, warm neutral colour, soft contrast, macro photograph of a real paper model, 50mm lens, fine paper grain.",
+ "negative_prompt": "numbers or writing on the paper, text, letters, logo, watermark, glossy plastic or CGI sheen, map, symbols or engravings on the coins, props, clutter",
+ "aspect_ratio": "3:4",
+ "resolution": "2k",
+ "seed": 1034
+}

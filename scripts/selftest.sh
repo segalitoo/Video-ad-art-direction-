@@ -84,6 +84,29 @@ python3 scripts/taste.py nearest examples/driftpay/test/out/S04_1.qwen.jpg --med
 if python3 scripts/taste.py add examples/driftpay/test/out/S04_2.qwen.jpg --kind exemplar --medium frame --why "" --source x >/dev/null 2>&1; then
   echo "FAIL taste entry without a reason not refused"; exit 1; fi
 ok "taste library refuses an example without a reason"
+python3 - "$tmp" <<'PY'
+import sys
+from PIL import Image, ImageDraw
+t = sys.argv[1]
+im = Image.new("RGB", (400, 400))
+for y in range(400):                                   # a mint backdrop with a strong gradient
+    ImageDraw.Draw(im).line([(0, y), (399, y)], fill=(200 - y // 4, 225 - y // 5, 205 - y // 5))
+d = ImageDraw.Draw(im)
+d.polygon([(80, 200), (330, 90), (230, 320)], fill=(235, 235, 238))     # a white "plane"
+d.line([(200, 170), (260, 200)], fill=(150, 150, 152), width=6)         # a grey shaded seam inside it
+im.save(f"{t}/cut_src.png")
+PY
+python3 scripts/cutout.py "$tmp/cut_src.png" -o "$tmp/cut.png" --chroma --near 5 --far 10 >/dev/null
+python3 - "$tmp" <<'PY' && ok "cut-out keeps the object whole and drops a gradient backdrop" || { echo "FAIL cutout"; exit 1; }
+import sys
+from PIL import Image
+c = Image.open(f"{sys.argv[1]}/cut.png")
+w, h = c.size
+assert 200 < w < 270 and 200 < h < 250, c.size                        # cropped to the object
+a = c.getchannel("A")
+assert a.getpixel((w // 2, h // 2)) == 255                             # the seam inside stays solid
+assert a.getpixel((2, h - 3)) == 0                                     # backdrop corner is gone
+PY
 python3 scripts/taste.py add examples/driftpay/test/out/S04_2.qwen.jpg --kind exemplar --medium static --why "ext" \
   --source "someone else" --external --copy "Headline" --watch "clip art" >/dev/null
 test -f "$TASTE_DIR/refs/external/T0003.jpg" && grep -q 'external: true' "$TASTE_DIR/library.yml" && grep -q 'watch: clip art' "$TASTE_DIR/library.yml" \

@@ -1,0 +1,7 @@
+{
+ "prompt": "A paper plane folded from a crisp white invoice sheet with a thin coral stripe along one edge and grey ruled lines where the numbers would be, gliding up and to the right in a three-quarter view, alone in the centre with wide empty space around it, on a plain seamless mint-green paper backdrop. Every fold in sharp focus, nothing else in the frame. Handmade paper-craft miniature, crisp folded paper with visible fibres, clean scored creases, true paper thickness, soft daylight from a window on the left, gentle contact shadow, warm neutral colour, soft contrast, macro photograph of a real paper model, 50mm lens, fine paper grain.",
+ "negative_prompt": "numbers or writing on the paper, text, letters, logo, watermark, glossy plastic or CGI sheen, map, second plane, clutter, props",
+ "aspect_ratio": "1:1",
+ "resolution": "2k",
+ "seed": 1017
+}
