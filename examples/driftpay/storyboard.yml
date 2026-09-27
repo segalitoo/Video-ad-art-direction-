@@ -1,6 +1,6 @@
 # Driftpay · "Paper planes" · 15s · stage 3 output
 # A round trip: the invoice leaves the desk as a paper plane, crosses the world, and comes back as money.
-# S02 starts on the kept S01 frame and S05 is an edit of it, so the desk is the same at the start and the end.
+# S02 starts on the kept S01 frame; S03 and S05 start from the kept plane frame. One desk from start to end.
 
 ad:
   id: driftpay-planes-15s
@@ -41,7 +41,9 @@ shots:
   - id: S03
     beat: build
     duration_s: 2.5
-    subject: the paper plane in the air just past the edge of the kraft-paper desk, nose up, window light behind it
+    subject: the paper plane is now in the air just past the edge of the kraft-paper desk, nose up, the window light behind it
+    edit_of: S02-K-end
+    edit_verb: Change
     action: the paper plane glides up and out of the top of the frame
     camera_move: static
     hero: true
@@ -66,8 +68,8 @@ shots:
   - id: S05
     beat: payoff
     duration_s: 2.5
-    subject: the paper plane resting on the kraft-paper desk on the spot where the invoice was
-    edit_of: S01-K
+    subject: the paper plane resting on the kraft-paper desk on the spot where the invoice was (the kept S02 end frame)
+    from_frame: S02-K-end
     end_subject: a small neat stack of coral and mint paper coins on the same spot, the paper plane gone
     action: the paper plane unfolds and turns into a neat stack of paper coins
     camera_move: static
@@ -87,12 +89,13 @@ shots:
 statics:
   - id: A1
     concept: the plane over the map
-    subject: the paper plane in mid-air above a folded paper world map with raised mint continents and a coral thread route
+    subject: the paper plane over the folded paper world map (the kept S04 frame)
+    from_frame: S04-K
     hero: true
     copy_space: top
     headline: "Get paid like it's local."
     cta: "Open a free account"
-    plates: ["1:1", "1.91:1", "4:5"]
+    plates: ["1:1", "4:5"]
     platforms: [linkedin_feed, meta_feed]
 
   - id: A2

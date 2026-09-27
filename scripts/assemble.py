@@ -583,7 +583,7 @@ def build(board, lock, specs, tools, tool_names):
             out += [f"**{shot['id']}-K · start frame:** the kept {shot['from_frame']} frame. Nothing to generate.", ""]
         elif shot.get("edit_of"):
             # Made from another kept frame, so the room, pot and props match that shot by construction.
-            edit = edit_prompt(shot["subject"], shot, lock, verb="Add")
+            edit = edit_prompt(shot["subject"], shot, lock, verb=shot.get("edit_verb", "Add"))
             keyframes = []
             for name in image_tools:
                 text, extra = for_tool(edit, tools[name], neg_image, aspect)

@@ -1,0 +1,129 @@
+round: Driftpay final frames
+lock: ../driftpay.dna.yml
+groups:
+  T:
+    label: 'S03 start: plane lifting off (edit of E1)'
+    files: 2
+  N:
+    label: 'S04 end: plane along the route (edit of M2)'
+    files: 2
+  C:
+    label: 'S05 end: coins (edit of E1)'
+    files: 2
+pairs: []
+items:
+  T1:
+    file: out/S03_1.qwen-edit.jpg
+    group: T
+    kind: image
+    model: qwen-edit
+  T2:
+    file: out/S03_2.qwen-edit.jpg
+    group: T
+    kind: image
+    model: qwen-edit
+  N1:
+    file: out/S04-end_1.qwen-edit.jpg
+    group: N
+    kind: image
+    model: qwen-edit
+  N2:
+    file: out/S04-end_2.qwen-edit.jpg
+    group: N
+    kind: image
+    model: qwen-edit
+  C1:
+    file: out/S05-end_1.qwen-edit.jpg
+    group: C
+    kind: image
+    model: qwen-edit
+  C2:
+    file: out/S05-end_2.qwen-edit.jpg
+    group: C
+    kind: image
+    model: qwen-edit
+scores:
+  T1:
+    lock: 5
+    hero: 5
+    craft: 4
+    composition: 4
+    story: 4
+    animatable: 4
+    note: Plane shape unchanged from E1; shadow separated from the desk reads 'just lifted'. Not near the desk edge
+  T2:
+    lock: 5
+    hero: 3
+    craft: 4
+    composition: 4
+    story: 5
+    animatable: 4
+    note: 'Clearly airborne, but the plane widened: off model'
+  N1:
+    lock: 5
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 2
+    animatable: 3
+    note: 'Plane turned upward and left the route: gives the clip the wrong path'
+  N2:
+    lock: 5
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 4
+    animatable: 4
+    note: Plane moved along the thread toward the right; thread and map unchanged. Not the far end, a short glide
+  C1:
+    lock: 5
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 5
+    animatable: 4
+    note: 'Tall coral and mint coin stack, the desk identical: ''paid'' reads at once'
+  C2:
+    lock: 5
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 4
+    animatable: 4
+    note: Smaller stack, a little slanted; clean
+pair_scores: {}
+fixes:
+- 'Edits move objects only a little: ask for the far end by landmark (e.g. ''next to the clock on the right edge'')
+  next time.'
+machine:
+  T1:
+    size: 1152x2048
+    sharp: 73.6
+    calm_bands: 62.5
+    palette: 63.4
+  T2:
+    size: 1152x2048
+    sharp: 72.4
+    calm_bands: 60.2
+    palette: 63.1
+  N1:
+    size: 1152x2048
+    sharp: 97.4
+    calm_bands: 46.6
+    palette: 61.9
+  N2:
+    size: 1152x2048
+    sharp: 100.0
+    calm_bands: 48.3
+    palette: 62.2
+  C1:
+    size: 1152x2048
+    sharp: 81.2
+    calm_bands: 60.4
+    palette: 63.0
+  C2:
+    size: 1152x2048
+    sharp: 70.2
+    calm_bands: 66.4
+    palette: 62.2
+pair_machine: {}
