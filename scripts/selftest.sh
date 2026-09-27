@@ -43,6 +43,18 @@ from common import load_storyboard; import assemble as A
 b, l = load_storyboard('../examples/fernly/storyboard.yml'); n = A.negatives_for(l, 'image')
 assert 'faces or full people' in n and not any('people or body parts' == x for x in n)") && ok "people: hands bans faces, not the hand" || { echo "FAIL people: hands"; exit 1; }
 
+# Routes: every route resolves, a bad one is refused, and the own-keys client builds requests without sending.
+for r in higgsfield-web own-keys weave higgsfield-api; do
+  python3 scripts/assemble.py examples/driftpay/storyboard.yml --route $r 2>/dev/null | grep -q "Route: \`$r\`" || { echo "FAIL route $r"; exit 1; }
+done
+if python3 scripts/assemble.py examples/driftpay/storyboard.yml --route nope --check >/dev/null 2>&1; then echo "FAIL bad route not caught"; exit 1; fi
+ok "all four routes build; a bad route is refused"
+python3 scripts/img_api.py --provider gemini --prompt x --ref examples/driftpay/test/out/S01_2.qwen.jpg --dry-run | grep -q "generateContent" \
+  && python3 scripts/img_api.py --provider openai --prompt x --dry-run | grep -q "images/generations" && ok "own-keys client builds Gemini and OpenAI requests" \
+  || { echo "FAIL img_api dry run"; exit 1; }
+if python3 scripts/img_api.py --provider openai --prompt x >/dev/null 2>&1; then echo "FAIL unapproved spend not refused"; exit 1; fi
+ok "own-keys client refuses to spend without approval"
+
 # Judge pass: a matching pair must beat a mismatched one, a hard fail drops out, an unscored file stops the rank.
 mkdir -p "$tmp/judge/out"
 python3 - "$tmp/judge" <<'PY'

@@ -19,7 +19,7 @@ from pathlib import Path
 import sys
 
 from common import (
-    HEX_RE, TOKEN_ORDER, load_specs, load_storyboard, load_tools,
+    HEX_RE, TOKEN_ORDER, TOOLS_FILE, load_route, load_specs, load_storyboard, load_tools, load_yaml,
     parse_aspect, safe_union,
 )
 
@@ -470,60 +470,93 @@ def render_group(label, results):
 DEFAULT_CANDIDATES = {"keyframe": 8, "motion": 3, "static": 4}
 
 
-def budget(board, lock, tools, tool_names):
-    """Credits for one full round of stage 4 and 5, per tool that lists its models.
+def unit_cost(tool, model, seconds=None):
+    """Price of one image, or of `seconds` of video, in dollars (None when the tool lists no price)."""
+    per_credit = tool.get("usd_per_credit")
+    if seconds is not None:
+        secs = max(model.get("min_s", 0), seconds)
+        if "usd_per_s" in model:
+            return secs * model["usd_per_s"]
+        if "credits_per_s" in model and per_credit:
+            return secs * model["credits_per_s"] * per_credit
+        if "credits" in model and per_credit:
+            return model["credits"] * per_credit
+        return None
+    if "usd" in model:
+        return model["usd"]
+    if "credits" in model and per_credit:
+        return model["credits"] * per_credit
+    return None
 
-    Shown before the stage 4 gate, so the spend is approved before it happens.
-    """
+
+def round_counts(board, lock):
+    """How many of each job one round of stages 4 and 5 needs, plus static plates."""
     cands = {**DEFAULT_CANDIDATES, **(board["ad"].get("candidates") or {})}
     shots = [s for s in board["shots"] if s.get("generate", True)]
     hero = 1 if any(s.get("hero") for s in shots) else 0
-    rows = []
-    for name in tool_names:
-        models = tools[name].get("models") or {}
-        img, vid = models.get("image"), models.get("video")
-        if not (img or vid):
+    fresh = [s for s in shots if not s.get("from_frame") and not s.get("edit_of")]
+    edits = sum(1 for s in shots if s.get("edit_of")) + sum(1 for s in shots if s.get("end_subject"))
+    statics = board.get("statics") or []
+    return {
+        "cands": cands,
+        "keyframe": (len(fresh) + hero) * cands["keyframe"],
+        "edit": edits * cands["keyframe"],
+        "static": sum(0 if st.get("from_frame") else 1 if st.get("edit_of") else len(st.get("plates") or [])
+                      for st in statics) * cands["static"],
+        "video_s": [math.ceil(float(s.get("duration_s", 0))) for s in shots] if lock["_mode"].get("keyframe_first") else [],
+        "shots": shots, "hero": hero,
+    }
+
+
+def route_cost(route, tools, n):
+    """Dollar lines for one round on one route: [(job, model name, count text, dollars or None)]."""
+    lines = []
+    for job, label, count in (("keyframe", "Keyframes", n["keyframe"]), ("edit", "Edits (end and chained frames)", n["edit"]),
+                              ("keyframe", "Static plates", n["static"])):
+        if not count or job not in route:
             continue
-        ends = sum(1 for s in shots if s.get("end_subject"))
-        key_n = (len([s for s in shots if not s.get("from_frame")]) + hero + ends) * cands["keyframe"]
-        mot_n = len(shots) * cands["motion"] if lock["_mode"].get("keyframe_first") else 0
-        key_c = key_n * img["credits"] if img else None
-        mot_c = None
-        if vid and "credits_per_s" in vid:
-            # Priced by the second: each shot is generated at its own length, never under the minimum.
-            secs = sum(max(vid.get("min_s", 0), math.ceil(float(s.get("duration_s", 0)))) for s in shots)
-            mot_c = secs * vid["credits_per_s"] * (cands["motion"] if mot_n else 0)
-        elif vid:
-            mot_c = mot_n * vid["credits"]
-        # A static reusing a kept frame costs nothing; an edit of one is a single plate, cropped for the other ratios.
-        st_n = sum(0 if st.get("from_frame") else 1 if st.get("edit_of") else len(st.get("plates") or [])
-                   for st in board.get("statics") or []) * cands["static"]
-        st_c = st_n * img["credits"] if img else None
-        total = (key_c or 0) + (mot_c or 0) + (st_c or 0)
-        rows.append(
-            f"| {name} | {key_n} × {img['name']} ≈ {key_c:g} | " if img else f"| {name} | n/a | "
-        )
-        rows[-1] += (f"{mot_n} × {vid['name']} ≈ {mot_c:g} | " if vid else "n/a | ")
-        rows[-1] += (f"{st_n} × {img['name']} ≈ {st_c:g} | " if img and st_n else "0 | ")
-        rows[-1] += f"**{total:g}** {tools[name].get('cost_unit', 'credits')} |"
-        usd = tools[name].get("usd_per_credit")
-        rows[-1] += f" ≈ ${total * usd:,.0f} |" if usd else " n/a |"
-    if not rows:
+        tool = tools[route[job]["tool"]]
+        model = tool["models"][route[job]["model"]]
+        each = unit_cost(tool, model)
+        lines.append((label, model["name"], f"{count}", None if each is None else each * count))
+    if n["video_s"] and "video" in route:
+        tool = tools[route["video"]["tool"]]
+        model = tool["models"][route["video"]["model"]]
+        per = [unit_cost(tool, model, s) for s in n["video_s"]]
+        clips = len(n["video_s"]) * n["cands"]["motion"]
+        total = None if None in per else sum(per) * n["cands"]["motion"]
+        lines.append(("Motion", model["name"], f"{clips} clips", total))
+    return lines
+
+
+def budget(board, lock, tools, tool_names):
+    """Dollars for one full round of stages 4 and 5 on the active route, and the same round on
+    the other routes. Shown before the stage 4 gate, so the spend is approved before it happens."""
+    n = round_counts(board, lock)
+    if not board["ad"].get("_route"):
         return []
-    return [
-        "## Budget · one round of stages 4 and 5, plus static plates",
-        "",
-        f"{len(shots)} generated shots{' + the hero reference' if hero else ''}, "
-        f"{cands['keyframe']} keyframe candidates each, {cands['motion']} motion candidates per kept frame. "
-        "Prices are the quotes at `last_checked` in `adapters/tools.yml`; the tool quotes the real cost "
-        "before each run, and nothing runs without approval. USD uses `usd_per_credit` (the plan "
-        "noted beside it); a Weave credit and a Higgsfield credit are not the same money.",
-        "",
-        "| Tool | Keyframes | Motion | Static plates | Total | USD |",
-        "|---|---|---|---|---|---|",
-        *rows,
-        "",
-    ]
+    name, route = board["ad"]["_route"]
+    lines = route_cost(route, tools, n)
+    known = [d for *_, d in lines if d is not None]
+    total = sum(known)
+    out = ["## Budget · one round of stages 4 and 5, plus static plates", "",
+           f"Route `{name}`. {len(n['shots'])} generated shots{' + the hero reference' if n['hero'] else ''}, "
+           f"{n['cands']['keyframe']} image candidates each, {n['cands']['motion']} motion candidates per shot. "
+           "List prices from `adapters/tools.yml` (credits at the plan rate noted there); every run is quoted "
+           "again by the tool and approved before it happens.", "",
+           "| Job | Model | Count | USD |", "|---|---|---|---|"]
+    out += [f"| {job} | {model} | {count} | {'n/a' if d is None else f'${d:,.2f}'} |" for job, model, count, d in lines]
+    out += [f"| **Total** | | | **${total:,.2f}**{' + unpriced items' if len(known) < len(lines) else ''} |", ""]
+    others = []
+    for other, jobs in (load_yaml(TOOLS_FILE).get("routes") or {}).items():
+        if other == name:
+            continue
+        ls = route_cost({k: v for k, v in jobs.items() if k != "note"}, tools, n)
+        ds = [d for *_, d in ls if d is not None]
+        others.append(f"`{other}` ≈ ${sum(ds):,.2f}" + ("+" if len(ds) < len(ls) else ""))
+    if others:
+        out += ["Same round on the other routes: " + " · ".join(others) + ".", ""]
+    return out
 
 
 def build(board, lock, specs, tools, tool_names):
@@ -550,6 +583,15 @@ def build(board, lock, specs, tools, tool_names):
         "**Palette:** " + " · ".join(f"{c['name']} `{c['hex']}`" for c in lock.get("palette") or []),
         "",
     ]
+    if ad.get("_route"):
+        rname, route = ad["_route"]
+        out += [f"**Route: `{rname}`**. {route.get('note', '')} Switch with `ad.route` or `--route`.", "",
+                "| Job | Tool | Model |", "|---|---|---|"]
+        for job in ("keyframe", "edit", "draft", "video"):
+            if job in route:
+                t, m = route[job]["tool"], route[job]["model"]
+                out.append(f"| {job} | {t} | {tools[t]['models'][m]['name']} |")
+        out.append("")
     if lock["_mode"].get("keyframe_first"):
         out += ["**Order:** keyframe first. Pick 1 of 8 to 12, log every verdict, then animate "
                 "only the kept frame.", ""]
@@ -664,6 +706,7 @@ def main():
     ap.add_argument("storyboard")
     ap.add_argument("--check", action="store_true", help="run the pre-checks only")
     ap.add_argument("--tools", nargs="+", help="override the storyboard's tool list")
+    ap.add_argument("--route", help="which engine does each job (see routes in adapters/tools.yml)")
     ap.add_argument("-o", "--out", help="write prompts to this file (default: stdout)")
     args = ap.parse_args()
 
@@ -671,6 +714,11 @@ def main():
     specs, tools = load_specs(), load_tools()
     if args.tools:
         board["ad"]["tools"] = args.tools
+    route_name, route = load_route(args.route, board)
+    board["ad"]["_route"] = (route_name, route)
+    # The route's tools come first, so its prompts are the ones on top; extra tools follow.
+    route_tools = [j["tool"] for k, j in route.items() if k != "note"]
+    board["ad"]["tools"] = list(dict.fromkeys(route_tools + list(board["ad"].get("tools") or [])))
 
     errors, warnings = check(board, lock, specs, tools)
     for w in warnings:

@@ -39,6 +39,17 @@ def load_tools():
     return load_yaml(TOOLS_FILE)["tools"]
 
 
+def load_route(name=None, board=None):
+    """The route that does each job (keyframe, edit, draft, video): the name given, else the
+    storyboard's `ad.route`, else the default in adapters/tools.yml. Returns (name, jobs)."""
+    data = load_yaml(TOOLS_FILE)
+    routes = data.get("routes") or {}
+    name = name or ((board or {}).get("ad") or {}).get("route") or data.get("default_route")
+    if name not in routes:
+        fail(f"unknown route '{name}'. Options: {', '.join(routes)}")
+    return name, {k: v for k, v in routes[name].items() if k != "note"} | {"note": routes[name].get("note", "")}
+
+
 def load_storyboard(path):
     path = Path(path)
     board = load_yaml(path)
