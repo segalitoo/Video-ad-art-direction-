@@ -492,3 +492,56 @@ entries:
     Carty
   watch: The partner logos are greyed almost to invisible, and the small body text is very low contrast. Low-resolution
     screenshot.
+- id: T0024
+  kind: exemplar
+  medium: web
+  file: refs/external/T0024.jpg
+  original: 28.png
+  tags:
+  - vertical-fintech
+  - landing-page
+  - concept
+  - accent-word
+  - underline
+  - floating-proof
+  - stat-row
+  - dark-green-field
+  why: 'One accent colour doing three jobs: the word ''grow'' in bright green, a green underline under ''business'',
+    and the one CTA button. The product card carries a small floating revenue widget, so the proof sits on the product,
+    not in a separate block. A calm row of three stats closes the fold.'
+  source: Dribbble shot, 'Dropcard' payment-card landing page. Link and designer not given. Concept work. Screenshot
+    by the art director, 2026-09-27.
+  added: '2026-09-27'
+  by: 'art director (verdict: good); claude (reason, draft)'
+  external: true
+  copy: Payment card to grow your business / All-in-one platform for creating payment cards and embeded fintech
+    experience to grow your business. / Request Demo / Scroll more / 250K Registered Business / 200M+ Revenue Total
+    / 85% Revenue Growth
+  watch: The client logos are greyed almost to invisible. 'embeded' is misspelled. The layout (headline left, card
+    right) is the safest fintech default.
+- id: T0025
+  kind: exemplar
+  medium: web
+  file: refs/external/T0025.jpg
+  original: 29.webp
+  tags:
+  - vertical-fintech
+  - landing-page
+  - concept
+  - icon-in-headline
+  - hand-holds-product
+  - ticker-band
+  - split-field
+  - translucent-cards
+  why: The headline trades a word for an icon in a black pill ('Made For [icon] Digital Users'), so the line reads
+    and plays at once. A real hand holds see-through cards, which makes a digital product feel physical. A tilted
+    black ticker band ('DIGITAL BANKING') crosses the frame and gives the page motion.
+  source: Dribbble shot, 'dot.' digital banking landing page. Link and designer not given. Concept work. Screenshot
+    by the art director, 2026-09-27.
+  added: '2026-09-27'
+  by: 'art director (verdict: good); claude (reason, draft)'
+  external: true
+  copy: Digital Banking Made For Digital Users / We are here for you. we create business with you in mind. we make
+    things easier. / 1.3M+ Active users across the world / Get Started / Scroll to explore
+  watch: 'Too many extras fight for attention: sparkles, the scroll badge, the pixel logo, the ''©/22'' label. Pick
+    one.'
