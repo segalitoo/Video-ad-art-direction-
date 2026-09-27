@@ -1,2 +1,121 @@
 # The taste library. Add with scripts/taste.py; edit `why` and `tags` by hand freely.
-entries: []
+entries:
+- id: T0001
+  kind: exemplar
+  medium: static
+  file: refs/external/T0001.jpg
+  original: carousel-strip.png
+  tags:
+  - carousel
+  - sequence
+  - continuity
+  - kids
+  - ecommerce
+  - product-cutout
+  why: 'The carousel reads as one long strip: cream circles and the kite drawing cross the card edges, so each swipe
+    feels like the next frame. The same idea as our chain rule for video.'
+  source: Meta Ad Library, ad 1188243682182438, Toetots (running since 2024-07-03 on Facebook, Instagram, Audience
+    Network, Messenger). Screenshots by the art director.
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: 'Primary text: Give your child''s feet the best start with Palette Baby Sneaker, recommended by experts
+    and approved by podiatrists. Designed with your child''s health and comfort in mind, these sneakers are perfect
+    for growing feet. #Toetots #ToetotsKids #babyshoes #Kidshoes. CTA: Shop Now.'
+- id: T0002
+  kind: exemplar
+  medium: static
+  file: refs/external/T0002.jpg
+  original: c1-lifestyle.png
+  tags:
+  - carousel
+  - opening-card
+  - colourways
+  - colour-blocks
+  - product-photo
+  why: 'The opening card shows every colourway at once, on flat colour blocks that repeat the shoes'' own colours.
+    The weakest card: a props-on-a-table shot with no idea of its own.'
+  source: Meta Ad Library, ad 1188243682182438, Toetots (running since 2024-07-03 on Facebook, Instagram, Audience
+    Network, Messenger). Screenshots by the art director.
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: No on-image text.
+- id: T0003
+  kind: exemplar
+  medium: static
+  file: refs/external/T0003.jpg
+  original: c2-green-callouts.png
+  tags:
+  - carousel
+  - callout-arrows
+  - product-cutout
+  - mascot
+  - colour-echo
+  - whitespace
+  why: 'One feature per callout: small sentence-case type on a clean white field, a hand-drawn arrow to the part
+    it names, text never over the product. The mascot adds warmth without competing.'
+  source: Meta Ad Library, ad 1188243682182438, Toetots (running since 2024-07-03 on Facebook, Instagram, Audience
+    Network, Messenger). Screenshots by the art director.
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: Adjustable velcro strap / Barefoot Feel for All-Day Comfort / wordmark bottom centre
+- id: T0004
+  kind: exemplar
+  medium: static
+  file: refs/external/T0004.jpg
+  original: c3-purple-callouts.png
+  tags:
+  - carousel
+  - callout-arrows
+  - product-cutout
+  - mascot
+  - colour-echo
+  - template
+  why: 'Template discipline: the exact layout of the green card, only the colourway and the mascot change, and the
+    mascot''s colour echoes the shoe (purple starfish, purple shoe).'
+  source: Meta Ad Library, ad 1188243682182438, Toetots (running since 2024-07-03 on Facebook, Instagram, Audience
+    Network, Messenger). Screenshots by the art director.
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: Adjustable velcro strap / Barefoot Feel for All-Day Comfort / wordmark bottom centre
+- id: T0005
+  kind: exemplar
+  medium: static
+  file: refs/external/T0005.jpg
+  original: c4-heel-kite.png
+  tags:
+  - carousel
+  - macro
+  - photo-plus-illustration
+  - material
+  - playful
+  why: 'A macro crop of the heel over a flat hand-drawn kite: photo and drawing mixed, playful, and the product
+    still carries the frame. The texture of the sole is the content.'
+  source: Meta Ad Library, ad 1188243682182438, Toetots (running since 2024-07-03 on Facebook, Instagram, Audience
+    Network, Messenger). Screenshots by the art director.
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: No on-image text.
+- id: T0006
+  kind: exemplar
+  medium: static
+  file: refs/external/T0006.jpg
+  original: c5-toe-box.png
+  tags:
+  - carousel
+  - macro
+  - text-on-path
+  - feature-callout
+  - mascot
+  why: The words curve along the toe cap, so the type points at the feature it names. One feature, one frame, set
+    in the brand's rounded type in a dark green taken from the shoe.
+  source: Meta Ad Library, ad 1188243682182438, Toetots (running since 2024-07-03 on Facebook, Instagram, Audience
+    Network, Messenger). Screenshots by the art director.
+  added: '2026-09-27'
+  by: claude (draft, art director to confirm)
+  external: true
+  copy: Wide-Toe Box Design

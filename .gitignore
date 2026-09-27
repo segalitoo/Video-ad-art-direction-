@@ -16,3 +16,6 @@ examples/**/out/*.png
 
 # Exception: the finished ads are the deliverable, and this workspace is temporary
 !examples/*/final/deliver/*.mp4
+
+# Third-party references in the taste library: this repo is public
+taste/refs/external/

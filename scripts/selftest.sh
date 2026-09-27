@@ -84,6 +84,14 @@ python3 scripts/taste.py nearest examples/driftpay/test/out/S04_1.qwen.jpg --med
 if python3 scripts/taste.py add examples/driftpay/test/out/S04_2.qwen.jpg --kind exemplar --medium frame --why "" --source x >/dev/null 2>&1; then
   echo "FAIL taste entry without a reason not refused"; exit 1; fi
 ok "taste library refuses an example without a reason"
+python3 scripts/taste.py add examples/driftpay/test/out/S04_2.qwen.jpg --kind exemplar --medium static --why "ext" \
+  --source "someone else" --external --copy "Headline" >/dev/null
+test -f "$TASTE_DIR/refs/external/T0003.jpg" && grep -q 'external: true' "$TASTE_DIR/library.yml" \
+  && git check-ignore -q taste/refs/external/T0003.jpg \
+  && ok "external references stay out of git" || { echo "FAIL taste external"; exit 1; }
+rm "$TASTE_DIR/refs/external/T0003.jpg"
+python3 scripts/taste.py sheet -o "$tmp/lib.html" >/dev/null && grep -q "image not on this machine" "$tmp/lib.html" \
+  && ok "the library sheet survives a missing external image" || { echo "FAIL taste sheet missing"; exit 1; }
 unset TASTE_DIR
 
 # Judge pass: a matching pair must beat a mismatched one, a hard fail drops out, an unscored file stops the rank.

@@ -14,7 +14,9 @@ new candidate with its nearest neighbours, and `lessons.md` collects the rules l
 
 Files live in taste/: library.yml (one entry per example), refs/ (JPEG copies, clips as a
 5-frame strip), lessons.md. External references are for internal inspiration only: never
-published or used in an ad, always credited in `source`.
+published or used in an ad, always credited in `source`. Add them with `--external`: the
+image goes to refs/external/, which git ignores (this repo is public), and only the entry,
+its reason, its credit and the ad's text (`--copy`) are committed.
 """
 
 import argparse
@@ -34,6 +36,7 @@ from judge import colour_match, embedded, hue_hist, region_labs, structure_match
 TASTE = Path(os.environ.get("TASTE_DIR", ROOT / "taste"))   # override for tests
 LIB = TASTE / "library.yml"
 REFS = TASTE / "refs"
+EXTERNAL = REFS / "external"                                # third-party images: never committed
 LESSONS = TASTE / "lessons.md"
 MEDIA = ["frame", "clip", "static", "board", "lock", "edit"]
 CLIP_EXT = {".mp4", ".mov", ".webm"}
@@ -81,7 +84,7 @@ def likeness(a, b):
     return 0.5 * structure_match(a["gray"], b["gray"]) + 0.5 * colour_match(a, b)
 
 
-def add_entry(src, kind, medium, tags, why, source, by):
+def add_entry(src, kind, medium, tags, why, source, by, external=False, copy=None):
     if kind not in ("exemplar", "anti"):
         fail("kind is exemplar or anti")
     if medium not in MEDIA:
@@ -91,16 +94,21 @@ def add_entry(src, kind, medium, tags, why, source, by):
     entries = load_lib()
     n = 1 + max([int(e["id"][1:]) for e in entries] or [0])
     eid = f"T{n:04d}"
-    REFS.mkdir(parents=True, exist_ok=True)
+    folder = EXTERNAL if external else REFS
+    folder.mkdir(parents=True, exist_ok=True)
     img = still_of(src)
     if max(img.size) > 1400:
         s = 1400 / max(img.size)
         img = img.resize((round(img.width * s), round(img.height * s)))
-    ref = REFS / f"{eid}.jpg"
+    ref = folder / f"{eid}.jpg"
     img.save(ref, quality=88)
     entry = {"id": eid, "kind": kind, "medium": medium, "file": str(ref.relative_to(TASTE)),
-             "original": str(src), "tags": tags, "why": why, "source": source,
+             "original": str(src) if Path(src).resolve().is_relative_to(ROOT) else Path(src).name, "tags": tags, "why": why, "source": source,
              "added": date.today().isoformat(), "by": by}
+    if external:
+        entry["external"] = True
+    if copy:
+        entry["copy"] = copy
     entries.append(entry)
     save_lib(entries)
     print(f"added {eid} ({kind}, {medium}): {why}")
@@ -108,7 +116,8 @@ def add_entry(src, kind, medium, tags, why, source, by):
 
 
 def cmd_add(args):
-    add_entry(args.file, args.kind, args.medium, split_tags(args.tags), args.why, args.source, args.by)
+    add_entry(args.file, args.kind, args.medium, split_tags(args.tags), args.why, args.source, args.by,
+              args.external, args.copy)
 
 
 def split_tags(text):
@@ -134,6 +143,10 @@ def cmd_from_judge(args):
 
 def cmd_nearest(args):
     entries = [e for e in load_lib() if not args.medium or e["medium"] == args.medium]
+    missing = [e["id"] for e in entries if not (TASTE / e["file"]).exists()]
+    if missing:
+        print(f"skipped {', '.join(missing)}: image not on this machine (external refs are not in git)")
+    entries = [e for e in entries if e["id"] not in missing]
     if not entries:
         fail("the library has no entries for this medium yet; add references first")
     cand = still_of(args.file)
@@ -191,14 +204,23 @@ h1{{font-size:22px;margin:0 0 16px}}h2{{font-size:15px;margin:24px 0 10px;color:
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:14px}}
 figure{{margin:0;background:var(--card);border-radius:8px;overflow:hidden;border:3px solid transparent}}
 figure img{{display:block;width:100%}}figcaption{{padding:8px 10px;font-size:13px}}
+.gone{{aspect-ratio:1;display:grid;place-items:center;color:var(--muted);font-size:13px}}
+q{{display:block;margin-top:6px;color:var(--muted)}}
 .exemplar{{border-color:var(--good)}}.anti{{border-color:var(--bad)}}.cand{{border-color:var(--ink)}}
 </style><div class="wrap"><h1>{html.escape(title)}</h1><div class="grid">{body}</div></div>"""
 
 
 def cmd_sheet(args):
     entries = load_lib()
-    body = "".join(f'<figure class="{e["kind"]}"><img src="{embedded(TASTE / e["file"], 420)}"><figcaption><b>{e["id"]}</b> '
-                   f'{e["kind"]} · {e["medium"]}<br>{html.escape(e["why"])}<br><small>{html.escape(", ".join(e.get("tags") or []))}'
+
+    def picture(e):
+        f = TASTE / e["file"]
+        return f'<img src="{embedded(f, 420)}">' if f.exists() else '<div class="gone">image not on this machine</div>'
+
+    body = "".join(f'<figure class="{e["kind"]}">{picture(e)}<figcaption><b>{e["id"]}</b> '
+                   f'{e["kind"]} · {e["medium"]}<br>{html.escape(e["why"])}'
+                   + (f'<br><q>{html.escape(e["copy"])}</q>' if e.get("copy") else "")
+                   + f'<br><small>{html.escape(", ".join(e.get("tags") or []))}'
                    f' · {html.escape(e.get("source", ""))}</small></figcaption></figure>' for e in entries)
     Path(args.out).write_text(page(f"Taste library · {len(entries)} examples", body), encoding="utf-8")
     print(f"wrote {args.out}: {len(entries)} examples")
@@ -215,6 +237,8 @@ def main():
     p.add_argument("--why", required=True)
     p.add_argument("--source", required=True, help="where it came from; credit external work")
     p.add_argument("--by", default="art director")
+    p.add_argument("--external", action="store_true", help="third-party work: keep the image out of git")
+    p.add_argument("--copy", help="the ad's own text (headline, callouts, CTA), for reference")
     p = sub.add_parser("from-judge")
     p.add_argument("round")
     p.add_argument("--keep", action="append", help='ID:"why it works"')

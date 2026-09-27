@@ -10,6 +10,9 @@ the art director's taste over time instead of starting from zero on each project
 ## Feed it
 
 - **References you admire:** `python scripts/taste.py add <image> --kind exemplar --medium static --tags ... --why "..." --source "credit"`.
+- **Other brands' ads** (Meta Ad Library screenshots and similar): add `--external --copy "the ad's text"`.
+  This repo is public, so the image stays in `refs/external/` (git ignores it) and only the entry, the
+  reason, the credit and the text are committed. A fresh clone has the entries without those images.
   External work is for internal inspiration only: never published, never used in an ad, always credited.
 - **At every gate:** after the art director picks, file the verdicts with their reasons:
   `python scripts/taste.py from-judge <round.yml> --keep D1:"why it works" --reject D3:"what went wrong"`.
