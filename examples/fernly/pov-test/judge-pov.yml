@@ -1,0 +1,306 @@
+round: Fernly POV rescue test
+lock: ../fernly.dna.yml
+groups:
+  W:
+    label: Worm's-eye view
+    files: 5
+  F:
+    label: Phone lying on the soil, 0.5x
+    files: 5
+  R:
+    label: Pot rim in the foreground
+    files: 5
+pairs: []
+items:
+  W1:
+    file: out/wormseye.qwen.jpg
+    group: W
+    kind: image
+    model: qwen
+  W2:
+    file: out/wormseye.soul_1.jpg
+    group: W
+    kind: image
+    model: soul
+  W3:
+    file: out/wormseye.soul_2.jpg
+    group: W
+    kind: image
+    model: soul
+  W4:
+    file: out/wormseye.soul_3.jpg
+    group: W
+    kind: image
+    model: soul
+  W5:
+    file: out/wormseye.soul_4.jpg
+    group: W
+    kind: image
+    model: soul
+  F1:
+    file: out/phone-on-soil.qwen.jpg
+    group: F
+    kind: image
+    model: qwen
+  F2:
+    file: out/phone-on-soil.soul_1.jpg
+    group: F
+    kind: image
+    model: soul
+  F3:
+    file: out/phone-on-soil.soul_2.jpg
+    group: F
+    kind: image
+    model: soul
+  F4:
+    file: out/phone-on-soil.soul_3.jpg
+    group: F
+    kind: image
+    model: soul
+  F5:
+    file: out/phone-on-soil.soul_4.jpg
+    group: F
+    kind: image
+    model: soul
+  R1:
+    file: out/rim-foreground.qwen.jpg
+    group: R
+    kind: image
+    model: qwen
+  R2:
+    file: out/rim-foreground.soul_1.jpg
+    group: R
+    kind: image
+    model: soul
+  R3:
+    file: out/rim-foreground.soul_2.jpg
+    group: R
+    kind: image
+    model: soul
+  R4:
+    file: out/rim-foreground.soul_3.jpg
+    group: R
+    kind: image
+    model: soul
+  R5:
+    file: out/rim-foreground.soul_4.jpg
+    group: R
+    kind: image
+    model: soul
+scores:
+  W1:
+    lock: 3
+    hero: 3
+    craft: 3
+    composition: 3
+    story: 3
+    animatable: 4
+    note: 'Closest to a POV: leaves overhang the lens, soil at the bottom edge. But a second monstera stands mid-frame,
+      so it reads ''watching another plant'''
+  W2:
+    lock: 4
+    hero: 4
+    craft: 3
+    composition: 3
+    story: 2
+    animatable: 4
+    note: ''
+    fail: Instagram or TikTok interface with usernames drawn into the image
+  W3:
+    lock: 4
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 2
+    animatable: 4
+    note: Grittier phone look, floor-level angle looking up a little; still a side view of the plant, not from it
+  W4:
+    lock: 4
+    hero: 4
+    craft: 3
+    composition: 3
+    story: 2
+    animatable: 4
+    note: ''
+    fail: Instagram or TikTok interface with usernames drawn into the image
+  W5:
+    lock: 4
+    hero: 4
+    craft: 3
+    composition: 3
+    story: 2
+    animatable: 4
+    note: ''
+    fail: Instagram or TikTok interface with usernames drawn into the image
+  F1:
+    lock: 3
+    hero: 4
+    craft: 4
+    composition: 4
+    story: 2
+    animatable: 4
+    note: Side view, the can huge in the foreground; no POV
+  F2:
+    lock: 4
+    hero: 4
+    craft: 3
+    composition: 3
+    story: 2
+    animatable: 4
+    note: ''
+    fail: Instagram or TikTok interface with usernames drawn into the image
+  F3:
+    lock: 4
+    hero: 4
+    craft: 3
+    composition: 3
+    story: 2
+    animatable: 4
+    note: ''
+    fail: Instagram or TikTok interface with usernames drawn into the image
+  F4:
+    lock: 4
+    hero: 4
+    craft: 3
+    composition: 3
+    story: 2
+    animatable: 4
+    note: ''
+    fail: Instagram or TikTok interface with usernames drawn into the image
+  F5:
+    lock: 4
+    hero: 4
+    craft: 3
+    composition: 3
+    story: 2
+    animatable: 4
+    note: ''
+    fail: Instagram or TikTok interface with usernames drawn into the image
+  R1:
+    lock: 3
+    hero: 3
+    craft: 3
+    composition: 3
+    story: 3
+    animatable: 4
+    note: 'Pot rim and soil in the foreground, but it is a second pot: the hand waters a different plant behind'
+  R2:
+    lock: 4
+    hero: 4
+    craft: 3
+    composition: 3
+    story: 2
+    animatable: 4
+    note: ''
+    fail: Instagram or TikTok interface with usernames drawn into the image
+  R3:
+    lock: 4
+    hero: 4
+    craft: 3
+    composition: 3
+    story: 2
+    animatable: 4
+    note: ''
+    fail: Instagram or TikTok interface with usernames drawn into the image
+  R4:
+    lock: 4
+    hero: 4
+    craft: 3
+    composition: 3
+    story: 2
+    animatable: 4
+    note: ''
+    fail: Instagram or TikTok interface with usernames drawn into the image
+  R5:
+    lock: 4
+    hero: 4
+    craft: 3
+    composition: 3
+    story: 2
+    animatable: 4
+    note: ''
+    fail: Instagram or TikTok interface with usernames drawn into the image
+pair_scores: {}
+fixes:
+- 'The plant''s-eye view is out of reach for these image models: 0 of 22 frames across both tests. Qwen reads ''from
+  inside the pot'' as a second pot.'
+- 'Soul 2 ignores inline negatives for app interfaces: 11 of 12 images drew a Stories screen. Do not use Soul 2
+  for UGC-styled prompts.'
+- 'Recommendation: stop the Fernly POV route; test Driftpay.'
+machine:
+  W1:
+    size: 1152x2048
+    sharp: 93.1
+    calm_bands: 59.3
+    palette: 42.7
+  W2:
+    size: 1152x2048
+    sharp: 88.7
+    calm_bands: 38.7
+    palette: 33.3
+  W3:
+    size: 1152x2048
+    sharp: 95.1
+    calm_bands: 65.1
+    palette: 33.9
+  W4:
+    size: 1152x2048
+    sharp: 87.3
+    calm_bands: 36.2
+    palette: 35.6
+  W5:
+    size: 1152x2048
+    sharp: 96.9
+    calm_bands: 72.7
+    palette: 33.6
+  F1:
+    size: 1152x2048
+    sharp: 85.4
+    calm_bands: 59.9
+    palette: 39.2
+  F2:
+    size: 1152x2048
+    sharp: 91.8
+    calm_bands: 53.1
+    palette: 34.3
+  F3:
+    size: 1152x2048
+    sharp: 98.2
+    calm_bands: 48.8
+    palette: 31.3
+  F4:
+    size: 1152x2048
+    sharp: 73.4
+    calm_bands: 51.1
+    palette: 37.2
+  F5:
+    size: 1152x2048
+    sharp: 100.0
+    calm_bands: 42.1
+    palette: 29.8
+  R1:
+    size: 1152x2048
+    sharp: 76.1
+    calm_bands: 58.8
+    palette: 36.3
+  R2:
+    size: 1152x2048
+    sharp: 84.3
+    calm_bands: 57.1
+    palette: 36.3
+  R3:
+    size: 1152x2048
+    sharp: 94.7
+    calm_bands: 78.2
+    palette: 37.7
+  R4:
+    size: 1152x2048
+    sharp: 88.8
+    calm_bands: 31.6
+    palette: 41.1
+  R5:
+    size: 1152x2048
+    sharp: 92.6
+    calm_bands: 51.8
+    palette: 30.1
+pair_machine: {}
