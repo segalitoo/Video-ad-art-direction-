@@ -412,3 +412,83 @@ entries:
   by: 'art director (verdict: good); claude (reason, draft)'
   external: true
   copy: Falling Behind on Amazon? / Boost Organic Rankings with Levanta. / Read Case Study
+- id: T0021
+  kind: exemplar
+  medium: web
+  file: refs/external/T0021.jpg
+  original: 25.webp
+  tags:
+  - vertical-fintech
+  - landing-page
+  - concept
+  - three-colour-system
+  - accent-cta
+  - iridescent-product
+  - big-type
+  - dark-field
+  why: 'A strict three-colour system: black, off-white and one acid lime used only for CTAs. All other colour is
+    saved for the product, the iridescent cards. A huge, tightly tracked sans headline beside a small grey paragraph
+    gives two sizes and a clear order. The black panel bends around the ''Explore more'' badge, so the layout itself
+    points down the page.'
+  source: Dribbble shot 19742791, 'Carty – Digital Banking Landing Page Website' (https://dribbble.com/shots/19742791).
+    Designer not visible in the screenshots. Concept work, not a live product. Screenshots by the art director,
+    2026-09-27.
+  added: '2026-09-27'
+  by: 'art director (verdict: good); claude (reason, draft)'
+  external: true
+  copy: Digitize your financial / Money should be easy. It's time to say goodbye to banks & financial services companies
+    that don't work for you / Digitize Now / 12M World active user / 2022 The world's best digital banks
+  watch: Grey-on-grey feature cards and stat labels are too faint to read. The headline 'Digitize your financial'
+    is broken English.
+- id: T0022
+  kind: exemplar
+  medium: web
+  file: refs/external/T0022.jpg
+  original: 26.webp
+  tags:
+  - vertical-fintech
+  - landing-page
+  - concept
+  - ad-like
+  - hand-holds-product
+  - colour-only-on-product
+  - accent-cta
+  - dark-field
+  why: 'The CTA panel is a ready-made ad: black field, a three-line promise, one lime pill, and a black-and-white
+    hand letting go of a colour card with an orbit ring and three sparkles. The only colour in the frame is the
+    product, so the eye goes straight to it. Close to what a Driftpay end card could be.'
+  source: Dribbble shot 19742791, 'Carty – Digital Banking Landing Page Website' (https://dribbble.com/shots/19742791).
+    Designer not visible in the screenshots. Concept work, not a live product. Screenshots by the art director,
+    2026-09-27.
+  added: '2026-09-27'
+  by: 'art director (verdict: good); claude (reason, draft)'
+  external: true
+  copy: Meet your banking future starting from now with Carty / Try Carty Now / 243K Carty's users from all over
+    the globe / 489M revenue / 267% Carty's investment growth in 2022
+  watch: The tilted mock-up is Dribbble staging, not the design. The faded stat numbers (243K, 489M) fail contrast.
+- id: T0023
+  kind: exemplar
+  medium: web
+  file: refs/external/T0023.jpg
+  original: 27.webp
+  tags:
+  - vertical-fintech
+  - landing-page
+  - concept
+  - page-rhythm
+  - alternating-fields
+  - section-numbers
+  why: 'The page rhythm: dark hero, light sections, a dark CTA panel mid-page, a dark footer, with huge faded section
+    numbers (01–05) as the structure. The same alternating-field idea as the Levanta campaign, stretched down one
+    page.'
+  source: Dribbble shot 19742791, 'Carty – Digital Banking Landing Page Website' (https://dribbble.com/shots/19742791).
+    Designer not visible in the screenshots. Concept work, not a live product. Screenshots by the art director,
+    2026-09-27.
+  added: '2026-09-27'
+  by: 'art director (verdict: good); claude (reason, draft)'
+  external: true
+  copy: Best features provided by carty / Get to know more about carty / Meet your banking future starting from
+    now with Carty / Meet most carty trusted partners / Let's learn how carty work / Connect your finances with
+    Carty
+  watch: The partner logos are greyed almost to invisible, and the small body text is very low contrast. Low-resolution
+    screenshot.

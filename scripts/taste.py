@@ -38,7 +38,7 @@ LIB = TASTE / "library.yml"
 REFS = TASTE / "refs"
 EXTERNAL = REFS / "external"                                # third-party images: never committed
 LESSONS = TASTE / "lessons.md"
-MEDIA = ["frame", "clip", "static", "board", "lock", "edit"]
+MEDIA = ["frame", "clip", "static", "board", "lock", "edit", "web"]   # web: landing pages, style reference only
 CLIP_EXT = {".mp4", ".mov", ".webm"}
 
 

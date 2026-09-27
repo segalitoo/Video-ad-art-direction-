@@ -13,6 +13,9 @@ the art director's taste over time instead of starting from zero on each project
 - **Other brands' ads** (Meta Ad Library screenshots and similar): add `--external --copy "the ad's text"`.
   This repo is public, so the image stays in `refs/external/` (git ignores it) and only the entry, the
   reason, the credit and the text are committed. A fresh clone has the entries without those images.
+- **Landing pages and other web design** (Dribbble shots and similar): `--medium web`. They teach
+  colour, type and layout, not ad structure, so the review never compares an ad with them as an ad.
+  Dribbble blocks automated access, so these come in as the art director's screenshots.
 - **Mixed examples:** when only one idea in an ad is worth learning, say that idea in `--why` and
   put what not to copy in `--watch` (clip art, clutter, stock people). The review shows both.
   External work is for internal inspiration only: never published, never used in an ad, always credited.
