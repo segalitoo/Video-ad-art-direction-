@@ -24,3 +24,6 @@ taste/refs/external/
 examples/axolotl/refs/
 examples/axolotl/out/
 examples/axolotl/qa/
+
+# Local-only projects (not published): the animal page template
+local/
