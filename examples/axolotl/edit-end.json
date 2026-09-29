@@ -1,0 +1,13 @@
+{
+ "prompt": "Edit image 1. Keep the camera, framing, the body, the spacesuit, the harness and backpack, the arms, legs, feet and tail, the position and shape of the glass helmet, the blue background and the lighting exactly as they are in image 1. Change only this: the head and eyes turn to look toward screen-right, in three-quarter view, exactly like the axolotl's head in image 2: same face, same smile, same pink gills and speckled skin, same blue eyes. The head stays centred inside the helmet.",
+ "image_urls": [
+  "https://d3snorpfx4xhv8.cloudfront.net/2584f776-b711-47aa-8e5e-c821d55e349a/9c325d90-16da-4db6-bf38-43a7427d892b.png",
+  "https://d3snorpfx4xhv8.cloudfront.net/2584f776-b711-47aa-8e5e-c821d55e349a/951f0b28-80cd-4d18-9832-2305decf12a3.png"
+ ],
+ "negative_prompt": "body turned or moved, different pose, different suit, extra limbs, extra fingers, second axolotl, text, watermark, changed background",
+ "aspect_ratio": "3:2",
+ "resolution": "2k",
+ "prompt_extend": false,
+ "enable_thinking": false,
+ "seed": 4127
+}

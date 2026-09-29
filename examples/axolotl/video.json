@@ -1,0 +1,8 @@
+{
+ "image_url": "https://d3snorpfx4xhv8.cloudfront.net/2584f776-b711-47aa-8e5e-c821d55e349a/9c325d90-16da-4db6-bf38-43a7427d892b.png",
+ "end_image_url": "https://d3snorpfx4xhv8.cloudfront.net/2584f776-b711-47aa-8e5e-c821d55e349a/b1f68aae-b36a-4b66-906b-74f277c7beb2.png",
+ "prompt": "One continuous, slow head turn. The axolotl starts looking toward screen-left, smoothly turns to face the viewer at the midpoint, then continues until it looks toward screen-right. Keep the body centered and still; only the head and eyes turn inside the glass helmet. The gills flutter subtly. Fixed camera, unchanged background and lighting, consistent character design, no cuts or other movement.",
+ "duration": 5,
+ "resolution": "720p",
+ "generate_audio": false
+}

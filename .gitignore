@@ -19,3 +19,6 @@ examples/**/out/*.png
 
 # Third-party references in the taste library: this repo is public
 taste/refs/external/
+
+# The art director's own reference images: kept local unless they choose to publish them (public repo)
+examples/axolotl/refs/
