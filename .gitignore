@@ -22,3 +22,5 @@ taste/refs/external/
 
 # The art director's own reference images: kept local unless they choose to publish them (public repo)
 examples/axolotl/refs/
+examples/axolotl/out/
+examples/axolotl/qa/
