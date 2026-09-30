@@ -113,9 +113,9 @@ statics:
 # Quote every line: a comma inside {...} breaks YAML.
 variants:
   hooks:
-    - {id: H1, super: "Your invoice is leaving."}
-    - {id: H2, super: "This invoice gets paid tomorrow."}
-    - {id: H3, super: "Watch an invoice cross the world."}
+    - {id: H1, super: "Your invoice is leaving.", mechanic: curiosity}
+    - {id: H2, super: "This invoice gets paid tomorrow.", mechanic: result}
+    - {id: H3, super: "Watch an invoice cross the world.", mechanic: visual}
   ctas:
     - {id: C1, text: "Open a free account"}
     - {id: C2, text: "Get paid faster"}

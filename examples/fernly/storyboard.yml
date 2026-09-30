@@ -113,9 +113,9 @@ statics:
 # Quote every line: a comma inside {...} breaks YAML.
 variants:
   hooks:
-    - {id: H1, super: "My human is trying to drown me."}
-    - {id: H2, super: "One star. Would not live here again."}
-    - {id: H3, super: "Day 3 of being overwatered."}
+    - {id: H1, super: "My human is trying to drown me.", mechanic: confession}
+    - {id: H2, super: "One star. Would not live here again.", mechanic: contrarian}
+    - {id: H3, super: "Day 3 of being overwatered.", mechanic: curiosity}
   ctas:
     - {id: C1, text: "Get Fernly free"}
     - {id: C2, text: "Save your plants"}

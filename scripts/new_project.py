@@ -4,7 +4,7 @@
     python scripts/new_project.py sunpeel peel-back-summer
     python scripts/new_project.py acme spring-launch --mode ugc
 
-Creates projects/<brand>-<campaign>/ with the brief, lock, storyboard, copy
+Creates projects/<brand>-<campaign>/ with the research sheet, brief, lock, storyboard, copy
 matrix, QA checklist and an empty iteration log, plus folders for keyframes,
 clips and exports.
 """
@@ -40,7 +40,7 @@ def main():
 
     for sub in ("keyframes", "clips", "exports"):
         (target / sub).mkdir(parents=True)
-    for name in ("brief.md", "copy-matrix.md", "qa-checklist.md"):
+    for name in ("research.md", "brief.md", "copy-matrix.md", "qa-checklist.md"):
         shutil.copy(TEMPLATES / name, target / name)
 
     lock_name = f"{brand}.dna.yml"
@@ -57,7 +57,7 @@ def main():
     (target / "iteration-log.csv").write_text(header + "\n", encoding="utf-8")
 
     print(f"created {target.relative_to(ROOT)}  (mode: {args.mode})")
-    print("next: fill brief.md, get it approved, then write the lock")
+    print("next: fill research.md, then brief.md; get the brief approved, then write the lock")
 
 
 if __name__ == "__main__":

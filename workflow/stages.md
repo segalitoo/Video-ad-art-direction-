@@ -24,28 +24,32 @@ J = judge pass: Claude scores every batch and names the best matching set before
 - Every gate from stage 3 on shows the visual storyboard (`board.py`).
 - Every generation is logged with a verdict and a reason (`iteration-log.csv`).
 - Claude judges every batch before a person does (`judge.py`): a score and a reason per file, and the best matching set. People pick.
+- Research before the brief: angles come from the market and the buyer's own words, not a blank prompt.
+- Proof is shown, never invented: numbers and quotes only from the lock's `proof` block.
+- Score before spending (`score.py`): no paid generation for a script or concept under 15/25.
+- Results feed back (`perf.py`): the platform's numbers decide kill, hold or scale, and winners join the taste library.
 - Two iteration cycles, then ship it or kill it.
 
 ---
 
-## 01 · Define · Brief and hook angles
-Claude turns a 2-minute intake into a one-page brief and drafts ten hook angles. The lead keeps three.
+## 01 · Define · Research, brief and hook angles
+Research first, then the brief. Claude maps the category, then turns a 2-minute intake into a one-page brief and drafts ten hooks. The lead keeps three.
 
 | | |
 |---|---|
-| **Output** | `brief.md`: the one thing, audience, insight, 3 hook angles, mandatories, success metric |
-| **Human gate** | The creative lead approves the brief. One message; if it needs "and", it is two ads. |
-| **Tools** | Claude, Perplexity or web search for trend and competitor scans, the Meta Ad Library and TikTok Creative Center for references |
-| **Automated** | Brief draft, hook volume, reference scans |
-| **Stays manual** | Framing the problem, picking the angle |
-| **Bottleneck** | Vague briefs. Claude asks the intake questions until every field is filled. |
+| **Output** | `research.md`: competitor map, saturated zones and gaps (angle and format), trust barriers, proof on hand, the customer voice bank, 7 angles ranked by gap × pain × proof with a format each. `brief.md`: the one thing, the single buyer, insight, 3 angles, what the ads do not do, mandatories, the metric and the test thresholds (`perf.yml`) |
+| **Human gate** | The creative lead approves the research and the brief. One message; if it needs "and", it is two ads. |
+| **Tools** | Claude, Perplexity or web search, the Meta Ad Library and TikTok Creative Center, reviews and forums for the buyer's words |
+| **Automated** | Competitor scans, the voice bank, angle ranking, brief draft, hook volume |
+| **Stays manual** | Framing the problem, picking the angle, setting the test thresholds with the media buyer |
+| **Bottleneck** | Generic research. Every finding names its source; a line that fits any brand in the category is cut. |
 
 ## 02 · Define · The lock
 Style exploration at volume, narrowed to three directions, then frozen as tokens.
 
 | | |
 |---|---|
-| **Output** | `<brand>.dna.yml`: mode, tokens, palette, type, sound, end card, hero, negatives |
+| **Output** | `<brand>.dna.yml`: mode, tokens, palette, type, sound, end card, hero, negatives, and how the brand talks and proves: `verbal`, `proof`, `buyer`, `guardrails` |
 | **Human gate** | The art director signs the lock. The highest-leverage call in the pipeline. |
 | **Tools** | Claude, Higgsfield / Nano Banana / Midjourney for style frames, Figma for the direction board |
 | **Automated** | Style frames, mode defaults, pre-checks (`assemble.py --check`) |
@@ -65,6 +69,7 @@ The shot list, beat by beat: hook, build, product, proof, payoff, end card.
 | **Tools** | Claude, Figma, `assemble.py --check` |
 | **Automated** | Beat drafts, timing sum, word counts on supers, hook position, platform length limits, and a prompt lint: movement in a keyframe, too many events for a short clip, brand names that clash with the text ban, too many scene colours, music cues leaking into SFX |
 | **Stays manual** | Pacing, what the viewer feels at each beat |
+| **Score gate** | `score.py`: script and hooks scored on hook, buyer language, objection, product moment, close (out of 25). 20+ produce with every hook variant; 15 to 19 one version; under 15 rewrite first. Words are cheap; clips are not. |
 | **Bottleneck** | Storyboards that look finished too early. Words first, pictures at stage 4. |
 
 ## 04 · Produce · Keyframes
@@ -124,10 +129,10 @@ Hooks, supers, CTAs, captions and platform primary text. Three lines per placeme
 
 | | |
 |---|---|
-| **Output** | `copy-matrix.md` with every losing line and its reason |
+| **Output** | `copy-matrix.md` with every losing line and its reason; hooks tagged by mechanic and voice |
 | **Human gate** | The copy lead picks and trims. Claims never ship unreviewed. |
-| **Tools** | Claude with the brand voice guide as its system prompt |
-| **Automated** | Bulk drafts, word-count limits from the lock, locale fan-out |
+| **Tools** | Claude with the lock's `verbal`, `buyer` and `proof` blocks and the voice bank; `copy_check.py` |
+| **Automated** | Bulk drafts, hooks across 3+ mechanics and 3 voices, word-count limits, banned words, unproven numbers, hooks that start alike, locale fan-out |
 | **Stays manual** | Final voice, anything legal will read |
 | **Bottleneck** | Native review, done by market priority |
 
@@ -162,10 +167,10 @@ One approved base becomes the ad matrix, then performance data picks what to fix
 
 | | |
 |---|---|
-| **Output** | `matrix.csv`, reframed exports, and the next test batch |
+| **Output** | `matrix.csv`, reframed exports, `perf.md` (kill / hold / scale per ad, patterns by hook, CTA and platform, a 10-variation plan per winner), and the next test batch |
 | **Human gate** | Data proposes, a person decides. Someone owns the winning variant. |
-| **Tools** | `scripts/matrix.py`, `scripts/crop.py` for a free 4:5 cut, Higgsfield reframe only when the crop fails, platform A/B tests |
-| **Automated** | Variant expansion, reframes, data pulls, logging |
+| **Tools** | `scripts/matrix.py`, `scripts/crop.py` for a free 4:5 cut, Higgsfield reframe only when the crop fails, `scripts/perf.py` on the platform export, `scripts/loop.py` to test a static as a motion loop |
+| **Automated** | Variant expansion, reframes, the kill / hold / scale read against the account's thresholds, fatigue, winners filed in the taste library with their numbers |
 | **Stays manual** | Deciding what to fix and why |
 | **Bottleneck** | Endless loops. Two cycles at most, then ship it or kill it. |
 
@@ -184,3 +189,9 @@ One approved base becomes the ad matrix, then performance data picks what to fix
 - **LOCK:** the next campaign starts from this lock, not a blank prompt.
 - **ADAPTERS:** a new tool is one block in `adapters/tools.yml`, and every prompt works in it.
 - **LOG:** every verdict and reason sharpens the next lock version.
+- **RESULTS:** winners go into the taste library with their numbers, so taste is checked against what performed.
+- **MULTIPLY:** a winner gets ten variations (hooks, treatments, formats, proof, CTA, awareness) before any new concept.
+
+**Credit.** The research sheet, the static format library, the score gate and the kill / hold / scale
+loop adapt ideas from public guides by Dusan Radovanovic (hookandscale.io, 2026), rewritten for this
+system: text set in the edit, not generated; proof only from the lock; thresholds set per account.

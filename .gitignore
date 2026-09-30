@@ -27,3 +27,6 @@ examples/axolotl/qa/
 
 # Local-only projects (not published): the animal page template
 local/
+
+# Rendered format frames (the contact sheet is kept; rerun static_formats.py for the files)
+examples/*/formats/out/

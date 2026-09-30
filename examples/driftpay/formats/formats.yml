@@ -1,0 +1,24 @@
+# Driftpay · the static format library on a real lock (scripts/static_formats.py).
+# The Driftpay lock has no proof block (a demo brand has no reviews or stats), so the proof formats
+# (stat, review, testimonial, rating, price-per-day, badges) refuse to build: add F07 below to see it.
+lock: ../driftpay.dna.yml
+product: ../statics-v2/cut/hero-plane.png
+cta: Open a free account
+sizes: ["1080x1350"]
+ads:
+  - {id: F1, format: hero-headline, headline: "Get paid like it's local.", subhead: "Invoices from abroad land the next business day.", bg: light}
+  - id: F2
+    format: us-vs-them
+    headline: "Bank transfer or Driftpay?"
+    them: Bank transfer
+    cons: ["Days in transit", "Hidden FX margin", "A fee on every invoice"]
+    pros: ["Next business day", "The real exchange rate", "No monthly fee"]
+    bg: light
+    product_scale: 0.8
+  - {id: F3, format: benefits, headline: "Invoices that chase themselves.", benefits: ["Next business day", "Real exchange rate", "Automatic reminders", "No monthly fee"], bg: accent}
+  - id: F4
+    format: text-thread
+    messages: [{from: them, text: "how do you get paid by US clients?"}, {from: me, text: "Driftpay. lands next day"}, {from: them, text: "fees?"}, {from: me, text: "real rate, no monthly fee"}]
+  - {id: F5, format: premium, headline: "Paid. Locally.", bg: dark, product_scale: 1.3}
+  - {id: F6, format: lifestyle, plate: ../final/statics/plates/A1_4x5.jpg, headline: "Your client is abroad. Your money isn't."}
+  # - {id: F7, format: stat, stat: 0}      # refused: the lock has no proof.stats

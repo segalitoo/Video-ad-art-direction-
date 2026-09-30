@@ -6,9 +6,9 @@ tokens:
   FORM: everyday home or street setting, product used naturally in hand
   LIGHT: available window light or daylight, slightly uneven
   GRADE: native phone colour, no heavy grade
-  CAMERA: handheld selfie framing, small natural shake, eye-level
-  MOTION: casual, real-time pacing, direct talk to camera
-  TECH: phone sensor look, mild compression, natural skin texture
+  CAMERA: handheld selfie framing, slightly off-centre, small natural shake, eye-level
+  MOTION: casual, real-time pacing, direct talk to camera, the gaze breaks away from the lens every few seconds, small weight shifts, irregular blinks
+  TECH: phone sensor look, mild compression, visible skin texture and pores, a few flyaway hairs
 negative:
   - studio lighting
   - perfect skin retouching
@@ -16,7 +16,15 @@ negative:
 negative_video:
   - cinematic camera moves
 keyframe_first: true
+# What makes a synthetic presenter read as real (the "anti-AI markers"). The tokens above carry the
+# visual and motion ones; these go to the script and the edit.
+realism:
+  script: one small self-correction or restart ("it's, well, it was..."); a pause before an answer
+  sound: room tone under the voice, never studio silence
+  presenter: within about 5 years of the buyer's age, dressed as they would be at home, not as the brand
+  product: enters between seconds 8 and 12 in a 30s script, used, not presented
 qa_watch:
   - Synthetic presenter must be disclosed where the platform or law requires it
   - Lip-sync drift on dialogue
   - Claims spoken by a "customer" still need legal review
+  - Tells: a gaze locked on the lens, perfectly even blinks, plastic skin, studio silence, no restarts

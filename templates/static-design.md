@@ -15,6 +15,42 @@ tool only.
 The plate prompt then says where the subject sits (below the sheet, or right of the column)
 and keeps that area simple. Type never sits on photo detail.
 
+## 1b. The format library (for a testing set)
+
+When a campaign needs many statics to test, pick formats from the angle, not the other way round
+(`research.md` section 6 maps angle → format). `scripts/static_formats.py` builds each one from the
+lock and renders it; the art director still refines the keepers in Figma.
+
+| Group | Format | Use it when | Needs |
+|---|---|---|---|
+| Headline | hero-headline | cold traffic, one strong claim | a headline |
+| Proof | stat | a real number that surprises | `proof.stats` with a source |
+| | review | one customer sentence strong enough to be the headline | `proof.quotes` |
+| | testimonial | warm audiences, close to buying | `proof.quotes` |
+| | rating | a high rating with many reviews | `proof.rating`, `proof.review_count` |
+| Compare | us-vs-them | a clear win over the category's usual way (never a named brand) | them, cons, pros |
+| | ingredients | a product made of standout parts or features | 4 to 6 callouts |
+| | benefits | several clear benefits, cold traffic | a list |
+| | price-per-day | the price is the objection, the daily cost is not | `proof.price_per_day` |
+| | badges | trust signals cut the friction | `proof.badges` |
+| Native | lifestyle | competitors only run studio shots | a plate (a real place) |
+| | ugc-frame | high ad blindness; looks captured, not designed | a plate |
+| | text-thread | the most native format; social proof inside the chat | messages |
+| | premium | known product, retargeting | nothing: space does the work |
+| | seasonal | 2 to 3 weeks before a moment | a plate, a season |
+
+Rules the script enforces:
+- **Proof is shown, never invented.** Proof formats refuse to build without the lock's `proof`
+  block, and any %, star rating, review count or price per day in the copy must be listed there.
+- **A text thread or UGC frame never invents a person.** No fake names, handles or faces; the
+  lines are the brand's own, in a native shape.
+- **The set, not just the ad.** At least 3 formats and 2 background treatments per batch, no two
+  headlines starting on the same word, product scale varying by 20% or more.
+- **The thumbnail test.** At 25% size the CTA is still 7 px or more and the headline 12 px or more,
+  both at 4.5:1 contrast (3:1 for large type).
+
+Example: `examples/driftpay/formats/` (the lock has no proof, so its proof formats refuse to build).
+
 ## 2. Type
 
 - The lock's brand font, installed in Figma. Never a system fallback.

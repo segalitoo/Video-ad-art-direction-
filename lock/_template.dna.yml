@@ -43,6 +43,37 @@ type:
   max_words_per_super: 6
   min_size_pct_of_height: 3.5
 
+# How the brand talks. Copy checks (scripts/copy_check.py) and the static formats read this.
+verbal:
+  voice: <one word + a line, e.g. "bold: short, sure, no hedging">
+  headline_case: sentence     # sentence | upper | lower | title
+  headline_pattern: statement # statement | question | fragment | stat-led
+  headline_max_words: 8
+  cta: [<Shop now>]           # the CTA wording the brand uses; the first is the default
+
+# Proof that exists and may be shown. Leave a field empty when there is none: the proof
+# formats (stat, review, testimonial, rating, badges) refuse to render without it, and
+# numbers in on-screen copy that are not listed here are flagged. Never invent proof.
+proof:
+  rating: ""                  # e.g. "4.8"
+  review_count: ""            # e.g. "10,000+"
+  stats: []                   # [{value: "93%", claim: "felt more energy", source: "survey of 1,204 buyers, 2026"}]
+  quotes: []                  # [{text: "...", name: "Dana R.", source: "Trustpilot, with permission"}]
+  badges: []                  # e.g. [Vegan, Third-party tested]
+  price_per_day: ""           # e.g. "$1.13/day", only if the price supports it exactly
+
+# The single buyer from the brief, in their own words (research.md voice bank).
+buyer:
+  who: <one person, one sentence>
+  pain: <their words>
+  dream: <their words>
+  objection: <their words>
+
+# What the ads never do. The pre-checks flag these words in every line a viewer sees.
+guardrails:
+  never_say: []               # banned words or claims, e.g. ["cure", "guaranteed", "best in the world"]
+  never_use: []               # off-brand colours, tones or devices, for the design review
+
 sound:
   genre: <genre>
   bpm: <bpm>

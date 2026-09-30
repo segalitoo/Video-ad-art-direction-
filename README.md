@@ -24,13 +24,14 @@ DEFINE                      PRODUCE (in parallel)                SHIP
 
 Ten stages, one human gate each, two iteration cycles at most. **J** is the judge pass: before each pick, Claude scores every image or clip against a fixed rubric, gives the round one score, and names the best matching set (`scripts/judge.py`). Full detail: [`workflow/stages.md`](workflow/stages.md).
 
-Six ideas carry the whole system:
+Seven ideas carry the whole system:
 1. **The lock.** The look is written as tokens before the first generation (`<brand>.dna.yml`). A moodboard gets interpreted; a token gets pasted.
 2. **Assembled prompts.** `STYLE + [SHOT] + WORLD + FORM + LIGHT + GRADE + PALETTE + TECH + FRAME`. Only the bracketed slot changes between shots, so every shot reads as one film.
 3. **A chain of frames.** With `chain: true` every shot starts on the previous shot's end frame, and the end frame is an edit of the one before. Clips run first frame to last frame, so nothing jumps between them. The visual storyboard scores every join.
 4. **Keyframe first.** Each shot starts as a still (pick 1 of 8 to 12). Only a kept frame gets animated, and its motion prompt says only what moves. This keeps paid video generations low.
 5. **Machines check first.** Pre-checks on the storyboard, a judge pass on every batch, and spec checks on every export, so people only review what passed, ranked.
 6. **Everything logged.** Each generation records its verdict, reason and lock version.
+7. **Research in, results out.** Angles come from a research sheet (competitors, gaps, the buyer's own words, proof on hand), scripts are scored before any paid run, and the platform's numbers come back through `perf.py`: kill, hold or scale, winners multiplied before new concepts, and filed in the taste library with their results. Proof is shown, never invented.
 
 ## Using it with Claude
 
@@ -58,6 +59,12 @@ python scripts/crop.py master.mp4 4:5                           # free 4:5 feed 
 python scripts/phone_look.py clip.mp4 --shake 1                 # phone-footage feel: drift, grain, flicker
 python scripts/hf_api.py run <model> -i body.json --yes --out clips/   # Higgsfield API: estimate, approve, submit, wait, download
 python scripts/static_compose.py <storyboard.yml> A1 --plate 4:5=a.png --plate 9:16=b.png   # static ads, every size
+python scripts/copy_check.py <storyboard.yml>                   # every line vs the lock: banned words, unproven numbers, hook rules
+python scripts/score.py new score/r1.yml --from <storyboard.yml>   # score scripts and hooks before any paid run; then: score.py rank
+python scripts/static_formats.py formats.yml -o layout.yml --render out --sheet sheet.jpg   # 15 static formats from the lock (--list)
+python scripts/static_render.py layout.yml -o out --layers      # plate + type layers, for motion loops
+python scripts/loop.py make --still out/F1_plate.png --type out/F1_type.png -o F1_loop.mp4   # a static as a 6s loop, type kept sharp
+python scripts/perf.py read export.csv --rules perf.yml --matrix matrix.csv -o perf.md   # kill / hold / scale, patterns, winner plan
 python scripts/spec_check.py A1_meta_feed_1080x1350.jpg --overlay                             # QA works for statics too
 python scripts/spec_check.py export.mp4 --platform tiktok --overlay   # stage 9 QA
 bash scripts/selftest.sh                                         # test everything

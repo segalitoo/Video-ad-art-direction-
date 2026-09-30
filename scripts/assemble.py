@@ -18,6 +18,7 @@ import re
 from pathlib import Path
 import sys
 
+from copy_rules import check_board_copy
 from common import (
     HEX_RE, TOKEN_ORDER, TOOLS_FILE, load_route, load_specs, load_storyboard, load_tools, load_yaml,
     parse_aspect, safe_union,
@@ -97,7 +98,7 @@ def check(board, lock, specs, tools):
             errors.append(f"{s['id']}: uses the hero, but the lock has no hero description")
 
     variants = board.get("variants") or {}
-    for kind, allowed in (("hooks", {"id", "super"}), ("ctas", {"id", "text"})):
+    for kind, allowed in (("hooks", {"id", "super", "mechanic", "voice"}), ("ctas", {"id", "text"})):
         for variant in variants.get(kind, []):
             extra = set(variant) - allowed
             if extra:
@@ -112,6 +113,7 @@ def check(board, lock, specs, tools):
     errors += e
     warnings += w
     warnings += lint(board, lock)
+    warnings += check_board_copy(board, lock)
     return errors, warnings
 
 

@@ -1,0 +1,27 @@
+# perf.yml · the test rules for one account (brief.md section 7). scripts/perf.py applies them
+# to the platform's ad-level export. Set the numbers with the media buyer: these are starting
+# points from one agency's public playbook, not truths about your account.
+#
+# Metrics a rule can use: ctr (link CTR, %), cpa (cost per result), spend, impressions, clicks,
+# results, frequency, cpm, roas, days (age of the ad), and target_cpa / target_roas from below.
+# The latest checkpoint the ad's age has reached applies. Kill wins over scale.
+
+target_cpa: 40          # cost per result you can afford
+target_roas: 0          # 0 = not judged on ROAS
+min_spend: 20           # under this, no call: WAIT
+
+checkpoints:
+  - day: 1
+    kill: ["ctr < 1.0", "cpa > 2 * target_cpa", "frequency > 3"]
+    scale: ["ctr > 2.0 and cpa < 1.5 * target_cpa"]
+  - day: 3
+    kill: ["ctr < 1.0", "cpa > 2 * target_cpa"]
+    scale: ["ctr > 2.5 and cpa < target_cpa"]
+  - day: 7
+    kill: ["ctr < 1.5", "cpa > 1.5 * target_cpa"]
+    scale: ["cpa < target_cpa"]
+
+# With --prev (an earlier export of the same ads): CTR down this much and frequency over this = fatigue.
+fatigue:
+  ctr_drop_pct: 20
+  frequency: 2.5

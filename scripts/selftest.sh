@@ -9,11 +9,17 @@ ok() { echo "ok   $1"; }
 python3 scripts/assemble.py examples/sunpeel/storyboard.yml --check 2>/dev/null && ok "sunpeel passes pre-checks"
 python3 scripts/assemble.py examples/fernly/storyboard.yml --check 2>/dev/null && ok "fernly passes pre-checks"
 python3 scripts/assemble.py examples/fernly/storyboard.yml > "$tmp/fernly.md" 2>/dev/null
-diff -q "$tmp/fernly.md" examples/fernly/prompts.md >/dev/null && ok "committed fernly prompts.md is up to date"
+diff -q "$tmp/fernly.md" examples/fernly/prompts.md >/dev/null && ok "committed fernly prompts.md is up to date" || { echo "FAIL fernly prompts.md is stale"; exit 1; }
 python3 scripts/assemble.py examples/sunpeel/storyboard.yml > "$tmp/prompts.md" 2>/dev/null
-diff -q "$tmp/prompts.md" examples/sunpeel/prompts.md >/dev/null && ok "committed prompts.md is up to date"
+diff -q "$tmp/prompts.md" examples/sunpeel/prompts.md >/dev/null && ok "committed prompts.md is up to date" || { echo "FAIL prompts.md is stale"; exit 1; }
+for ex in driftpay fernly; do
+  python3 scripts/assemble.py examples/$ex/storyboard.yml 2>/dev/null | diff -q - examples/$ex/prompts.md >/dev/null \
+    && python3 scripts/matrix.py examples/$ex/storyboard.yml 2>/dev/null | diff -q - examples/$ex/matrix.csv >/dev/null \
+    || { echo "FAIL $ex prompts.md or matrix.csv is stale: rebuild them"; exit 1; }
+done
+ok "committed driftpay and fernly prompts and matrices are up to date"
 python3 scripts/matrix.py examples/sunpeel/storyboard.yml > "$tmp/matrix.csv" 2>/dev/null
-diff -q "$tmp/matrix.csv" examples/sunpeel/matrix.csv >/dev/null && ok "committed matrix.csv is up to date"
+diff -q "$tmp/matrix.csv" examples/sunpeel/matrix.csv >/dev/null && ok "committed matrix.csv is up to date" || { echo "FAIL matrix.csv is stale"; exit 1; }
 
 # A broken storyboard must fail.
 sed 's/beat: hook/beat: build/' examples/sunpeel/storyboard.yml > "$tmp/bad.yml"
@@ -174,6 +180,115 @@ python3 scripts/judge.py rank "$tmp/judge/r.yml" | grep -q "Best set: D1 + L1" &
 if python3 scripts/judge.py rank "$tmp/judge/bad.yml" >/dev/null 2>&1; then echo "FAIL unscored file not caught"; exit 1; fi
 ok "judge refuses to rank an unfinished visual pass"
 
+# Copy rules: guardrails, unproven proof numbers, hook sets (research-first, proof-never-invented).
+python3 - "$tmp" <<'PY'
+import sys, yaml
+t = sys.argv[1]
+lock = yaml.safe_load(open("examples/fernly/fernly.dna.yml"))
+lock["guardrails"] = {"never_say": ["guaranteed"]}
+lock["proof"] = {"rating": "4.8", "stats": [{"value": "93%", "claim": "x", "source": "y"}]}
+yaml.safe_dump(lock, open(f"{t}/copy.dna.yml", "w"))
+yaml.safe_dump({"hooks": [
+    {"id": "H1", "line": "I was drowning my fern every week", "mechanic": "confession"},
+    {"id": "H2", "line": "I stopped watering, guaranteed results", "mechanic": "result"},
+    {"id": "H3", "line": "87% of plants die this way", "mechanic": "stat"},
+    {"id": "H4", "line": "93% of owners water too much", "mechanic": "stat"}]}, open(f"{t}/hooks.yml", "w"))
+PY
+copy_out=$(python3 scripts/copy_check.py "$tmp/hooks.yml" --lock "$tmp/copy.dna.yml" || true)
+echo "$copy_out" | grep -q '"guaranteed" is in the lock' && echo "$copy_out" | grep -q '"87%" reads as proof' \
+  && ! echo "$copy_out" | grep -q '"93%"' && echo "$copy_out" | grep -q 'H1, H2 all start with "i"' \
+  && ok "copy check flags banned words, unproven numbers and hooks that start alike" || { echo "FAIL copy_check: $copy_out"; exit 1; }
+python3 scripts/copy_check.py examples/fernly/storyboard.yml >/dev/null && ok "fernly copy passes the copy check" || { echo "FAIL fernly copy"; exit 1; }
+
+# Static formats: proof formats refuse without proof; with proof, all 15 build and render cleanly.
+mkdir -p "$tmp/fmt"; cp examples/driftpay/statics-v2/cut/hero-plane.png "$tmp/fmt/p.png"
+python3 - "$tmp" <<'PY'
+import sys, yaml
+t = sys.argv[1]
+lock = yaml.safe_load(open("examples/driftpay/driftpay.dna.yml"))
+lock["proof"] = {"rating": "4.8", "review_count": "1,200+", "stats": [{"value": "93%", "claim": "paid next day", "source": "test"}],
+                 "quotes": [{"text": "I stopped chasing payments.", "name": "Test"}], "badges": ["A", "B"], "price_per_day": "$0.33/day"}
+yaml.safe_dump(lock, open(f"{t}/fmt/proof.dna.yml", "w"))
+plate = "../../examples/driftpay/final/statics/plates/A1_4x5.jpg"
+ads = [{"id": "F01", "format": "hero-headline", "headline": "Get paid like it's local.", "bg": "light"},
+       {"id": "F02", "format": "stat", "bg": "dark"}, {"id": "F03", "format": "review"}, {"id": "F04", "format": "testimonial"},
+       {"id": "F05", "format": "rating", "headline": "Freelancers stay."},
+       {"id": "F06", "format": "us-vs-them", "headline": "Bank or us?", "them": "Bank", "cons": ["Slow"], "pros": ["Fast"], "product_scale": 0.8},
+       {"id": "F07", "format": "ingredients", "headline": "Inside", "callouts": [{"name": "A", "benefit": "b"}, {"name": "C", "benefit": "d"}]},
+       {"id": "F08", "format": "benefits", "headline": "Invoices on time.", "benefits": ["One", "Two"], "bg": "accent"},
+       {"id": "F09", "format": "price-per-day", "headline": "Less than coffee.", "bg": "dark"},
+       {"id": "F10", "format": "badges", "headline": "Built right"},
+       {"id": "F11", "format": "lifestyle", "plate": plate, "headline": "Your money isn't abroad."},
+       {"id": "F12", "format": "ugc-frame", "plate": plate, "headline": "ok this changed invoicing"},
+       {"id": "F13", "format": "text-thread", "messages": [{"from": "them", "text": "fees?"}, {"from": "me", "text": "none"}]},
+       {"id": "F14", "format": "premium", "headline": "Paid. Locally.", "product_scale": 1.3},
+       {"id": "F15", "format": "seasonal", "plate": plate, "season": "Tax season", "headline": "Close the year paid."}]
+yaml.safe_dump({"lock": "proof.dna.yml", "product": "p.png", "ads": ads}, open(f"{t}/fmt/all.yml", "w"))
+yaml.safe_dump({"lock": "../../examples/driftpay/driftpay.dna.yml", "product": "p.png",
+                "ads": [{"id": "X", "format": "stat"}]}, open(f"{t}/fmt/noproof.yml", "w"))
+yaml.safe_dump({"lock": "proof.dna.yml", "product": "p.png", "ads": [
+    {"id": "S1", "format": "benefits", "headline": "Paid fast", "benefits": ["a"]},
+    {"id": "S2", "format": "benefits", "headline": "Paid again", "benefits": ["a"]},
+    {"id": "S3", "format": "benefits", "headline": "Paid now", "benefits": ["a"]}]}, open(f"{t}/fmt/same.yml", "w"))
+PY
+if python3 scripts/static_formats.py "$tmp/fmt/noproof.yml" >/dev/null 2>&1; then echo "FAIL proof format built without proof"; exit 1; fi
+ok "proof formats refuse to build without proof in the lock"
+fmt_out=$(python3 scripts/static_formats.py "$tmp/fmt/all.yml" --render "$tmp/fmt/out")
+echo "$fmt_out" | grep -q "PASS  15 ads, 15 formats, 15 frames, 0 flag" \
+  && [ "$(ls "$tmp/fmt/out" | wc -l)" -eq 15 ] && ok "all 15 static formats build, pass the thumbnail test and render" || { echo "FAIL static formats"; exit 1; }
+same=$(python3 scripts/static_formats.py "$tmp/fmt/same.yml" || true)
+echo "$same" | grep -q "use 1 format" && echo "$same" | grep -q "same background" && echo "$same" | grep -q 'all start with "paid"' \
+  && ok "a batch of look-alike statics is flagged" || { echo "FAIL batch checks: $same"; exit 1; }
+chk=examples/driftpay/formats/.layout-check.yml                 # same folder, so relative paths match
+python3 scripts/static_formats.py examples/driftpay/formats/formats.yml -o "$chk" >/dev/null
+diff -q "$chk" examples/driftpay/formats/layout.yml >/dev/null && { rm -f "$chk"; ok "committed driftpay formats layout is up to date"; } \
+  || { rm -f "$chk"; echo "FAIL driftpay formats layout is stale"; exit 1; }
+
+# Layers for motion loops: plate + type layer put back together equal the full static.
+python3 scripts/static_render.py examples/driftpay/formats/layout.yml -o "$tmp/layers" --only F1 --layers >/dev/null
+python3 - "$tmp/layers" <<'PY' && ok "plate and type layers recompose the static" || { echo "FAIL layers"; exit 1; }
+import sys, glob
+from PIL import Image, ImageChops, ImageStat
+d = sys.argv[1]
+full = Image.open(glob.glob(f"{d}/F1_*[0-9].jpg")[0]).convert("RGB")
+plate = Image.open(glob.glob(f"{d}/F1_*_plate.png")[0]).convert("RGBA")
+plate.alpha_composite(Image.open(glob.glob(f"{d}/F1_*_type.png")[0]))
+assert max(ImageStat.Stat(ImageChops.difference(plate.convert("RGB"), full)).mean) < 1.0
+PY
+
+# Score gate: totals, thresholds, the weakest dimension named.
+python3 scripts/score.py new "$tmp/score.yml" --kind script --ids A B C >/dev/null
+python3 - "$tmp/score.yml" <<'PY'
+import sys, yaml
+p = sys.argv[1]; d = yaml.safe_load(open(p))
+for (k, it), v in zip(d["items"].items(), ([5, 4, 4, 4, 4], [3, 4, 3, 4, 3], [3, 2, 2, 3, 3])):
+    it["scores"] = dict(zip(it["scores"], v))
+yaml.safe_dump(d, open(p, "w"))
+PY
+score_out=$(python3 scripts/score.py rank "$tmp/score.yml")
+echo "$score_out" | grep -q "21/25  A .*every hook variant" && echo "$score_out" | grep -q "17/25  B .*one version" \
+  && echo "$score_out" | grep -q "13/25  C .*REWRITE: buyer_language" && ok "score gate ranks and decides before any paid run" \
+  || { echo "FAIL score: $score_out"; exit 1; }
+
+# Performance loop: kill / hold / scale / wait from the account's rules, fatigue, winners into the library.
+cat > "$tmp/export.csv" <<'CSV'
+Ad name,Amount spent (USD),Impressions,Link clicks,Results,Frequency,Days
+fernly-reviews-15s_tiktok_H1C1,120.50,10000,260,5,1.8,3
+fernly-reviews-15s_tiktok_H2C1,95.00,9000,70,1,2.1,3
+fernly-reviews-15s_tiktok_H3C1,15.00,1200,30,0,1.1,3
+fernly-reviews-15s_meta_feed_H2C2,60.00,6000,95,1,1.5,7
+CSV
+perf_out=$(python3 scripts/perf.py read "$tmp/export.csv" --rules templates/perf.yml --matrix examples/fernly/matrix.csv -o "$tmp/perf.md")
+echo "$perf_out" | grep -q "SCALE  fernly-reviews-15s_tiktok_H1C1" && echo "$perf_out" | grep -q "KILL   fernly-reviews-15s_tiktok_H2C1" \
+  && echo "$perf_out" | grep -q "WAIT   fernly-reviews-15s_tiktok_H3C1" && echo "$perf_out" | grep -q "HOLD   fernly-reviews-15s_meta_feed_H2C2" \
+  && grep -q "## By hook" "$tmp/perf.md" && grep -q "Multiply the winners" "$tmp/perf.md" \
+  && ok "perf read decides kill, hold, scale and wait, and plans the winner's variations" || { echo "FAIL perf: $perf_out"; exit 1; }
+printf 'fernly-reviews-15s_tiktok_H1: ../examples/driftpay/test/out/S04_2.qwen.jpg\n' > "$tmp/creatives.yml"
+cp "$tmp/creatives.yml" "$tmp/c.yml"; sed -i 's#\.\./examples#../examples#' "$tmp/c.yml"
+TASTE_DIR="$tmp/taste-perf" python3 scripts/perf.py taste "$tmp/export.csv" --rules templates/perf.yml --files "$tmp/c.yml" >/dev/null
+grep -q "Performance: SCALE" "$tmp/taste-perf/library.yml" && grep -q "performer" "$tmp/taste-perf/library.yml" \
+  && ok "the winner is filed in the taste library with its numbers" || { echo "FAIL perf taste"; exit 1; }
+
 if command -v ffmpeg >/dev/null; then
   ffmpeg -y -v error -f lavfi -i "testsrc2=size=1080x1920:rate=30:duration=15" \
     -f lavfi -i "sine=frequency=440:duration=15" -af "loudnorm=I=-14:TP=-1.5" \
@@ -228,6 +343,9 @@ PY
   if python3 scripts/spec_check.py "$tmp/static/A1_tiktok_1080x1920.jpg" --platform youtube_shorts >/dev/null; then
     echo "FAIL static on a platform without statics not caught"; exit 1; fi
   ok "static on a platform that has no static ads is refused"
+  python3 scripts/loop.py make --still "$tmp"/layers/F1_*_plate.png --move float --type "$tmp"/layers/F1_*_type.png -o "$tmp/loop.mp4" >/dev/null
+  [ "$(ffprobe -v error -show_entries stream=nb_frames -of csv=p=0 "$tmp/loop.mp4")" -eq 180 ] \
+    && ok "a static becomes a 6 s loop with its type layer on top" || { echo "FAIL loop"; exit 1; }
 else
   echo "skip spec_check tests (ffmpeg not installed)"
 fi

@@ -12,14 +12,20 @@ centred in the line box, kerning kept (raqm).
 Layout file: `fonts` (style -> ttf), `colors` (name -> hex), `defaults`, `frames`. Each frame has
 name, w, h, bg and `items`, drawn in order:
 
-  image     src, x, y, w, h (cover-fit), shadow {y, blur, opacity}
+  image     src, x, y, w, h (cover-fit; fit: contain keeps a cut-out whole, anchor floor|center), shadow {y, blur, opacity}
   fade      x, y, w, h, color, edge top|bottom|left (opaque at that edge, clear at the other)
-  text      text, style, size, color, x, y, ls, lh, width (wraps), fit (fill w − 2·fit), center
+  text      text, style, size, color, x, y, ls, lh, width (wraps), fit (fill w − 2·fit), center, align right
   stack     x, y, gap, lines [{text, style, size, color, ls, lh}], accent {color, mode fill|underline};
             the part of a line between |bars| is the accent
   wordmark  x, y, size, ink, mark (colour), name
-  cta       label, size, x, y | below <id> + gap | bottom <px>, fill, ink
+  cta       label, size, x, y | below <id> + gap | bottom <px>, fill, ink, style (Bold), plain (text only)
   chip      x, y, words [[text, style, color], ...], dot (colour)
+  rect      x, y, w, h, fill, radius, shadow, stroke {color, width}: a card, a sticker, a column
+  stars     x, y, size, count (5), filled (count), fill, empty
+  marks     x, y, size, gap, color, mark check|cross, lines [text], style, ink, width: a list with a
+            drawn tick or cross before each line
+  bubble    x, y, text, size, width (max), side left|right, fill, ink, style: a chat message
+  line      x1, y1, x2, y2, color, width, dot (radius at x1,y1): a callout leader
 
 Any item can carry `id` (for `below`) and `bottom: N` (placed N px above the frame's bottom edge).
 """
@@ -126,6 +132,26 @@ def cover(src, w, h):
     return im.crop((left, top, left + round(w), top + round(h)))
 
 
+def contain(src, w, h, anchor="floor"):
+    im = Image.open(src).convert("RGBA")
+    s = min(w / im.width, h / im.height)
+    im = im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))), Image.LANCZOS)
+    out = Image.new("RGBA", (round(w), round(h)), (0, 0, 0, 0))
+    top = (round(h) - im.height) // 2 if anchor == "center" else round(h) - im.height   # default: stands on the box floor
+    out.paste(im, ((round(w) - im.width) // 2, top))
+    return out
+
+
+def star(cx, cy, r):
+    import math
+    pts = []
+    for i in range(10):
+        a = math.pi / 2 + i * math.pi / 5
+        rr = r if i % 2 == 0 else r * 0.45
+        pts.append((cx + rr * math.cos(a), cy - rr * math.sin(a)))
+    return pts
+
+
 def place_y(it, h, fh, ctx):
     if "below" in it:
         b = ctx.boxes[it["below"]]
@@ -135,15 +161,28 @@ def place_y(it, h, fh, ctx):
     return it.get("y", 0)
 
 
-def render_frame(fr, ctx):
+PLATE_ITEMS = {"image", "fade"}      # what a motion loop animates; everything else is the type layer
+
+
+def render_frame(fr, ctx, layer=None):
+    """layer None: the whole ad. 'plate': background, images and fades only (for animating).
+    'type': everything else on a transparent canvas (laid over the animated plate)."""
     W, H = fr["w"], fr["h"]
-    canvas = Image.new("RGBA", (W, H), ctx.c(fr.get("bg", "#FFFFFF")) + (255,))
+    bg = ctx.c(fr.get("bg", "#FFFFFF")) + (255,)
+    canvas = Image.new("RGBA", (W, H), (0, 0, 0, 0) if layer == "type" else bg)
     ctx.boxes = {}
     for it in fr["items"]:
         kind = it["type"]
+        if layer and (kind in PLATE_ITEMS) != (layer == "plate"):
+            if it.get("id"):                     # keep positions for items placed `below` this one
+                ctx.boxes[it["id"]] = (it.get("x", 0), it.get("y", 0), it.get("w", 0), it.get("h", 0))
+            continue
         box = None
         if kind == "image":
-            im = cover(ctx.base / it["src"], it["w"], it["h"])
+            if it.get("fit") == "contain":
+                im = contain(ctx.base / it["src"], it["w"], it["h"], it.get("anchor", "floor"))
+            else:
+                im = cover(ctx.base / it["src"], it["w"], it["h"])
             paste_with_shadow(canvas, im, it["x"], it["y"], it.get("shadow"))
             box = (it["x"], it["y"], it["w"], it["h"])
         elif kind == "fade":
@@ -178,7 +217,8 @@ def render_frame(fr, ctx):
             x = (W - tw) / 2 if it.get("center") else it["x"]
             y = place_y(it, th, H, ctx)
             for i, t in enumerate(lines):
-                draw_line(canvas, ctx, x, y + i * size * lh / 100, t, style, size, lambda _: col, ls, lh)
+                lx = x + (tw - widths[i]) if it.get("align") == "right" else x
+                draw_line(canvas, ctx, lx, y + i * size * lh / 100, t, style, size, lambda _: col, ls, lh)
             box = (x, y, it.get("width") or tw, th)
         elif kind == "stack":
             x, y0 = it["x"], it["y"]
@@ -217,14 +257,20 @@ def render_frame(fr, ctx):
                              lambda _: ink, -3, 100)
             box = (x, y, tx + w - x, row_h)
         elif kind == "cta":
-            s = it["size"]
-            fnt = ctx.f("Bold", s)
+            s, st = it["size"], it.get("style", "Bold")
+            fnt = ctx.f(st, s)
             tw = line_width(fnt, it["label"], s, -1)
             w, h = tw + 2.2 * s, s + 1.24 * s
+            if it.get("center"):
+                it = dict(it, x=(W - w) / 2)
             x, y = it.get("x", 0), place_y(it, h, H, ctx)
-            ImageDraw.Draw(canvas).rounded_rectangle([x, y, x + w, y + h], radius=h / 2, fill=ctx.c(it.get("fill", "coral")))
             ink = ctx.c(it.get("ink", "navy"))
-            draw_line(canvas, ctx, x + 1.1 * s, y + 0.62 * s, it["label"], "Bold", s, lambda _: ink, -1, 100)
+            if it.get("plain"):
+                draw_line(canvas, ctx, x + 1.1 * s, y + 0.62 * s, it["label"], st, s, lambda _: ink, 4, 100)
+                ImageDraw.Draw(canvas).rectangle([x + 1.1 * s, y + 1.72 * s, x + 1.1 * s + tw, y + 1.72 * s + max(2, s * 0.06)], fill=ink)
+            else:
+                ImageDraw.Draw(canvas).rounded_rectangle([x, y, x + w, y + h], radius=h / 2, fill=ctx.c(it.get("fill", "coral")))
+                draw_line(canvas, ctx, x + 1.1 * s, y + 0.62 * s, it["label"], st, s, lambda _: ink, -1, 100)
             box = (x, y, w, h)
         elif kind == "chip":
             size, padl, padr, padv, gap, dot = 26, 22, 26, 16, 14, 16
@@ -244,11 +290,76 @@ def render_frame(fr, ctx):
                 draw_line(canvas, ctx, cx, y + padv, t, st, size, lambda _, c=c: c, -1, 100)
                 cx += tw + gap
             box = (x, y, w, h)
+        elif kind == "rect":
+            w, h = round(it["w"]), round(it["h"])
+            card = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+            st = it.get("stroke") or {}
+            ImageDraw.Draw(card).rounded_rectangle([0, 0, w - 1, h - 1], radius=it.get("radius", 0),
+                                                   fill=ctx.c(it["fill"]) + (255,) if it.get("fill") else None,
+                                                   outline=ctx.c(st["color"]) if st else None, width=st.get("width", 0))
+            y = place_y(it, h, H, ctx)
+            paste_with_shadow(canvas, card, it["x"], y, it.get("shadow"))
+            box = (it["x"], y, w, h)
+        elif kind == "stars":
+            n, filled, sz = it.get("count", 5), it.get("filled", it.get("count", 5)), it["size"]
+            y = place_y(it, sz, H, ctx)
+            d = ImageDraw.Draw(canvas)
+            gap = sz * 0.18
+            x0 = (W - (n * sz + (n - 1) * gap)) / 2 if it.get("center") else it["x"]
+            for i in range(n):
+                cx = x0 + i * (sz + gap) + sz / 2
+                d.polygon(star(cx, y + sz / 2, sz / 2), fill=ctx.c(it.get("fill", "#F5B400") if i < filled else it.get("empty", "#D9D9D9")))
+            box = (x0, y, n * sz + (n - 1) * gap, sz)
+        elif kind == "marks":
+            sz, gap, style = it["size"], it.get("gap", it["size"] * 0.7), it.get("style", "Medium")
+            x, y0 = it["x"], it["y"]
+            y = y0
+            d = ImageDraw.Draw(canvas)
+            col, ink = ctx.c(it.get("color", "#1FA463")), ctx.c(it.get("ink", "#111111"))
+            m = sz * 0.9
+            for text in it["lines"]:
+                cy = y + sz * 0.55
+                d.ellipse([x, cy - m / 2, x + m, cy + m / 2], fill=col)
+                k, lw = m / 10, max(2, round(sz * 0.11))
+                if it.get("mark", "check") == "check":
+                    d.line([(x + 2.6 * k, cy + 0.1 * k), (x + 4.3 * k, cy + 1.9 * k), (x + 7.5 * k, cy - 2.0 * k)], fill=(255, 255, 255), width=lw, joint="curve")
+                else:
+                    d.line([(x + 3 * k, cy - 2 * k), (x + 7 * k, cy + 2 * k)], fill=(255, 255, 255), width=lw)
+                    d.line([(x + 7 * k, cy - 2 * k), (x + 3 * k, cy + 2 * k)], fill=(255, 255, 255), width=lw)
+                lines = wrap(ctx, text, style, sz, -1, it["width"] - m - sz * 0.5) if it.get("width") else [text]
+                for j, t in enumerate(lines):
+                    draw_line(canvas, ctx, x + m + sz * 0.5, y + j * sz * 1.15, t, style, sz, lambda _: ink, -1, 115)
+                y += len(lines) * sz * 1.15 + gap
+            box = (x, y0, it.get("width", 0), y - gap - y0)
+        elif kind == "bubble":
+            sz, style = it["size"], it.get("style", "Medium")
+            pad = sz * 0.7
+            lines = wrap(ctx, it["text"], style, sz, -1, it["width"] - 2 * pad)
+            fnt = ctx.f(style, sz)
+            tw = max(line_width(fnt, t, sz, -1) for t in lines)
+            w, h = tw + 2 * pad, len(lines) * sz * 1.25 + 2 * pad * 0.8
+            y = place_y(it, h, H, ctx)
+            x = it["x"] if it.get("side", "left") == "left" else it["x"] + it["width"] - w
+            card = Image.new("RGBA", (round(w), round(h)), (0, 0, 0, 0))
+            ImageDraw.Draw(card).rounded_rectangle([0, 0, w - 1, h - 1], radius=min(h / 2, sz * 1.2), fill=ctx.c(it["fill"]) + (255,))
+            paste_with_shadow(canvas, card, x, y, None)
+            ink = ctx.c(it["ink"])
+            for j, t in enumerate(lines):
+                draw_line(canvas, ctx, x + pad, y + pad * 0.8 + j * sz * 1.25, t, style, sz, lambda _: ink, -1, 125)
+            box = (x, y, w, h)
+        elif kind == "line":
+            d = ImageDraw.Draw(canvas)
+            col = ctx.c(it.get("color", "#111111"))
+            d.line([(it["x1"], it["y1"]), (it["x2"], it["y2"])], fill=col, width=it.get("width", 3))
+            if it.get("dot"):
+                r = it["dot"]
+                d.ellipse([it["x1"] - r, it["y1"] - r, it["x1"] + r, it["y1"] + r], fill=col)
+            box = (min(it["x1"], it["x2"]), min(it["y1"], it["y2"]), abs(it["x2"] - it["x1"]), abs(it["y2"] - it["y1"]))
         else:
             fail(f"unknown item type {kind}")
         if it.get("id") and box:
             ctx.boxes[it["id"]] = box
-    return canvas.convert("RGB")
+    return canvas if layer == "type" else canvas.convert("RGB")
 
 
 def main():
@@ -258,6 +369,8 @@ def main():
     ap.add_argument("--only", help="render only frames whose name contains this")
     ap.add_argument("--sheet", help="also write a contact sheet of every rendered frame")
     ap.add_argument("--quality", type=int, default=92)
+    ap.add_argument("--layers", action="store_true",
+                    help="also write <file>_plate.png (no type, to animate) and <file>_type.png (transparent) for scripts/loop.py")
     a = ap.parse_args()
     lp = Path(a.layout)
     layout = yaml.safe_load(lp.read_text(encoding="utf-8"))
@@ -273,6 +386,10 @@ def main():
         img.save(path, quality=a.quality, subsampling=0)
         done.append((fr, img))
         print(f"{path}  {img.width}x{img.height}")
+        if a.layers:
+            render_frame(fr, ctx, "plate").save(out / f"{fr['file']}_plate.png")
+            render_frame(fr, ctx, "type").save(out / f"{fr['file']}_type.png")
+            print(f"  + {fr['file']}_plate.png, {fr['file']}_type.png")
     if a.sheet and done:
         H = 520
         thumbs = [im.resize((round(im.width * H / im.height), H)) for _, im in done]

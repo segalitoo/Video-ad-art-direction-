@@ -169,7 +169,7 @@ authentic phone video, unpolished, real home footage, vertical. [SHOT: the monst
 ```
 Edit this photo. Keep the camera, framing, the plain matte terracotta pot with a thin rim, every prop, the room and the light exactly as they are. Change only this: the monstera is now lush and upright, glossy healthy green leaves held high, no wilting or yellowing. Keep it clean: no studio lighting, no text in the image, no social media interface, app buttons or usernames, no lettering on book spines, no faces or full people, no extra, missing or fused fingers.
 ```
-- Edit the kept S05-K keyframe (image input), do not generate from scratch
+- Edit the kept S05-K frame (image input), do not generate from scratch
 - No image editing in this tool: use the S05-K prompt with this as the [SHOT]: the monstera is now lush and upright, glossy healthy green leaves held high, no wilting or yellowing
 - Set aspect ratio in the tool: 9:16
 
