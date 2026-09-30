@@ -66,6 +66,10 @@ Example: `examples/driftpay/formats/` (the lock has no proof, so its proof forma
 - Contrast comes from the layout: ink on the sheet colour, 4.5:1 or better. No scrims.
 - Stories and TikTok: all type between 16% and 60% of the height; no drawn CTA (the platform adds one).
 - Feed and LinkedIn: 7–8% margins on every side.
+- Measure contrast on the pixels under the type box, not on the lock swatch: photo walls are darker where the light falls off (L016).
+- Headline room: ask for the subject in the lower half, or a low pose; image models ignore "empty upper third" (L013).
+- Garments: expect fake woven labels with letters; remove them with one edit of the kept frame (L014).
+- More wall for 9:16: tile clean wall only, blur, grain, colour-match the seam; stretch the floor downward to lift a low subject into the safe area (L015).
 
 ## 4. The judge rubric for statics
 

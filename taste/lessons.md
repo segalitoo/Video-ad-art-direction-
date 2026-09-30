@@ -61,3 +61,23 @@ Rules learned from real results. Each one names its evidence and where it is enf
 - **Evidence:** Driftpay statics v2: the fix pass hit the limit after build, upload and two screenshot calls
 - **Enforced in:** templates/static-design.md
 - **Added:** 2026-09-27
+
+### L013 · Soul 2.0 ignores "empty upper third": ask for the subject in the lower half with the top of the head just below the middle, or choose a pose that is low by nature (lying on a sofa gives the headline room for free)
+- **Evidence:** A fashion spec (local project, 2026-09-30): round 1 put the head in the top third in 10 of 10 frames; "lower half" wording improved the standing frames, and all 8 sofa frames left half the frame as wall
+- **Enforced in:** templates/static-design.md §3
+- **Added:** 2026-09-30
+
+### L014 · Image models sew fake woven labels with made-up letters onto garments; remove them with one Nano Banana Pro edit of the kept frame ("remove the label, keep everything else exactly the same"), which also upscales to 2K and keeps the face
+- **Evidence:** Same project: 14 of 16 round 2 frames had a bib label with fake letters even with "no labels" in the prompt; the 2-credit edits removed it with the face, pose and light unchanged
+- **Enforced in:** templates/static-design.md §3; the lock's negative_image
+- **Added:** 2026-09-30
+
+### L015 · To reach 9:16 or give type more room, extend a plain wall for free, but never mirror a strip that contains the subject: tile only clean wall, blur the symmetry away, add grain, and colour-match the seam; extend the floor downward to lift a low subject into the Reels safe area. Floors can't be mirrored sideways (the planks make a V)
+- **Evidence:** Same project: the first mirror copied her head upside down into the top; the second showed a seam line; the third (clean-wall tile, colour match) was invisible. The sofa frame sat in the bottom 35% of Stories until the floor was stretched
+- **Enforced in:** templates/static-design.md §3
+- **Added:** 2026-09-30
+
+### L016 · Check the ink on the real wall, not on the lock colour: a photo wall is darker than its sampled swatch where the headline sits. Measure the pixels under the type box; the brand plum fell to 3.4:1 on the darker plaster, a deeper shade of it reached 4.8:1
+- **Evidence:** Same project: the lock's "5.2:1 on the wall" came from a light sample; the headline area measured #A99174
+- **Enforced in:** templates/static-design.md §3
+- **Added:** 2026-09-30
