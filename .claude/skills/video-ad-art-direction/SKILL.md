@@ -21,6 +21,7 @@ The full stage descriptions are in `workflow/stages.md`. Read it once per sessio
 9. **Proof is shown, never invented.** A %, star rating, review count, quote or price per day appears only when the lock's `proof` block lists it with a source. `copy_check.py` and `static_formats.py` enforce it; never fill the proof block to make a check pass.
 10. **Score before spending.** No paid generation for a script, concept or static brief that scored under 15 in `score.py`.
 11. **Specs can be out of date.** Values marked `verify: true` in `platforms/specs.yml` or `adapters/tools.yml` are not official. Say so for real client work.
+12. **Show each stage as a page, not a wall of text.** The art director scans; they don't read long chat replies. Present every stage's output and its gate as one Artifact page per project (the same URL, updated each stage), in the layout of the intake form: short cards, scores and status as pills, uncertain points marked ❌, and the gate decisions as controls saved to the page's `db` (`gates/stage<NN>`). Leave out anything that doesn't change a decision; put the sources in a collapsed section. The chat reply is a few lines and the link. The markdown files in the project stay the record.
 
 ## Routes: who does each job
 
