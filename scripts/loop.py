@@ -60,6 +60,15 @@ def cmd_make(a):
     if t.mode != "RGBA":
         fail(f"{a.type} is not a transparent type layer; make it with static_render.py --layers")
     W, H = t.size
+    if a.clip:
+        clip_s = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", a.clip],
+                                      capture_output=True, text=True, check=True).stdout.strip())
+        if a.seconds is None:                       # use the whole clip: its forward half is the full clip
+            a.seconds = round(2 * clip_s, 2)
+        elif a.seconds / 2 < clip_s - 0.1:
+            print(f"note: the clip is {clip_s:g}s; only its first {a.seconds / 2:g}s are used (leave out --seconds to use all of it)")
+    elif a.seconds is None:
+        a.seconds = 6
     fps, half = 30, a.seconds / 2
     frames = round(half * fps)
     with tempfile.TemporaryDirectory() as tmp:
@@ -94,7 +103,8 @@ def main():
     m.add_argument("--clip", help="the plate animated by an image-to-video model")
     m.add_argument("--move", choices=sorted(MOVES), default="push")
     m.add_argument("--type", required=True, help="the transparent type layer from static_render.py --layers")
-    m.add_argument("--seconds", type=float, default=6)
+    m.add_argument("--seconds", type=float, default=None,
+                   help="loop length; default 6 for --still, twice the clip length for --clip")
     m.add_argument("-o", "--out", required=True)
     a = ap.parse_args()
     {"prompt": cmd_prompt, "make": cmd_make}[a.cmd](a)
