@@ -39,6 +39,10 @@ default_route: higgsfield-web          # chosen 2026-09-27
 routes:
   higgsfield-web:
     note: Higgsfield web plan through its Claude connector. Needs plan credits.
+    # Tested 2026-09-30: plan "unlimited" models are web-app only. A connector run of Soul 2.0 with
+    # use_unlim=true was refused ("Unlimited generations aren't supported for text2image_soul_v2"),
+    # with no charge. Through the connector, Soul 2.0 costs 1 credit and Nano Banana Pro 2 credits.
+    # Wan 2.2 is not in the connector catalog. For free drafts, the user runs our prompts in the web app.
     keyframe: {tool: higgsfield, model: image}        # Nano Banana Pro
     edit:     {tool: higgsfield, model: image}        # Nano Banana Pro, the previous frame as image_references
     draft:    {tool: higgsfield, model: image_draft}  # GPT Image, style frames
