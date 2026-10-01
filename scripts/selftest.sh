@@ -236,6 +236,22 @@ ok "proof formats refuse to build without proof in the lock"
 fmt_out=$(python3 scripts/static_formats.py "$tmp/fmt/all.yml" --render "$tmp/fmt/out")
 echo "$fmt_out" | grep -q "PASS  15 ads, 15 formats, 15 frames, 0 flag" \
   && [ "$(ls "$tmp/fmt/out" | wc -l)" -eq 15 ] && ok "all 15 static formats build, pass the thumbnail test and render" || { echo "FAIL static formats"; exit 1; }
+python3 - "$tmp" <<'PY'
+import sys, yaml
+t = sys.argv[1]
+d = yaml.safe_load(open(f"{t}/fmt/all.yml")); d["sizes"] = ["1080x1920"]
+yaml.safe_dump(d, open(f"{t}/fmt/tall.yml", "w"))
+PY
+python3 scripts/static_formats.py "$tmp/fmt/tall.yml" -o "$tmp/fmt/tall_layout.yml" >/dev/null 2>&1 || true
+python3 - "$tmp/fmt/tall_layout.yml" <<'PY' && ok "9:16 statics: no drawn CTA, all type starts at or below 16% of the height" || { echo "FAIL 9:16 safe band"; exit 1; }
+import sys, yaml
+lay = yaml.safe_load(open(sys.argv[1]))
+text = ("text", "stack", "marks", "bubble", "cta", "wordmark", "chip")
+for f in lay["frames"]:
+    assert not any(i.get("type") == "cta" for i in f["items"]), f["name"] + ": a drawn CTA on a 9:16 frame"
+    tops = [i["y"] for i in f["items"] if i.get("type") in text and "y" in i]
+    assert not tops or min(tops) >= f["h"] * 0.16 - 1, f["name"] + ": type above 16%"
+PY
 same=$(python3 scripts/static_formats.py "$tmp/fmt/same.yml" || true)
 echo "$same" | grep -q "use 1 format" && echo "$same" | grep -q "same background" && echo "$same" | grep -q 'all start with "paid"' \
   && ok "a batch of look-alike statics is flagged" || { echo "FAIL batch checks: $same"; exit 1; }

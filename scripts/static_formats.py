@@ -131,6 +131,8 @@ class Build:
                                                          "opacity": 0.22}} if shadow else {}))
 
     def cta(self, label, fill, ink, bottom=None, x=None, center=False, plain=False):
+        if self.H / self.W >= 1.7:      # Stories and Reels: the platform draws its own CTA button
+            return
         size = 32 * self.u
         it = self.add(type="cta", label=label, size=round(size), fill=fill, ink=ink, plain=plain,
                       bottom=round(bottom if bottom is not None else 80 * self.u))
@@ -316,13 +318,20 @@ def build_ad(ad, W, H, fonts, lock, base):
             b.cta(cta, "#FFFFFF", "#111111", center=True)
         else:
             band = pal["dark"]
-            b.add(type="fade", x=0, y=round(H * 0.45), w=W, h=round(H * 0.55), color=band, edge="bottom")
+            tall = H / W >= 1.7          # Stories and Reels: type between 16% and 60% of the height
+            if tall:
+                b.add(type="fade", x=0, y=0, w=W, h=round(H * 0.5), color=band, edge="top")
+            else:
+                b.add(type="fade", x=0, y=round(H * 0.45), w=W, h=round(H * 0.55), color=band, edge="bottom")
             if fmt == "seasonal":
                 size, pad = 32 * u, 24 * u
                 w = b.tw(ad["season"], "Bold", size) + 2 * pad
                 b.add(type="rect", x=round(m), y=round(m), w=round(w), h=round(size + pad * 1.4), fill=pal["hero"], radius=round((size + pad * 1.4) / 2))
                 b.text(ad["season"], size, m + pad, m + pad * 0.7, pal["on"](pal["hero"]), "Bold", ls=0)
-            b.headline(head, 84 * u, m, 0, pal["on"](band), band, width=W - 2 * m, bottom=round(200 * u))
+            if tall:
+                b.headline(head, 84 * u, m, round(H * 0.17), pal["on"](band), band, width=W - 2 * m)
+            else:
+                b.headline(head, 84 * u, m, 0, pal["on"](band), band, width=W - 2 * m, bottom=round(200 * u))
             b.cta(cta, cta_fill if contrast(cta_fill, band) >= 1.6 else pal["light"], pal["on"](cta_fill if contrast(cta_fill, band) >= 1.6 else pal["light"]))
     elif fmt == "text-thread":
         frame["bg"] = pal["light"]
@@ -347,12 +356,34 @@ def build_ad(ad, W, H, fonts, lock, base):
             b.headline(head, 72 * u, 0, 140 * u, ink, bg, center=True, ls=-2)
         b.product_img(W * 0.2, H * 0.2, W * 0.6, H * 0.55, min(1.0, scale))
         brand = (lock.get("meta") or {}).get("brand", "")
-        b.text(brand, 28 * u, 0, H - 250 * u, ink, "Bold", center=True, ls=12)
+        b.text(brand, 28 * u, 0, (140 * u + 72 * u * 1.3) if H / W >= 1.7 else H - 250 * u, ink, "Bold", center=True, ls=12)
         b.cta(cta, None, ink, center=True, plain=True)
     else:
         fail(f"unknown format {fmt}")
+    if H / W >= 1.7:
+        safe_band(b, W, H)
     frame["items"] = b.items
     return frame, b.checks
+
+
+TEXT_ITEMS = ("text", "stack", "marks", "bubble", "cta", "wordmark", "chip")
+
+
+def safe_band(b, W, H):
+    """Stories and Reels: the platform covers the top 14% and the bottom ~35%. Shift the layout down so
+    every type item starts at or below 16% of the height (full-frame plates and fades stay put), then
+    flag any type that still starts below 60%."""
+    tops = [it["y"] for it in b.items if it.get("type") in TEXT_ITEMS and "y" in it]
+    shift = max(0, round(H * 0.16 - min(tops))) if tops else 0
+    for it in b.items:
+        full = it.get("type") in ("image", "fade") and it.get("w") == W and it.get("x", 0) == 0 and it.get("y", 0) == 0
+        if shift and not full:
+            for k in ("y", "y1", "y2"):
+                if k in it:
+                    it[k] = it[k] + shift
+    for it in b.items:
+        if it.get("type") in TEXT_ITEMS and "y" in it and it["y"] > H * 0.60:
+            b.checks.append(("SAFE", it.get("text") or it.get("label") or it.get("type"), 0, None, None))
 
 
 # ---------- checks
@@ -361,6 +392,9 @@ def thumbnail_checks(ad_id, checks):
     """At 25% size: CTA cap height >= 7 px, headline >= 12 px, contrast 4.5 (3 for large text)."""
     out = []
     for kind, text, size, ink, bg in checks:
+        if kind == "SAFE":
+            out.append(f"{ad_id}: \"{text}\" starts below 60% of the height, under the Stories and Reels UI")
+            continue
         px = size * 0.25
         minimum = 7 if kind == "CTA" else 12
         if px < minimum:
