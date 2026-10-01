@@ -234,8 +234,51 @@ PY
 if python3 scripts/static_formats.py "$tmp/fmt/noproof.yml" >/dev/null 2>&1; then echo "FAIL proof format built without proof"; exit 1; fi
 ok "proof formats refuse to build without proof in the lock"
 fmt_out=$(python3 scripts/static_formats.py "$tmp/fmt/all.yml" --render "$tmp/fmt/out")
-echo "$fmt_out" | grep -q "PASS  15 ads, 15 formats, 15 frames, 0 flag" \
-  && [ "$(ls "$tmp/fmt/out" | wc -l)" -eq 15 ] && ok "all 15 static formats build, pass the thumbnail test and render" || { echo "FAIL static formats"; exit 1; }
+# the fixture's product is a wide, flat plane, so the space check rightly reports empty bands; nothing else may fire
+echo "$fmt_out" | grep -q "15 ads, 15 formats, 15 frames" && ! echo "$fmt_out" | grep "^FLAG" | grep -qv "empty band\|is empty\|nothing below" \
+  && [ "$(ls "$tmp/fmt/out" | wc -l)" -eq 15 ] && ok "all 15 static formats build, pass the thumbnail and layout tests and render" || { echo "FAIL static formats: $fmt_out"; exit 1; }
+python3 - <<'PY' && ok "headlines break like a designer's: on punctuation, no orphans, no 'the' at a line end" || { echo "FAIL line breaks"; exit 1; }
+import sys
+sys.path.insert(0, "scripts")
+from static_render import balance, clean_breaks, font, line_width
+f = font("assets/fonts/space-grotesk/SpaceGrotesk-Bold.ttf", 90)
+m = lambda t: line_width(f, t, 90, -2)
+assert balance("Your barrier called. It wants a break.", m, 1000) == ["Your barrier called.", "It wants a break."]
+assert balance("One shelf. Two generations. Same jar.", m, 1000) == ["One shelf.", "Two generations.", "Same jar."]
+assert balance("Line one\nline two", m, 2000) == ["Line one", "line two"]
+assert not clean_breaks(["Before the next active, the", "barrier."]) and not clean_breaks(["Your barrier", "called. It wants", "a break."])
+PY
+python3 - "$tmp" <<'PY' && ok "flow layouts for a tall product fill 4:5, 1:1 and 9:16 with no flags; a collision is caught" || { echo "FAIL flow layouts"; exit 1; }
+import subprocess, sys, yaml
+from PIL import Image, ImageDraw
+sys.path.insert(0, "scripts")
+t = sys.argv[1]
+im = Image.new("RGBA", (600, 620), (0, 0, 0, 0))
+ImageDraw.Draw(im).rounded_rectangle([60, 0, 300, 620], 40, fill=(230, 30, 140, 255))
+ImageDraw.Draw(im).rounded_rectangle([330, 300, 560, 620], 40, fill=(250, 250, 250, 255))
+im.save(f"{t}/fmt/tall.png")
+ads = [{"id": "T1", "format": "hero-headline", "headline": "Before the next active, the barrier.", "subhead": "Ceramides in every one."},
+       {"id": "T2", "format": "benefits", "headline": "Science you can read on the jar.", "benefits": ["One", "Two", "Three"]},
+       {"id": "T3", "format": "premium", "headline": "Finally, a routine we can share.", "bg": "dark"},
+       {"id": "T4", "format": "text-thread", "messages": [{"from": "me", "text": "where is it"}, {"from": "them", "text": "mine now"}]},
+       {"id": "T5", "format": "us-vs-them", "headline": "Your barrier called. It wants a break.", "them": "Ten steps", "cons": ["Acids"], "pros": ["Three steps"]},
+       {"id": "T6", "format": "ingredients", "headline": "3-1-1: the ratio your barrier uses.", "callouts": [{"name": "A", "benefit": "b"}, {"name": "C", "benefit": "d"}]}]
+yaml.safe_dump({"lock": "proof.dna.yml", "product": "tall.png", "sizes": ["1080x1350", "1080x1080", "1080x1920"], "ads": ads},
+               open(f"{t}/fmt/flow.yml", "w"))
+out = subprocess.run([sys.executable, "scripts/static_formats.py", f"{t}/fmt/flow.yml"], capture_output=True, text=True).stdout
+assert "PASS  6 ads, 6 formats, 18 frames, 0 flag" in out, out
+from static_render import Ctx, render_frame
+from static_formats import layout_checks
+fr = {"w": 1080, "h": 1080, "bg": "#FFFFFF", "items": [
+    {"type": "text", "text": "Headline here", "style": "Bold", "size": 90, "x": 80, "y": 100, "color": "#111111"},
+    {"type": "text", "text": "Sub line", "style": "Medium", "size": 40, "x": 80, "y": 150, "color": "#111111"},
+    {"type": "text", "text": "Low", "style": "Medium", "size": 40, "x": 80, "y": 900, "color": "#CCCCCC"}]}
+ctx = Ctx({"fonts": {"Bold": "assets/fonts/space-grotesk/SpaceGrotesk-Bold.ttf",
+                     "Medium": "assets/fonts/space-grotesk/SpaceGrotesk-Medium.ttf"}, "colors": {}, "frames": [fr]}, __import__("pathlib").Path("."))
+render_frame(fr, ctx)
+flags = " | ".join(layout_checks("X", ctx, 1080, 1080))
+assert "overlaps" in flags and "empty band" in flags and "pixels behind it" in flags, flags
+PY
 python3 - "$tmp" <<'PY'
 import sys, yaml
 t = sys.argv[1]

@@ -81,3 +81,13 @@ Rules learned from real results. Each one names its evidence and where it is enf
 - **Evidence:** Same project: the lock's "5.2:1 on the wall" came from a light sample; the headline area measured #A99174
 - **Enforced in:** templates/static-design.md §3
 - **Added:** 2026-09-30
+
+### L017 · Never write "headline", "copy space" or "for text" in an image prompt: the model draws fake text and boxes to fill it. Ask for the space in plain picture terms ("the upper third is plain tiled wall")
+- **Evidence:** Byoma spec set, 2026-10-01: 8 of 8 Soul drafts with "space for a headline" had fake lettering or white boxes; one NBP edit cleaned the chosen frame
+- **Enforced in:** the lock's negative_image ("headline boxes")
+- **Added:** 2026-10-01
+
+### L018 · A layout made of fixed positions breaks when the size changes. Measure the type first, then give the product the space that is left; break lines like a designer (on punctuation, no orphan, no "the" at a line end); and check the rendered file, not the plan: collisions, empty bands, contrast on the real pixels
+- **Evidence:** Byoma spec set, 2026-10-01: the first 30 files passed every pre-render check, yet the 1:1 headline ran into the product, 9:16 frames had empty halves, callout names were 3.7:1, and "Your barrier called. It wants / a break." broke mid-sentence. The art director caught it at the set gate
+- **Enforced in:** scripts/static_formats.py (flow layouts, fit and balance, layout_checks after render); scripts/selftest.sh
+- **Added:** 2026-10-01

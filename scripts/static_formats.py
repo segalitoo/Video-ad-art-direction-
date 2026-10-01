@@ -33,7 +33,7 @@ import yaml
 
 from common import ROOT, fail, load_lock, load_yaml
 from copy_rules import guardrail_hits, headline_issues, unproven_claims, words
-from static_render import Ctx, font, line_width, render_frame
+from static_render import Ctx, balance, break_cost, clean_breaks, font, line_width, render_frame
 
 DEFAULT_FONTS = {"Bold": ROOT / "assets/fonts/space-grotesk/SpaceGrotesk-Bold.ttf",
                  "Medium": ROOT / "assets/fonts/space-grotesk/SpaceGrotesk-Medium.ttf"}
@@ -130,17 +130,116 @@ class Build:
                  w=round(w), h=round(h), **({"shadow": {"y": round(30 * self.u), "blur": round(50 * self.u),
                                                          "opacity": 0.22}} if shadow else {}))
 
-    def cta(self, label, fill, ink, bottom=None, x=None, center=False, plain=False):
+    def product_in(self, x, y, w, h, align="center", valign="bottom", scale=1.0, shadow=True):
+        """The product as big as the box allows (times scale), placed by align/valign. Returns the
+        box it fills, or None without a product."""
+        if not self.product:
+            return None
+        from PIL import Image
+        with Image.open(self.product) as im:
+            bb = im.split()[-1].getbbox() if im.mode == "RGBA" else None
+            pw, ph = (bb[2] - bb[0], bb[3] - bb[1]) if bb else im.size
+        a = pw / ph
+        vw = min(w, h * a) * scale
+        vh = vw / a
+        vx = x + {"left": 0, "center": (w - vw) / 2, "right": w - vw}[align]
+        vy = y + {"top": 0, "center": (h - vh) / 2, "bottom": h - vh}[valign]
+        self.add(type="image", src=str(self.product), fit="contain", anchor="floor", x=round(vx), y=round(vy),
+                 w=round(vw), h=round(vh), **({"shadow": {"y": round(30 * self.u), "blur": round(50 * self.u),
+                                                          "opacity": 0.22}} if shadow else {}))
+        return vx, vy, vw, vh
+
+    def beside_cta(self, label):
+        """Left edge for a product that sits beside a bottom-left CTA without touching it."""
+        size = 34 * self.u
+        return max(self.W * 0.3, 80 * self.u + self.tw(label, "Bold", size, -1) + 2.2 * size + 32 * self.u)
+
+    def feed_product(self, y, label, scale=1.0):
+        """Feed frames: the product either beside the CTA (down to its baseline) or above it (full width),
+        whichever shows it bigger. A tall pack goes beside, a wide one above."""
+        if not self.product:
+            return None
+        from PIL import Image
+        with Image.open(self.product) as im:
+            bb = im.split()[-1].getbbox() if im.mode == "RGBA" else None
+            pw, ph = (bb[2] - bb[0], bb[3] - bb[1]) if bb else im.size
+        u, m = self.u, 80 * self.u
+        x = self.beside_cta(label)
+        side = (x, y, self.W - m * 0.6 - x, self.H - m - y)
+        above = (m, y, self.W - 2 * m, self.H - m - 76 * u - 40 * u - y)
+        area = lambda r: min(r[2], r[3] * pw / ph) ** 2
+        r = side if area(side) >= area(above) else above
+        return self.product_in(*r, "right" if r is side else "center", "center", scale=scale)
+
+    def cta(self, label, fill, ink, bottom=None, x=None, center=False, plain=False, y=None):
         if self.H / self.W >= 1.7:      # Stories and Reels: the platform draws its own CTA button
             return
-        size = 32 * self.u
+        size = 34 * self.u
         it = self.add(type="cta", label=label, size=round(size), fill=fill, ink=ink, plain=plain,
-                      bottom=round(bottom if bottom is not None else 80 * self.u))
+                      **({"y": round(y)} if y is not None else {"bottom": round(bottom if bottom is not None else 80 * self.u)}))
         if center:
             it["center"] = True
         else:
             it["x"] = round(x if x is not None else 80 * self.u)
         self.checks.append(("CTA", label, size, ink, fill if not plain else None))
+
+    # ---- flow layout: measure the type, then give the product the space that is left
+
+    @property
+    def tall(self):
+        return self.H / self.W >= 1.7
+
+    @property
+    def top(self):
+        """Where the type starts: 16% down on Stories and Reels (under the profile row), else the margin."""
+        return self.H * 0.16 if self.tall else 88 * self.u
+
+    @property
+    def floor(self):
+        """Where the content ends: above the CTA in the feed; above the reply bar on Stories and Reels."""
+        return self.H * 0.82 if self.tall else self.H - 80 * self.u - 76 * self.u - 44 * self.u
+
+    def marks_h(self, items, size, width):
+        """Height of a ticked list as the renderer draws it."""
+        m = size * 0.9
+        n = [len(self.lines(t, "Medium", size, width - m - size * 0.5, -1)) for t in items]
+        return sum(n) * size * 1.15 + size * 0.7 * (len(items) - 1)
+
+    def lines(self, text, style, size, width, ls=-2):
+        fnt = font(self.fonts[style], size)
+        return balance(text, lambda t: line_width(fnt, t, size, ls), width)
+
+    def fit(self, text, style, max_size, width, max_lines=3, max_h=None, lh=95, ls=-2, min_size=None):
+        """The biggest size whose balanced line breaks are clean (no orphan, no weak word at a line
+        end, no sentence split across a break) and fit max_lines and max_h. When several sizes
+        within 15% of that work, the one whose breaks all land on punctuation wins."""
+        min_size = min_size or max_size * 0.45
+        found, size = [], max_size
+        while size >= min_size:
+            ls_ = self.lines(text, style, size, width, ls)
+            h = size * lh / 100 * len(ls_)
+            if len(ls_) <= max_lines and (not max_h or h <= max_h) and clean_breaks(ls_):
+                found.append((size, ls_))
+                if size < found[0][0] * 0.85:
+                    break
+            size -= max_size * 0.03
+        if not found:
+            ls_ = self.lines(text, style, min_size, width, ls)
+            return min_size, ls_
+        punct = [f for f in found if f[0] >= found[0][0] * 0.85 and len(f[1]) > 1
+                 and all(t.split()[-1][-1] in ".?!:," for t in f[1][:-1])]
+        return (punct or found)[0]
+
+    def block(self, text, max_size, x, y, color, bg, width, style="Bold", max_lines=3, max_h=None, lh=95,
+              ls=-2, center=False, check=True, min_size=None, **kw):
+        """A headline or subhead with fitted size and designed line breaks. Returns (height, size)."""
+        size, ls_ = self.fit(text, style, max_size, width, max_lines, max_h, lh, ls, min_size)
+        it = self.text("\n".join(ls_), size, x, y, color, style, width=round(width), ls=ls, lh=lh, **kw)
+        if center:
+            it["center"] = True
+        if check:
+            self.checks.append(("headline", text, size, color, bg))
+        return size * lh / 100 * len(ls_), size
 
     def headline(self, text, size, x, y, color, bg, width=None, **kw):
         it = self.text(text, size, x, y, color, width=round(width) if width else None, lh=kw.pop("lh", 95), **kw)
@@ -179,16 +278,25 @@ def build_ad(ad, W, H, fonts, lock, base):
     cta = ad.get("cta") or ctas[0]
     head = case(ad.get("headline", ""), lock)
     proof = lock.get("proof") or {}
-    accent = next((c for c in (pal["accent"], pal["hero"]) if contrast(c, bg) >= 3), pal["on"](bg))   # text colour
+    accent = next((c for t in (4.5, 3) for c in (pal["accent"], pal["hero"]) if contrast(c, bg) >= t), pal["on"](bg))   # text colour
     cta_fill = pal["hero"] if contrast(pal["hero"], bg) >= 1.6 else pal["on"](bg)
     cta_ink = pal["on"](cta_fill)
     frame = {"w": W, "h": H, "bg": bg}
 
     if fmt == "hero-headline":
-        b.headline(head, 128 * u, m, 150 * u, ink, bg, width=W - 2 * m)
+        y = b.top
+        hh, _ = b.block(head, 150 * u, m, y, ink, bg, W - 2 * m, max_lines=3, max_h=H * (0.24 if b.tall else 0.30))
+        y += hh + 36 * u
         if ad.get("subhead"):
-            b.text(ad["subhead"], 40 * u, m, H * 0.40, ink, "Medium", width=round(W * 0.5), ls=-1, lh=125)
-        b.product_img(W * 0.45, H * 0.40, W * 0.5, H * 0.48, scale)
+            sz = (44 if b.tall else 40) * u
+            sh, _ = b.block(ad["subhead"], sz, m, y, ink, bg, W * 0.62, style="Medium", max_lines=3, lh=125, ls=-1,
+                            check=False, min_size=sz * 0.85)
+            y += sh
+        y += 44 * u
+        if b.tall:
+            b.product_in(m, y, W - 2 * m, b.floor - y, "center", scale=scale)
+        else:                                            # beside the CTA, down to its baseline
+            b.feed_product(y, cta, scale)
         b.cta(cta, cta_fill, cta_ink)
     elif fmt == "stat":
         st = proof["stats"][int(ad.get("stat", 0))]
@@ -238,47 +346,106 @@ def build_ad(ad, W, H, fonts, lock, base):
         b.product_img(W * 0.3, H * 0.47, W * 0.4, H * 0.34, scale * PRODUCT_SCALE["rating"])
         b.cta(cta, cta_fill, cta_ink, center=True)
     elif fmt == "us-vs-them":
-        b.headline(head, 72 * u, m, 90 * u, ink, bg, width=W - 2 * m)
-        colw, top = (W - 3 * m) / 2, H * 0.25
-        n = max(len(ad["cons"][:5]), len(ad["pros"][:5]))
-        ch = 120 * u + n * 34 * u * 2.4 + 40 * u
-        b.add(type="rect", x=round(m), y=round(top), w=round(colw), h=round(ch), fill=pal["soft"], radius=round(28 * u))
-        b.add(type="rect", x=round(2 * m + colw), y=round(top), w=round(colw), h=round(ch), fill=pal["hero"], radius=round(28 * u))
+        y = b.top
+        hh, _ = b.block(head, (112 if b.tall else 96) * u, m, y, ink, bg, W - 2 * m, max_lines=2, max_h=H * 0.2)
+        top = y + hh + 52 * u
+        gut = 32 * u
+        colw = (W - 2 * m - gut) / 2
+        fs, pad = (40 if b.tall else 34) * u, 36 * u
+        us = ad.get("us", (lock.get("meta") or {}).get("brand", ""))
+        cols = [(ad["them"], ad["cons"][:5]), (us, ad["pros"][:5])]
+        title_h = max(len(b.lines(t, "Bold", fs, colw - 2 * pad, -1)) for t, _ in cols) * fs
+        ch = pad + title_h + fs * 1.1 + max(b.marks_h(ls_, fs, colw - 2 * pad) for _, ls_ in cols) + pad
         on_hero = pal["on"](pal["hero"])
-        b.text(ad["them"], 36 * u, m + 36 * u, top + 36 * u, "#555A63", "Bold", width=round(colw - 72 * u), ls=-1)
-        b.text(ad.get("us", (lock.get("meta") or {}).get("brand", "")), 36 * u, 2 * m + colw + 36 * u, top + 36 * u, on_hero, "Bold", ls=-1)
-        b.add(type="marks", x=round(m + 36 * u), y=round(top + 120 * u), size=round(34 * u), mark="cross", color="#9AA0A8",
-              ink="#555A63", width=round(colw - 72 * u), lines=ad["cons"][:5])
-        b.add(type="marks", x=round(2 * m + colw + 36 * u), y=round(top + 120 * u), size=round(34 * u), mark="check",
-              color=pal["on"](pal["hero"]), ink=on_hero, width=round(colw - 72 * u), lines=ad["pros"][:5])
-        b.product_img(W * 0.5, top + ch + 20 * u, W * 0.45, H * 0.85 - top - ch - 20 * u, scale * PRODUCT_SCALE["us-vs-them"] / 0.55)
+        for i, ((title, ls_), fill, tink, mark, mcol) in enumerate(zip(
+                cols, (pal["soft"], pal["hero"]), ("#555A63", on_hero), ("cross", "check"), ("#9AA0A8", on_hero))):
+            x = m + i * (colw + gut)
+            b.add(type="rect", x=round(x), y=round(top), w=round(colw), h=round(ch), fill=fill, radius=round(28 * u))
+            b.text(title, fs, x + pad, top + pad, tink, "Bold", width=round(colw - 2 * pad), ls=-1)
+            b.add(type="marks", x=round(x + pad), y=round(top + pad + title_h + fs * 1.1), size=round(fs), mark=mark,
+                  color=mcol, ink=tink, width=round(colw - 2 * pad), lines=ls_)
+        y = top + ch + 44 * u
+        if b.tall:
+            b.product_in(m, y, W - 2 * m, b.floor - y, "center", scale=scale)
+        else:
+            b.feed_product(y, cta, scale)
         b.cta(cta, cta_fill, cta_ink)
     elif fmt == "ingredients":
-        b.headline(head, 64 * u, m, 90 * u, ink, bg, width=W - 2 * m, center=True)
-        px, py, pw, ph = W * 0.3, H * 0.28, W * 0.4, H * 0.46
-        b.product_img(px, py, pw, ph, scale, anchor="center")
+        y = b.top
+        hh, _ = b.block(head, (108 if b.tall else 96) * u, m, y, ink, bg, W - 2 * m, max_lines=2, max_h=H * 0.2)
+        y0 = y + hh + 64 * u
+        y1 = b.floor if b.tall else H - 80 * u - 76 * u - 48 * u
         cols = ad["callouts"][:6]
+        fs, bs = (42 if b.tall else 38) * u, (30 if b.tall else 28) * u
+        if b.tall:                                        # Stories: all type above 60%, so the callouts sit in a grid
+            colw = (W - 2 * m - 40 * u) / 2               # under the headline and point down at the product
+            rows = [cols[i:i + 2] for i in range(0, len(cols), 2)]
+            ty = y0
+            spots = []
+            for row in rows:
+                rh = 0
+                for j, c in enumerate(row):
+                    tx = m + j * (colw + 40 * u)
+                    b.text(c["name"], fs, tx, ty, accent, "Bold", width=round(colw), ls=-1)
+                    bl = b.lines(c.get("benefit", ""), "Medium", bs, colw, 0)
+                    b.text(c.get("benefit", ""), bs, tx, ty + fs + 10 * u, ink, "Medium", width=round(colw), ls=0, lh=125)
+                    h_ = fs + 10 * u + len(bl) * bs * 1.25
+                    spots.append((tx, ty + h_, j))
+                    rh = max(rh, h_)
+                ty += rh + 44 * u
+            b.add(type="line", x1=round(m), y1=round(y0 - 28 * u), x2=round(W - m), y2=round(y0 - 28 * u),
+                  color=accent, width=max(2, round(3 * u)))         # a rule over the grid: reads as an ingredient panel
+            py = ty + 24 * u
+            b.product_in(m, py, W - 2 * m, y1 - py, "center", "center", scale)
+            cols = []
+        colw = W * 0.30                                   # the callouts stack on the left, the product fills the right
+        px = m + colw + 40 * u
+        if cols:
+            box = b.product_in(px, y0, W - m - px, y1 - y0, "center", "center", scale) or (px, y0, W - m - px, y1 - y0)
+            vx, vy, vw, vh = box
+            hs = [fs + 10 * u + len(b.lines(c.get("benefit", ""), "Medium", bs, colw, 0)) * bs * 1.25 for c in cols]
+            span = max(vh, sum(hs) + 40 * u * (len(cols) - 1))
+            gap = (span - sum(hs)) / max(1, len(cols) - 1)
+            ty = vy + (vh - span) / 2
         for i, c in enumerate(cols):
-            left = i % 2 == 0
-            row = i // 2
-            cy = H * 0.3 + row * H * 0.15
-            tx = m if left else W * 0.72
-            b.text(c["name"], 36 * u, tx, cy, accent, "Bold", width=round(W * 0.24), ls=-1)
-            b.text(c.get("benefit", ""), 27 * u, tx, cy + 46 * u, ink, "Medium", width=round(W * 0.24), ls=0, lh=125)
-            ex = tx + W * 0.24 + 16 * u if left else tx - 16 * u          # past the text column, never through it
-            b.add(type="line", x1=round(W * 0.42 if left else W * 0.58), y1=round(py + ph * (0.38 + 0.12 * row)),
-                  x2=round(ex), y2=round(cy + 20 * u), color=accent, width=max(2, round(3 * u)), dot=round(7 * u))
+            h_ = hs[i]
+            b.text(c["name"], fs, m, ty, accent, "Bold", width=round(colw), ls=-1)
+            b.text(c.get("benefit", ""), bs, m, ty + fs + 10 * u, ink, "Medium", width=round(colw), ls=0, lh=125)
+            tw_ = max(b.tw(c["name"], "Bold", fs), *(b.tw(t, "Medium", bs, 0) for t in b.lines(c.get("benefit", ""), "Medium", bs, colw, 0)))
+            tx = vx + vw * (0.2 + 0.12 * (i % 2))          # a point on the product
+            tyy = vy + vh * (0.25 + 0.55 * i / max(1, len(cols) - 1))
+            b.add(type="line", x1=round(tx), y1=round(tyy), x2=round(m + tw_ + 20 * u), y2=round(ty + fs * 0.55),
+                  color=accent, width=max(2, round(3 * u)), dot=round(7 * u))
+            ty += h_ + gap
         b.cta(cta, cta_fill, cta_ink, center=True)
     elif fmt == "benefits":
-        b.headline(head, 80 * u, m, 110 * u, ink, bg, width=W * 0.8)
-        b.add(type="marks", x=round(m), y=round(H * 0.36), size=round(38 * u), mark="check", color=accent,
-              ink=ink, width=round(W * 0.5), lines=ad["benefits"][:6])
-        b.product_img(W * 0.55, H * 0.38, W * 0.4, H * 0.46, scale)
+        y = b.top
+        hh, _ = b.block(head, (124 if b.tall else 112) * u, m, y, ink, bg, W - 2 * m, max_lines=3, max_h=H * 0.26)
+        y0 = y + hh + 60 * u
+        items = ad["benefits"][:6]
+        fs = (52 if b.tall else 44) * u
+        if b.tall or H - 80 * u - y0 > (W - 2 * m) * 0.7:      # a deep frame: list, then the product under it
+            lh_ = b.marks_h(items, fs, W - 2 * m)
+            b.add(type="marks", x=round(m), y=round(y0), size=round(fs), mark="check", color=accent, ink=ink,
+                  width=round(W - 2 * m), lines=items)
+            y2 = y0 + lh_ + 64 * u
+            if b.tall:
+                b.product_in(m, y2, W - 2 * m, b.floor - y2, "center", scale=scale)
+            else:
+                b.feed_product(y2, cta, scale)
+        else:
+            colw = W * 0.44
+            lh_ = b.marks_h(items, fs, colw)
+            b.product_in(m + colw + 24 * u, y0, W - m * 0.6 - (m + colw + 24 * u), H - 80 * u - y0, "right", "top",
+                         scale=scale)                       # a wide frame: list and product side by side, from the top
+            b.add(type="marks", x=round(m), y=round(y0), size=round(fs), mark="check", color=accent, ink=ink,
+                  width=round(colw), lines=items)
         b.cta(cta, cta_fill, cta_ink)
     elif fmt == "price-per-day":
         if head:
             b.headline(head, 56 * u, m, 130 * u, ink, bg, width=W - 2 * m, center=True)
-        b.text(proof["price_per_day"], 220 * u, 0, 240 * u, accent, center=True, ls=-5)
+        ps = min(220 * u, 220 * u * (W - 2 * m) / max(1, b.tw(proof["price_per_day"], "Bold", 220 * u, -5)))
+        b.text(proof["price_per_day"], ps, 0, 240 * u + (220 * u - ps) / 2, accent, center=True, ls=-5)
         if ad.get("compare"):
             b.text(ad["compare"], 40 * u, 0, 490 * u, ink, "Medium", center=True, ls=-1)
         b.product_img(W * 0.3, H * 0.47, W * 0.4, H * 0.34, scale * PRODUCT_SCALE["price-per-day"])
@@ -307,56 +474,85 @@ def build_ad(ad, W, H, fonts, lock, base):
             y += size + 2 * pad * 0.7 + gap
         b.cta(cta, cta_fill, cta_ink, center=True)
     elif fmt in ("lifestyle", "seasonal", "ugc-frame"):
-        b.add(type="image", src=str((base / ad["plate"]).resolve()), x=0, y=0, w=W, h=H)
+        b.add(type="image", src=str((base / ad["plate"]).resolve()), x=0, y=0, w=W, h=H,
+              **{k: ad[k] for k in ("focus", "zoom") if ad.get(k)})
         if fmt == "ugc-frame":
-            size = 50 * u
-            lines_w = min(W - 2 * m, b.tw(head, "Bold", size) + 80 * u)
-            b.add(type="rect", x=round((W - lines_w) / 2), y=round(H * 0.18), w=round(lines_w),
-                  h=round(size * 1.2 * max(1, round(b.tw(head, "Bold", size) / (lines_w - 80 * u) + 0.49)) + 60 * u),
-                  fill="#FFFFFF", radius=round(18 * u))
-            b.headline(head, size, (W - lines_w) / 2 + 40 * u, H * 0.18 + 30 * u, "#111111", "#FFFFFF", width=lines_w - 80 * u, lh=120)
-            b.cta(cta, "#FFFFFF", "#111111", center=True)
+            size, padx, pady = (56 if b.tall else 52) * u, 40 * u, 30 * u
+            hl = b.lines(head, "Bold", size, W - 2 * m - 2 * padx)
+            lw = max(b.tw(t, "Bold", size, -2) for t in hl)
+            bw_, bh_ = lw + 2 * padx, size * 1.2 * len(hl) + 2 * pady
+            by = b.top if b.tall else H * 0.12
+            b.add(type="rect", x=round((W - bw_) / 2), y=round(by), w=round(bw_), h=round(bh_), fill="#FFFFFF", radius=round(18 * u))
+            b.headline("\n".join(hl), size, (W - bw_) / 2 + padx, by + pady, "#111111", "#FFFFFF", width=lw + 4, lh=120)
+            b.cta(cta, "#FFFFFF", "#111111", center=True, y=by + bh_ + 20 * u)    # under the sticker, off the face
         else:
             band = pal["dark"]
-            tall = H / W >= 1.7          # Stories and Reels: type between 16% and 60% of the height
-            if tall:
-                b.add(type="fade", x=0, y=0, w=W, h=round(H * 0.5), color=band, edge="top")
-            else:
-                b.add(type="fade", x=0, y=round(H * 0.45), w=W, h=round(H * 0.55), color=band, edge="bottom")
+            at = ad.get("text_at") or ("top" if b.tall else "bottom")
+            fade = ad.get("fade", True)
+            tink = {"light": pal["light"], "dark": pal["dark"]}.get(ad.get("ink")) or pal["on"](band)
+            smax = (124 if b.tall else 108) * u
+            hs, hl = b.fit(head, "Bold", smax, W - 2 * m, 3, H * 0.28)
+            hh = hs * 0.95 * len(hl)
+            top = b.top
             if fmt == "seasonal":
                 size, pad = 32 * u, 24 * u
                 w = b.tw(ad["season"], "Bold", size) + 2 * pad
+                top = max(top, m + size + pad * 1.4 + 32 * u)
+            if at == "top":
+                hy = top
+            else:
+                hy = (H * 0.58 if b.tall else H - 80 * u - 76 * u - 44 * u) - hh
+            if fade:
+                if at == "top":
+                    b.add(type="fade", x=0, y=0, w=W, h=round(hy + hh + H * 0.2), color=band, edge="top")
+                else:
+                    b.add(type="fade", x=0, y=round(hy - H * 0.22), w=W, h=round(H - hy + H * 0.22), color=band, edge="bottom")
+            if fmt == "seasonal":
                 b.add(type="rect", x=round(m), y=round(m), w=round(w), h=round(size + pad * 1.4), fill=pal["hero"], radius=round((size + pad * 1.4) / 2))
                 b.text(ad["season"], size, m + pad, m + pad * 0.7, pal["on"](pal["hero"]), "Bold", ls=0)
-            if tall:
-                b.headline(head, 84 * u, m, round(H * 0.17), pal["on"](band), band, width=W - 2 * m)
-            else:
-                b.headline(head, 84 * u, m, 0, pal["on"](band), band, width=W - 2 * m, bottom=round(200 * u))
-            b.cta(cta, cta_fill if contrast(cta_fill, band) >= 1.6 else pal["light"], pal["on"](cta_fill if contrast(cta_fill, band) >= 1.6 else pal["light"]))
+            b.headline("\n".join(hl), hs, m, hy, tink, band if fade else None, width=W - 2 * m)
+            cf = cta_fill if not fade or contrast(cta_fill, band) >= 1.6 else pal["light"]
+            b.cta(cta, cf, pal["on"](cf))
     elif fmt == "text-thread":
         frame["bg"] = pal["light"]
-        y = H * 0.1
+        y = b.top
+        fs = ((56 if b.tall else 50) if H / W >= 1.2 else 48) * u
         bw = W - 2 * m
+        side = "left"
         for msg in ad["messages"][:6]:
             me = msg.get("from", "them") == "me"
             fill = pal["hero"] if me else "#E6E7EB"
-            it = b.add(type="bubble", x=round(m), y=round(y), text=msg["text"], size=round(48 * u), width=round(bw * 0.8),
-                       side="right" if me else "left", fill=fill, ink=pal["on"](fill))
-            if not me:
-                it["x"] = round(m)
-            else:
-                it["x"] = round(m + bw * 0.2)
-            lines = max(1, -(-b.tw(msg["text"], "Medium", 48 * u) // (bw * 0.8 - 68 * u)))
-            y += lines * 48 * u * 1.25 + 68 * u + 24 * u
-        b.checks.append(("headline", ad["messages"][0]["text"], 48 * u, "#111111", "#E6E7EB"))
-        b.product_img(W * 0.55, y, W * 0.35, min(H * 0.28, H - y - 200 * u), scale * PRODUCT_SCALE["text-thread"], shadow=False)
-        b.cta(cta, pal["hero"], pal["on"](pal["hero"]), center=True)
+            pad = fs * 0.7
+            b.add(type="bubble", x=round(m + (bw * 0.2 if me else 0)), y=round(y), text=msg["text"], size=round(fs),
+                  width=round(bw * 0.8), side="right" if me else "left", fill=fill, ink=pal["on"](fill))
+            y += len(b.lines(msg["text"], "Medium", fs, bw * 0.8 - 2 * pad, -1)) * fs * 1.25 + 2 * pad * 0.8 + 22 * u
+            side = "right" if me else "left"
+        b.checks.append(("headline", ad["messages"][0]["text"], fs, "#111111", "#E6E7EB"))
+        y += 8 * u
+        bottom = b.floor if b.tall else H - 80 * u
+        cs = 34 * u
+        cw = b.tw(cta, "Bold", cs, -1) + 2.2 * cs
+        sq = min(W * (0.72 if b.tall else 0.6), bottom - y, W - 2 * m - (0 if b.tall else cw + 40 * u))   # the product sent as a photo, on the side of the last message
+        if sq > 120 * u and b.product:
+            cx = m if side == "left" else W - m - sq
+            b.add(type="rect", x=round(cx), y=round(y), w=round(sq), h=round(sq), fill="#F1F1F3", radius=round(fs * 0.9))
+            b.product_in(cx + sq * 0.1, y + sq * 0.1, sq * 0.8, sq * 0.8, "center", "center", scale, shadow=False)
+        b.cta(cta, pal["hero"], pal["on"](pal["hero"]), x=(W - m - cw) if side == "left" else m)
     elif fmt == "premium":
-        if head:
-            b.headline(head, 72 * u, 0, 140 * u, ink, bg, center=True, ls=-2)
-        b.product_img(W * 0.2, H * 0.2, W * 0.6, H * 0.55, min(1.0, scale))
+        y = b.top + (0 if b.tall else 24 * u)
+        hh, _ = b.block(head, (100 if b.tall else 88) * u, m, y, ink, bg, W - 2 * m, max_lines=2, max_h=H * 0.18,
+                        center=True)
         brand = (lock.get("meta") or {}).get("brand", "")
-        b.text(brand, 28 * u, 0, (140 * u + 72 * u * 1.3) if H / W >= 1.7 else H - 250 * u, ink, "Bold", center=True, ls=12)
+        bsz = 30 * u
+        y0 = y + hh + 56 * u
+        if b.tall:                                        # Stories: the brand line stays above 60%, under the headline
+            b.text(brand, bsz, 0, y + hh + 32 * u, ink, "Bold", center=True, ls=12)
+            y0 += bsz + 32 * u
+            b.product_in(W * 0.1, y0, W * 0.8, b.floor - y0, "center", scale=min(1.0, scale))
+        else:
+            bottom = H - 80 * u - 76 * u - 24 * u - bsz - 40 * u
+            box = b.product_in(W * 0.1, y0, W * 0.8, bottom - y0, "center", "center", scale=min(1.0, scale))
+            b.text(brand, bsz, 0, (box[1] + box[3] if box else bottom) + 40 * u, ink, "Bold", center=True, ls=12)
         b.cta(cta, None, ink, center=True, plain=True)
     else:
         fail(f"unknown format {fmt}")
@@ -404,6 +600,63 @@ def thumbnail_checks(ad_id, checks):
             need_c = 3.0 if size >= 48 else 4.5
             if c < need_c:
                 out.append(f"{ad_id}: {kind} contrast {c:.1f}:1 on its background; needs {need_c}:1")
+    return out
+
+
+TYPE_KINDS = {"text", "stack", "marks", "bubble", "cta"}
+
+
+def layout_checks(name, ctx, W, H):
+    """After rendering: type that collides with type or the product, type outside the margins, type
+    under the contrast floor on the real pixels behind it, and empty bands on flat frames."""
+    out, u, tall = [], W / 1080, H / W >= 1.7
+    d = ctx.drawn
+    label = lambda it: str(it.get("text") or it.get("label") or (it.get("lines") or [it.get("type")])[0]).replace("\n", " ")[:38]
+    hit = lambda a, b, t: (min(a[0] + a[2], b[0] + b[2]) - max(a[0], b[0]) > t and
+                           min(a[1] + a[3], b[1] + b[3]) - max(a[1], b[1]) > t)
+    plate = any(k == "image" and it.get("fit") != "contain" and it.get("w") == W and it.get("h") == H for k, _, it, _ in d)
+    types = [(bx, it) for k, bx, it, _ in d if k in TYPE_KINDS]
+    prods = [bx for k, bx, it, _ in d if k == "image" and it.get("fit") == "contain"]
+    for i, (a, it) in enumerate(types):
+        for b2, it2 in types[i + 1:]:
+            if hit(a, b2, 4 * u):
+                out.append(f'{name}: "{label(it)}" overlaps "{label(it2)}"')
+        if any(hit(a, p, 4 * u) for p in prods):
+            out.append(f'{name}: "{label(it)}" runs into the product')
+        if a[0] < W * 0.04 or a[0] + a[2] > W * 0.96 + 1 or a[1] < 0 or a[1] + a[3] > H:
+            out.append(f'{name}: "{label(it)}" is outside the margins')
+    for k, bx, it, _ in d:
+        if k != "line":
+            continue
+        for t in range(1, 95):                             # a leader may touch its own label at the end, never cross type
+            px = it["x1"] + (it["x2"] - it["x1"]) * t / 100
+            py = it["y1"] + (it["y2"] - it["y1"]) * t / 100
+            hit_t = next((it2 for a, it2 in types if a[0] + 2 < px < a[0] + a[2] - 2 and a[1] + 2 < py < a[1] + a[3] - 2), None)
+            if hit_t is not None:
+                out.append(f'{name}: a callout line crosses "{label(hit_t)}"')
+                break
+    for k, bx, it, c in d:
+        if k == "text" and c is not None:
+            need_c = 3.0 if it["size"] >= 48 * u else 4.5
+            if c < need_c:
+                out.append(f'{name}: "{label(it)}" is {c:.1f}:1 on the pixels behind it; needs {need_c}:1')
+    if not plate:
+        spans = sorted((bx[1], bx[1] + bx[3]) for k, bx, it, _ in d
+                       if k in TYPE_KINDS or k == "rect" or (k == "image" and it.get("fit") == "contain"))
+        if spans:
+            merged = [list(spans[0])]
+            for a0, a1 in spans[1:]:
+                if a0 <= merged[-1][1]:
+                    merged[-1][1] = max(merged[-1][1], a1)
+                else:
+                    merged.append([a0, a1])
+            for (_, e), (s2, _) in zip(merged, merged[1:]):
+                if s2 - e > H * 0.15:
+                    out.append(f"{name}: an empty band {100 * (s2 - e) / H:.0f}% of the height deep at {100 * e / H:.0f}%")
+            if merged[0][0] > H * (0.22 if tall else 0.14):
+                out.append(f"{name}: the top {100 * merged[0][0] / H:.0f}% is empty")
+            if merged[-1][1] < H * (0.70 if tall else 0.84):
+                out.append(f"{name}: nothing below {100 * merged[-1][1] / H:.0f}% of the height")
     return out
 
 
@@ -493,6 +746,11 @@ def main():
             frames.append(fr)
             flags += thumbnail_checks(f"{ad['id']} {W}x{H}", checks)
     layout = {"fonts": {k: str(v) for k, v in fonts.items()}, "colors": {}, "frames": frames}
+    ctx = Ctx(layout, base)
+    rendered = []
+    for fr in frames:                                   # render once to check what is really on the frame
+        rendered.append(render_frame(fr, ctx))
+        flags += layout_checks(fr["name"].replace(f" {fr['w']}x", f" {fr['w']}x").split(" ")[0] + f" {fr['w']}x{fr['h']}", ctx, fr["w"], fr["h"])
     for f in flags:
         print(f"FLAG  {f}")
     print(f"{'PASS' if not flags else 'CHECK'}  {len(ads)} ads, {len({x['format'] for x in ads})} formats, "
@@ -512,10 +770,8 @@ def main():
     if a.render:
         out = Path(a.render)
         out.mkdir(parents=True, exist_ok=True)
-        ctx = Ctx(layout, base)
         done = []
-        for fr in frames:
-            img = render_frame(fr, ctx)
+        for fr, img in zip(frames, rendered):
             path = out / f"{fr['file']}.jpg"
             img.save(path, quality=92, subsampling=0)
             done.append(img)

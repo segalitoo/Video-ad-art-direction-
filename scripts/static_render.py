@@ -12,9 +12,11 @@ centred in the line box, kerning kept (raqm).
 Layout file: `fonts` (style -> ttf), `colors` (name -> hex), `defaults`, `frames`. Each frame has
 name, w, h, bg and `items`, drawn in order:
 
-  image     src, x, y, w, h (cover-fit; fit: contain keeps a cut-out whole, anchor floor|center), shadow {y, blur, opacity}
+  image     src, x, y, w, h (cover-fit, focus [fx, fy], zoom; fit: contain keeps a cut-out whole,
+            anchor floor|center), shadow {y, blur, opacity}
   fade      x, y, w, h, color, edge top|bottom|left (opaque at that edge, clear at the other)
-  text      text, style, size, color, x, y, ls, lh, width (wraps), fit (fill w − 2·fit), center, align right
+  text      text, style, size, color, x, y, ls, lh, width (wraps with balanced, designed line breaks;
+            \n forces a break), fit (fill w − 2·fit), center, align right
   stack     x, y, gap, lines [{text, style, size, color, ls, lh}], accent {color, mode fill|underline};
             the part of a line between |bars| is the accent
   wordmark  x, y, size, ink, mark (colour), name
@@ -31,6 +33,7 @@ Any item can carry `id` (for `below`) and `bottom: N` (placed N px above the fra
 """
 
 import argparse
+from itertools import combinations
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
@@ -90,17 +93,101 @@ def draw_line(img, ctx, x, top, text, style, size, colors_at, ls=-2, lh=100):
     return line_width(fnt, text, size, ls), box
 
 
-def wrap(ctx, text, style, size, ls, width):
-    fnt = ctx.f(style, size)
-    words, lines, cur = text.split(), [], ""
+WEAK_ENDS = {"a", "an", "the", "to", "of", "my", "your", "our", "his", "her", "its", "their", "and", "or",
+             "but", "on", "in", "for", "with", "at", "by", "from", "is", "are", "be", "no", "not"}
+
+
+def greedy(words, measure, width):
+    lines, cur = [], ""
     for w in words:
         trial = f"{cur} {w}".strip()
-        if cur and line_width(fnt, trial, size, ls) > width:
+        if cur and measure(trial) > width:
             lines.append(cur)
             cur = w
         else:
             cur = trial
     return lines + ([cur] if cur else [])
+
+
+def split_sentences(lines):
+    """Lines that end one sentence and start the next after a break inside the first."""
+    n = 0
+    for i, t in enumerate(lines):
+        starts = i == 0 or lines[i - 1].split()[-1][-1] in ".?!:"
+        if not starts and any(w[-1] in ".?!" for w in t.split()[:-1]):
+            n += 1
+    return n
+
+
+def break_cost(lines, measure, width):
+    """How a designer would rate these line breaks; lower is better. Balanced lines, breaks after
+    punctuation, no line ending on 'the' or 'my', no single word left alone on the last line."""
+    ws = [measure(t) for t in lines]
+    if max(ws) > width:
+        return None
+    top = max(ws)
+    cost = sum(((top - w) / width) ** 2 for w in ws[:-1])     # ragged right inside the block
+    if len(lines) > 1:
+        cost += 0.5 * max(0, 0.6 - ws[-1] / top)              # a short tail line
+        if len(lines[-1].split()) == 1:
+            cost += 2.0                                       # an orphan
+    if sum(len(t.split()) for t in lines) > 3:
+        cost += 1.0 * sum(len(t.split()) == 1 for t in lines[:-1])   # a lone word mid-block
+    cost += 0.8 * split_sentences(lines)
+    for t in lines[:-1]:
+        last = t.split()[-1]
+        if last[-1] in ".?!:":
+            cost -= 0.6
+        elif last[-1] in ",;":
+            cost -= 0.3
+        elif last.lower() in WEAK_ENDS:
+            cost += 0.8
+    return cost
+
+
+def clean_breaks(lines):
+    """True when no line ends on a weak word and no word stands alone on a line."""
+    if sum(len(t.split()) for t in lines) > 3 and any(len(t.split()) == 1 for t in lines):
+        return False
+    if split_sentences(lines):
+        return False
+    return not any(t.split()[-1].lower() in WEAK_ENDS for t in lines[:-1])
+
+
+def balance(text, measure, width):
+    """Line breaks for a headline or a short block: the fewest lines that fit, or one more when that
+    lets every line end on a sentence or a clause. A \\n in the text is a forced break."""
+    out = []
+    for para in str(text).split("\n"):
+        words = para.split()
+        if not words:
+            continue
+        g = greedy(words, measure, width)
+        if len(words) > 24 or len(g) == 1 and len(words) < 4:
+            out += g
+            continue
+        best, best_cost = g, None
+        for n in {len(g), len(g) + 1} if len(g) > 1 else {1, 2}:
+            if n > len(words):
+                continue
+            for cut in combinations(range(1, len(words)), n - 1):
+                idx = (0,) + cut + (len(words),)
+                lines = [" ".join(words[idx[i]:idx[i + 1]]) for i in range(n)]
+                c = break_cost(lines, measure, width)
+                if c is None:
+                    continue
+                c += 0.35 * (n - len(g))
+                if n == 2 and len(g) == 1:
+                    c += 0.4                                  # a fitting one-liner stays one line unless the break is clean
+                if best_cost is None or c < best_cost:
+                    best, best_cost = lines, c
+        out += best
+    return out
+
+
+def wrap(ctx, text, style, size, ls, width):
+    fnt = ctx.f(style, size)
+    return balance(text, lambda t: line_width(fnt, t, size, ls), width)
 
 
 def shadow_layer(size, alpha, dx, dy, blur, opacity, color=(30, 22, 14)):
@@ -124,11 +211,14 @@ def paste_with_shadow(canvas, im, x, y, shadow):
     canvas.alpha_composite(layer)
 
 
-def cover(src, w, h):
+def cover(src, w, h, focus=None, zoom=1.0):
+    """Fill w×h. focus [fx, fy] (0–1) is the point of the source kept in view; zoom > 1 crops tighter."""
     im = Image.open(src).convert("RGBA")
-    s = max(w / im.width, h / im.height)
+    s = max(w / im.width, h / im.height) * max(1.0, zoom)
     im = im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))), Image.LANCZOS)
-    left, top = (im.width - w) // 2, (im.height - h) // 2
+    fx, fy = focus or (0.5, 0.5)
+    left = min(max(0, round(fx * im.width - w / 2)), im.width - round(w))
+    top = min(max(0, round(fy * im.height - h / 2)), im.height - round(h))
     return im.crop((left, top, left + round(w), top + round(h)))
 
 
@@ -152,6 +242,24 @@ def star(cx, cy, r):
     return pts
 
 
+def behind(canvas, box, ink):
+    """The worst contrast (10th percentile) between the ink and the pixels already under a text box."""
+    x, y, w, h = (round(v) for v in box)
+    x0, y0 = max(0, x), max(0, y)
+    x1, y1 = min(canvas.width, x + w), min(canvas.height, y + h)
+    if x1 <= x0 or y1 <= y0:
+        return None
+    region = canvas.crop((x0, y0, x1, y1)).convert("RGB")
+    region.thumbnail((120, 120))
+    lin = lambda c: c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+    lum = lambda p: 0.2126 * lin(p[0] / 255) + 0.7152 * lin(p[1] / 255) + 0.0722 * lin(p[2] / 255)
+    li = lum(ink)
+    px = region.tobytes()
+    ratios = sorted((max(li, lb) + 0.05) / (min(li, lb) + 0.05)
+                    for lb in (lum(px[i:i + 3]) for i in range(0, len(px), 3)))
+    return ratios[len(ratios) // 10]
+
+
 def place_y(it, h, fh, ctx):
     if "below" in it:
         b = ctx.boxes[it["below"]]
@@ -171,6 +279,7 @@ def render_frame(fr, ctx, layer=None):
     bg = ctx.c(fr.get("bg", "#FFFFFF")) + (255,)
     canvas = Image.new("RGBA", (W, H), (0, 0, 0, 0) if layer == "type" else bg)
     ctx.boxes = {}
+    ctx.drawn = []          # (kind, (x, y, w, h) of what is visible, item, extra) for the layout checks
     for it in fr["items"]:
         kind = it["type"]
         if layer and (kind in PLATE_ITEMS) != (layer == "plate"):
@@ -182,9 +291,11 @@ def render_frame(fr, ctx, layer=None):
             if it.get("fit") == "contain":
                 im = contain(ctx.base / it["src"], it["w"], it["h"], it.get("anchor", "floor"))
             else:
-                im = cover(ctx.base / it["src"], it["w"], it["h"])
+                im = cover(ctx.base / it["src"], it["w"], it["h"], it.get("focus"), it.get("zoom", 1.0))
             paste_with_shadow(canvas, im, it["x"], it["y"], it.get("shadow"))
             box = (it["x"], it["y"], it["w"], it["h"])
+            vis = im.split()[-1].getbbox() if im.mode == "RGBA" else None
+            ctx.drawn.append(("image", (it["x"] + vis[0], it["y"] + vis[1], vis[2] - vis[0], vis[3] - vis[1]) if vis else box, it, None))
         elif kind == "fade":
             w, h = round(it["w"]), round(it["h"])
             col = ctx.c(it["color"])
@@ -216,6 +327,7 @@ def render_frame(fr, ctx, layer=None):
             tw, th = max(widths), size * lh / 100 * len(lines)
             x = (W - tw) / 2 if it.get("center") else it["x"]
             y = place_y(it, th, H, ctx)
+            ctx.drawn.append(("text", (x, y, tw, th), it, behind(canvas, (x, y, tw, th), col)))
             for i, t in enumerate(lines):
                 lx = x + (tw - widths[i]) if it.get("align") == "right" else x
                 draw_line(canvas, ctx, lx, y + i * size * lh / 100, t, style, size, lambda _: col, ls, lh)
@@ -242,6 +354,7 @@ def render_frame(fr, ctx, layer=None):
                 wmax = max(wmax, w)
                 y += bh + gap
             box = (x, y0, wmax, y - gap - y0)
+            ctx.drawn.append(("stack", box, it, None))
         elif kind == "wordmark":
             s, ink = it["size"], ctx.c(it["ink"])
             m = s * 0.75
@@ -272,6 +385,7 @@ def render_frame(fr, ctx, layer=None):
                 ImageDraw.Draw(canvas).rounded_rectangle([x, y, x + w, y + h], radius=h / 2, fill=ctx.c(it.get("fill", "coral")))
                 draw_line(canvas, ctx, x + 1.1 * s, y + 0.62 * s, it["label"], st, s, lambda _: ink, -1, 100)
             box = (x, y, w, h)
+            ctx.drawn.append(("cta", box, it, None))
         elif kind == "chip":
             size, padl, padr, padv, gap, dot = 26, 22, 26, 16, 14, 16
             words = it["words"]
@@ -300,6 +414,7 @@ def render_frame(fr, ctx, layer=None):
             y = place_y(it, h, H, ctx)
             paste_with_shadow(canvas, card, it["x"], y, it.get("shadow"))
             box = (it["x"], y, w, h)
+            ctx.drawn.append(("rect", box, it, None))
         elif kind == "stars":
             n, filled, sz = it.get("count", 5), it.get("filled", it.get("count", 5)), it["size"]
             y = place_y(it, sz, H, ctx)
@@ -317,6 +432,7 @@ def render_frame(fr, ctx, layer=None):
             d = ImageDraw.Draw(canvas)
             col, ink = ctx.c(it.get("color", "#1FA463")), ctx.c(it.get("ink", "#111111"))
             m = sz * 0.9
+            wmax = 0
             for text in it["lines"]:
                 cy = y + sz * 0.55
                 d.ellipse([x, cy - m / 2, x + m, cy + m / 2], fill=col)
@@ -328,9 +444,11 @@ def render_frame(fr, ctx, layer=None):
                     d.line([(x + 7 * k, cy - 2 * k), (x + 3 * k, cy + 2 * k)], fill=(255, 255, 255), width=lw)
                 lines = wrap(ctx, text, style, sz, -1, it["width"] - m - sz * 0.5) if it.get("width") else [text]
                 for j, t in enumerate(lines):
-                    draw_line(canvas, ctx, x + m + sz * 0.5, y + j * sz * 1.15, t, style, sz, lambda _: ink, -1, 115)
+                    lw_ = draw_line(canvas, ctx, x + m + sz * 0.5, y + j * sz * 1.15, t, style, sz, lambda _: ink, -1, 115)[0]
+                    wmax = max(wmax, m + sz * 0.5 + lw_)
                 y += len(lines) * sz * 1.15 + gap
-            box = (x, y0, it.get("width", 0), y - gap - y0)
+            box = (x, y0, wmax, y - gap - y0)
+            ctx.drawn.append(("marks", box, it, None))
         elif kind == "bubble":
             sz, style = it["size"], it.get("style", "Medium")
             pad = sz * 0.7
@@ -347,6 +465,7 @@ def render_frame(fr, ctx, layer=None):
             for j, t in enumerate(lines):
                 draw_line(canvas, ctx, x + pad, y + pad * 0.8 + j * sz * 1.25, t, style, sz, lambda _: ink, -1, 125)
             box = (x, y, w, h)
+            ctx.drawn.append(("bubble", box, it, None))
         elif kind == "line":
             d = ImageDraw.Draw(canvas)
             col = ctx.c(it.get("color", "#111111"))
@@ -355,6 +474,7 @@ def render_frame(fr, ctx, layer=None):
                 r = it["dot"]
                 d.ellipse([it["x1"] - r, it["y1"] - r, it["x1"] + r, it["y1"] + r], fill=col)
             box = (min(it["x1"], it["x2"]), min(it["y1"], it["y2"]), abs(it["x2"] - it["x1"]), abs(it["y2"] - it["y1"]))
+            ctx.drawn.append(("line", box, it, None))
         else:
             fail(f"unknown item type {kind}")
         if it.get("id") and box:
