@@ -303,16 +303,22 @@ python3 scripts/static_formats.py examples/driftpay/formats/formats.yml -o "$chk
 diff -q "$chk" examples/driftpay/formats/layout.yml >/dev/null && { rm -f "$chk"; ok "committed driftpay formats layout is up to date"; } \
   || { rm -f "$chk"; echo "FAIL driftpay formats layout is stale"; exit 1; }
 
-# Layers for motion loops: plate + type layer put back together equal the full static.
-python3 scripts/static_render.py examples/driftpay/formats/layout.yml -o "$tmp/layers" --only F1 --layers >/dev/null
-python3 - "$tmp/layers" <<'PY' && ok "plate and type layers recompose the static" || { echo "FAIL layers"; exit 1; }
+# Layers for motion loops: plate + type layer put back together equal the full static, and the
+# plate carries no type (F6 has a fade, which once leaked the headline into the plate).
+for f in F1 F6; do python3 scripts/static_render.py examples/driftpay/formats/layout.yml -o "$tmp/layers" --only $f --layers >/dev/null; done
+python3 - "$tmp/layers" <<'PY' && ok "plate and type layers recompose the static; the plate has no type, fades included" || { echo "FAIL layers"; exit 1; }
 import sys, glob
 from PIL import Image, ImageChops, ImageStat
 d = sys.argv[1]
-full = Image.open(glob.glob(f"{d}/F1_*[0-9].jpg")[0]).convert("RGB")
-plate = Image.open(glob.glob(f"{d}/F1_*_plate.png")[0]).convert("RGBA")
-plate.alpha_composite(Image.open(glob.glob(f"{d}/F1_*_type.png")[0]))
-assert max(ImageStat.Stat(ImageChops.difference(plate.convert("RGB"), full)).mean) < 1.0
+for f in ("F1", "F6"):
+    full = Image.open(glob.glob(f"{d}/{f}_*[0-9].jpg")[0]).convert("RGB")
+    plate = Image.open(glob.glob(f"{d}/{f}_*_plate.png")[0]).convert("RGBA")
+    typ = Image.open(glob.glob(f"{d}/{f}_*_type.png")[0])
+    mask = typ.split()[-1].point(lambda a: 255 if a > 200 else 0)
+    bare = ImageStat.Stat(ImageChops.difference(plate.convert("RGB"), full), mask).mean
+    assert max(bare) > 20, f + ": the plate still shows the type"
+    plate.alpha_composite(typ)
+    assert max(ImageStat.Stat(ImageChops.difference(plate.convert("RGB"), full)).mean) < 2.0, f   # JPEG noise on a photo
 PY
 
 # Score gate: totals, thresholds, the weakest dimension named.

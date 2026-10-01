@@ -308,11 +308,11 @@ def render_frame(fr, ctx, layer=None):
                 g.putdata([ramp[y] for y in range(h) for _ in range(w)])
             else:
                 g.putdata([ramp[x] for _ in range(h) for x in range(w)])
-            layer = Image.new("RGBA", canvas.size, col + (0,))
+            over = Image.new("RGBA", canvas.size, col + (0,))     # not `layer`: that names the pass being drawn
             solid = Image.new("RGBA", (w, h), col + (255,))
             solid.putalpha(g)
-            layer.paste(solid, (round(it["x"]), round(it["y"])))
-            canvas.alpha_composite(layer)
+            over.paste(solid, (round(it["x"]), round(it["y"])))
+            canvas.alpha_composite(over)
             box = (it["x"], it["y"], w, h)
         elif kind == "text":
             style, size, ls, lh = it["style"], it["size"], it.get("ls", -2), it.get("lh", 100)
