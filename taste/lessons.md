@@ -94,5 +94,6 @@ Rules learned from real results. Each one names its evidence and where it is enf
 
 ### L019 · In the Higgsfield web app, turn "Enhance prompt" off for loop clips, and never ask for moving light: the rewrite turns "soft light drifts" into blinds, flares and a colour shift. Ask for one small move (a push, a breath) and say the light and colours stay as the start frame. Check every clip frame against frame 0 before building the loop
 - **Evidence:** Byoma B06, 2026-10-01: Wan 2.2 with enhance on drew window-blind shadows from 0.6 s and ended on a dark crimson wall; white type fell to 1.7:1. B05 (one small human move) drifted little and kept 4.6:1. The free local push was the safe B06 loop
+- **Also:** never let the words you don't want reach the main prompt. On the rerun (enhance off) the negative list was pasted into the prompt box, and Wan drew exactly those things: blinds, a crimson wall, darkening. Give a person running a model one prompt to paste, with no negative list next to it
 - **Enforced in:** scripts/loop.py (make --layout renders each clip frame through the static's own layout)
 - **Added:** 2026-10-01
