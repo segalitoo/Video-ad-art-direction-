@@ -147,3 +147,8 @@ Rules learned from real results. Each one names its evidence and where it is enf
 - **Evidence:** Byoma B06 and B07 9:16, 2026-10-02: the headlines kept their 4:5 size and left the top half of the story empty. The art director: "the text can fill more of the space ... using white space in a smart way." Research behind the rule: attention to text grows with its surface size (Pieters & Wedel 2004)
 - **Enforced in:** templates/static-design.md section 2b; directions/make7.py (`fill_head`, `stack_head`)
 - **Added:** 2026-10-02
+
+### L029 · Growing a headline is a layout change: check what it now covers. Measure the rendered type pixels against the product's own pixels (not item boxes, not an averaged contrast), and when lines grow, keep each sentence whole: a line never starts a new sentence mid-line and carries it onto the next ("ONE SHELF. TWO / GENERATIONS.")
+- **Evidence:** Byoma 9:16 rollout, 2026-10-02: the bigger B08 headline ran across the floating cube with 0 flags (the collision check only knows layout items, the contrast check averages the box), and B05 broke as "ONE SHELF. TWO / GENERATIONS. / SAME TUBE.". Both caught on the review sheet, not by a check. The same pass found "Y" lines hanging 2 px past the margin: the optical margin clamped Y's negative side bearing to 0
+- **Enforced in:** directions/typefill.py (`clean_display`, `break_penalty`, `type_over_product`, run on every photo frame); scripts/static_render.py (`ink_left` keeps negative bearings)
+- **Added:** 2026-10-02

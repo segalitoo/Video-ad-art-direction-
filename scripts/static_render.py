@@ -103,10 +103,11 @@ def line_width(fnt, text, size, ls):
 
 def ink_left(fnt, ch):
     """Distance from the pen to the first inked pixel of ch: its real left side bearing. (getbbox can't
-    give this: Pillow reports the box from the pen, so its left edge is 0 for every glyph.)"""
+    give this: Pillow reports the box from the pen, so its left edge is 0 for every glyph.) Negative for a
+    glyph that reaches left of the pen (Y, V, W in League Spartan), so the line moves right onto the margin."""
     mask, off = fnt.getmask2(ch, anchor="ls")
     bb = mask.getbbox()
-    return max(0, off[0] + bb[0]) if bb else 0
+    return off[0] + bb[0] if bb else 0
 
 
 def draw_line(img, ctx, x, top, text, style, size, colors_at, ls=-2, lh=100):
