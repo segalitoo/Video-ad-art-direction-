@@ -91,3 +91,8 @@ Rules learned from real results. Each one names its evidence and where it is enf
 - **Evidence:** Byoma spec set, 2026-10-01: the first 30 files passed every pre-render check, yet the 1:1 headline ran into the product, 9:16 frames had empty halves, callout names were 3.7:1, and "Your barrier called. It wants / a break." broke mid-sentence. The art director caught it at the set gate
 - **Enforced in:** scripts/static_formats.py (flow layouts, fit and balance, layout_checks after render); scripts/selftest.sh
 - **Added:** 2026-10-01
+
+### L019 · In the Higgsfield web app, turn "Enhance prompt" off for loop clips, and never ask for moving light: the rewrite turns "soft light drifts" into blinds, flares and a colour shift. Ask for one small move (a push, a breath) and say the light and colours stay as the start frame. Check every clip frame against frame 0 before building the loop
+- **Evidence:** Byoma B06, 2026-10-01: Wan 2.2 with enhance on drew window-blind shadows from 0.6 s and ended on a dark crimson wall; white type fell to 1.7:1. B05 (one small human move) drifted little and kept 4.6:1. The free local push was the safe B06 loop
+- **Enforced in:** scripts/loop.py (make --layout renders each clip frame through the static's own layout)
+- **Added:** 2026-10-01

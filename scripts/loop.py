@@ -9,6 +9,11 @@ and a transparent type layer; only the plate moves; the type is laid back on top
     python scripts/loop.py prompt --move float                                 # the motion prompt for the plate
     python scripts/loop.py make --still out/F1_plate.png --move push --type out/F1_type.png -o F1_loop.mp4   # free
     python scripts/loop.py make --clip plate_seedance.mp4 --type out/F1_type.png -o F1_loop.mp4              # paid clip
+    python scripts/loop.py make --clip wan.mp4 --layout layout.yml --frame "F6 lifestyle 1080x1920" -o F6_loop.mp4
+
+With --layout and --frame, every clip frame is put through the ad's own layout instead of a centre
+crop: the plate's focus and zoom, any fade and the type are applied as in the approved static. Use it
+when the clip was made from the full source image (e.g. a 3:4 keyframe) rather than the cropped plate.
 
 Free (`--still`): a slow camera move made locally from the plate, no model, no cost.
 Paid (`--clip`): animate the plate with an image-to-video model (Seedance on the Higgsfield route;
@@ -56,6 +61,12 @@ def cmd_make(a):
         fail("ffmpeg is missing")
     if bool(a.still) == bool(a.clip):
         fail("give --still (free, local move) or --clip (an animated plate), not both")
+    if a.layout:
+        if not (a.clip and a.frame):
+            fail("--layout needs --clip and --frame")
+        return make_through_layout(a)
+    if not a.type:
+        fail("give --type (the type layer), or --layout and --frame")
     t = Image.open(a.type)
     if t.mode != "RGBA":
         fail(f"{a.type} is not a transparent type layer; make it with static_render.py --layers")
@@ -92,6 +103,53 @@ def cmd_make(a):
     print(f"wrote {a.out}  {W}x{H}, {a.seconds:g}s loop (forward and back), type layer on top")
 
 
+def make_through_layout(a):
+    """Each clip frame replaces the plate image of one layout frame and is rendered with the rest of the
+    ad (crop, fades, type), so the loop matches the approved static exactly."""
+    import yaml
+    from static_render import Ctx, render_frame
+    lay_path = Path(a.layout).resolve()
+    layout = yaml.safe_load(lay_path.read_text(encoding="utf-8"))
+    fr = next((f for f in layout["frames"] if a.frame in f.get("name", "")), None)
+    if not fr:
+        fail(f"no frame named like '{a.frame}' in {a.layout}")
+    W, H = fr["w"], fr["h"]
+    plate = next((it for it in fr["items"] if it.get("type") == "image" and it.get("fit") != "contain"
+                  and it.get("w") == W and it.get("h") == H), None)
+    if not plate:
+        fail(f"'{fr['name']}' has no full-frame plate image to animate")
+    ctx = Ctx(layout, lay_path.parent)
+    src = Image.open(ctx.base / plate["src"])
+    clip_wh = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height",
+                              "-of", "csv=p=0", a.clip], capture_output=True, text=True, check=True).stdout.strip()
+    cw, ch = (int(v) for v in clip_wh.split(",")[:2])
+    if abs(cw / ch - src.width / src.height) > 0.03:
+        print(f"note: the clip is {cw}x{ch} but the plate source is {src.width}x{src.height}; the crop will not match the static")
+    up = max(W / cw, H / ch) * max(1.0, plate.get("zoom", 1.0))
+    if up > 1.5:
+        print(f"note: the clip is {cw}x{ch}; the frame enlarges it {up:.1f}x, so it will look softer than the type (upscale the clip first)")
+    clip_s = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", a.clip],
+                                  capture_output=True, text=True, check=True).stdout.strip())
+    half = clip_s if a.seconds is None else min(clip_s, a.seconds / 2)
+    fps = 30
+    with tempfile.TemporaryDirectory() as tmp:
+        raw, seq = Path(tmp) / "raw", Path(tmp) / "seq"
+        raw.mkdir()
+        seq.mkdir()
+        run(["ffmpeg", "-y", "-v", "error", "-i", a.clip, "-t", f"{half}", "-vf", f"fps={fps}", str(raw / "%05d.png")])
+        frames = sorted(raw.glob("*.png"))
+        for i, f in enumerate(frames):
+            plate["src"] = str(f)
+            render_frame(fr, ctx).save(seq / f"{i:05d}.png")
+        fwd, loop = Path(tmp) / "fwd.mp4", Path(tmp) / "loop.mp4"
+        run(["ffmpeg", "-y", "-v", "error", "-framerate", str(fps), "-i", str(seq / "%05d.png"), "-pix_fmt", "yuv420p",
+             "-c:v", "libx264", "-crf", "12", str(fwd)])
+        run(["ffmpeg", "-y", "-v", "error", "-i", str(fwd), "-filter_complex",
+             "[0:v]split[a][b];[b]reverse[r];[a][r]concat=n=2:v=1:a=0,format=yuv420p[v]", "-map", "[v]", "-c:v", "libx264",
+             "-crf", "18", "-preset", "medium", "-movflags", "+faststart", "-an", a.out])
+    print(f"wrote {a.out}  {W}x{H}, {2 * len(frames) / fps:g}s loop (forward and back), rendered through '{fr['name']}'")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -102,7 +160,9 @@ def main():
     m.add_argument("--still", help="the plate PNG, for a free local move")
     m.add_argument("--clip", help="the plate animated by an image-to-video model")
     m.add_argument("--move", choices=sorted(MOVES), default="push")
-    m.add_argument("--type", required=True, help="the transparent type layer from static_render.py --layers")
+    m.add_argument("--type", help="the transparent type layer from static_render.py --layers")
+    m.add_argument("--layout", help="with --clip: render each clip frame through this layout file's --frame")
+    m.add_argument("--frame", help="with --layout: the frame name (or part of it), e.g. 'B06 lifestyle 1080x1920'")
     m.add_argument("--seconds", type=float, default=None,
                    help="loop length; default 6 for --still, twice the clip length for --clip")
     m.add_argument("-o", "--out", required=True)

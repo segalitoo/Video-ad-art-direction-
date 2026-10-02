@@ -411,6 +411,21 @@ PY
   python3 scripts/loop.py make --still "$tmp"/layers/F1_*_plate.png --move float --type "$tmp"/layers/F1_*_type.png -o "$tmp/loop.mp4" >/dev/null
   [ "$(ffprobe -v error -show_entries stream=nb_frames -of csv=p=0 "$tmp/loop.mp4")" -eq 180 ] \
     && ok "a static becomes a 6 s loop with its type layer on top" || { echo "FAIL loop"; exit 1; }
+  # a clip made from the full source image goes through the ad's own layout (crop, fade, type), not a centre crop
+  plate_src=$(python3 -c "import yaml; f=[f for f in yaml.safe_load(open('examples/driftpay/formats/layout.yml'))['frames'] if f['name'].startswith('F6')][0]; print([i['src'] for i in f['items'] if i['type']=='image'][0])")
+  ffmpeg -y -v error -loop 1 -i "examples/driftpay/formats/$plate_src" -t 1 -r 30 -vf "scale=600:-2,format=yuv420p" "$tmp/src_clip.mp4"
+  python3 scripts/loop.py make --clip "$tmp/src_clip.mp4" --layout examples/driftpay/formats/layout.yml --frame F6 -o "$tmp/loop_layout.mp4" >/dev/null
+  python3 - "$tmp" <<'PY' && ok "a source-image clip loops through the ad's layout: same crop, fade and type as the static" || { echo "FAIL loop through layout"; exit 1; }
+import subprocess, sys
+from PIL import Image, ImageChops, ImageStat
+t = sys.argv[1]
+subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", f"{t}/loop_layout.mp4", "-frames:v", "1", f"{t}/ll0.png"], check=True)
+subprocess.run([sys.executable, "scripts/static_render.py", "examples/driftpay/formats/layout.yml", "-o", f"{t}/ll", "--only", "F6"],
+               check=True, capture_output=True)
+import glob
+a = Image.open(f"{t}/ll0.png").convert("RGB"); b = Image.open(glob.glob(f"{t}/ll/F6_*.jpg")[0]).convert("RGB")
+assert a.size == b.size and max(ImageStat.Stat(ImageChops.difference(a, b)).mean) < 12
+PY
 else
   echo "skip spec_check tests (ffmpeg not installed)"
 fi
