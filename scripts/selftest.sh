@@ -377,6 +377,18 @@ def ink_x(optical):
 assert ink_x(False) >= 106, ink_x(False)          # the round O carries a real side bearing at this size
 assert abs(ink_x(True) - 100) <= 1, ink_x(True)
 PY
+python3 - <<'PY' && ok "extra kerning closes pairs a font ships without, in measuring and in drawing alike" || { echo "FAIL extra kerning"; exit 1; }
+import sys
+sys.path.insert(0, "scripts")
+import static_render as sr
+from static_render import font, line_width
+f = font("assets/fonts/space-grotesk/SpaceGrotesk-Bold.ttf", 100)
+plain = line_width(f, "BOOSTED", 100, 0)
+sr.KERN["SpaceGrotesk-Bold"] = {"ST": -0.05}
+assert abs(line_width(f, "BOOSTED", 100, 0) - (plain - 5)) < 0.01
+assert sr.kern_extra(f, "BOOS") == 0 and sr.kern_extra(f, "BOOST") == -5
+sr.KERN.clear()
+PY
 
 # Score gate: totals, thresholds, the weakest dimension named.
 python3 scripts/score.py new "$tmp/score.yml" --kind script --ids A B C >/dev/null

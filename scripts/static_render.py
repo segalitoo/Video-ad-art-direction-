@@ -32,6 +32,7 @@ name, w, h, bg and `items`, drawn in order:
   line      x1, y1, x2, y2, color, width, dot (radius at x1,y1): a callout leader
 
 Any item can carry `id` (for `below`) and `bottom: N` (placed N px above the frame's bottom edge).
+The layout can carry `kern: {font-file-stem: {pair: em}}` for pairs a font ships without.
 A frame can carry `grain` (0.03 to 0.06): fine noise that joins photo and flat colour into one
 surface. It keeps the mean colour and stays off the type layer.
 """
@@ -64,6 +65,7 @@ def rgb(v, colors):
 class Ctx:
     def __init__(self, layout, base):
         self.colors = layout.get("colors") or {}
+        KERN.update(layout.get("kern") or {})               # e.g. {"spartan-Bold": {"ST": -0.045}}
         self.fonts = {k: (base / v if not Path(v).is_absolute() else Path(v)) for k, v in layout["fonts"].items()}
         self.base = base
         self.boxes = {}
@@ -83,8 +85,19 @@ def tracked(text):
     return sum(1 for c in text if c != " ")
 
 
+KERN = {}      # font file stem -> {pair: em fraction}: pairs a font ships without (League Spartan has no "ST")
+
+
+def kern_extra(fnt, text):
+    """Extra kerning (px) over every listed pair in text."""
+    pairs = KERN.get(Path(getattr(fnt, "path", "") or "").stem)
+    if not pairs:
+        return 0.0
+    return sum(pairs.get(text[i:i + 2], 0.0) for i in range(len(text) - 1)) * fnt.size
+
+
 def line_width(fnt, text, size, ls):
-    return fnt.getlength(text) + max(0, tracked(text) - 1) * ls / 100 * size
+    return fnt.getlength(text) + max(0, tracked(text) - 1) * ls / 100 * size + kern_extra(fnt, text)
 
 
 def ink_left(fnt, ch):
@@ -106,7 +119,7 @@ def draw_line(img, ctx, x, top, text, style, size, colors_at, ls=-2, lh=100):
     for i, ch in enumerate(text):
         if ch == " ":
             continue
-        cx = x + fnt.getlength(text[:i]) + tracked(text[:i]) * track
+        cx = x + fnt.getlength(text[:i]) + tracked(text[:i]) * track + kern_extra(fnt, text[:i + 1])
         d.text((cx, base), ch, font=fnt, fill=colors_at(i), anchor="ls")
     return line_width(fnt, text, size, ls), box
 
