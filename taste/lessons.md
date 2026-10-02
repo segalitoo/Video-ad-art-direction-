@@ -130,3 +130,8 @@ Rules learned from real results. Each one names its evidence and where it is enf
 - **Evidence:** Byoma B10, 2026-10-02: "a woman in her fifties" and "a woman in her twenties" came back as two hands that read as one person. The round-5 prompt adds a butter-yellow knit cuff vs a white shirt cuff, veins and age spots vs a pale-pink manicure, a gold bangle and band vs silver stacking rings
 - **Enforced in:** keyframes/r5/prompts.md ([MOTHER'S HAND] and [DAUGHTER'S HAND] as separate fields)
 - **Added:** 2026-10-02
+
+### L026 · A cut-out carries its old ground: the shaded side of a pack picks up the sweep's colour (a yellow bounce makes pink read warm) and its edge keeps a ring of ground pixels. Loosen the colour test only as far as the ground allows, then erode the mask 1 to 2 px before feathering, and check every edge at full size on a contrasting colour
+- **Evidence:** Byoma B02 and B03, 2026-10-02: the tube's shaded edge failed the pink test (green above blue from the butter bounce) and came out ragged; once fixed, a dark line still ran down its left edge and a teal fringe sat under the pump. Both showed only at full size
+- **Enforced in:** label/cutouts.py (per-pack colour test, 1 px erosion before the feather)
+- **Added:** 2026-10-02
