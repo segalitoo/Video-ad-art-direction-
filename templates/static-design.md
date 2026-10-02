@@ -61,6 +61,33 @@ Example: `examples/driftpay/formats/` (the lock has no proof, so its proof forma
 - Wordmark with its mark, top-left of the copy block, 3–3.5% of the short side.
 - One message per static: wordmark, headline, one supporting line, CTA. Nothing else.
 
+## 2b. Type size and white space (from the research, 2026-10-02)
+
+The evidence, in short: attention to text grows in proportion to its surface size, and people read the
+large print first, then the small, then the picture (Pieters & Wedel 2004, eye tracking). Ads with less text
+on the image perform better (Meta's own testing behind the old 20% rule). White space in margins and between
+blocks raises comprehension by almost 20%, and most readers prefer more of it (Lin 2004; Chaparro et al.,
+Wichita State). Dense feature clutter hurts attention to the brand, while a deliberate design helps it
+(Pieters, Wedel & Batra 2010). So: few words, set big, in a deliberate field of space.
+
+1. **Few words, big.** The headline is the largest thing on the frame after the product, at least 2x any
+   other text. Grow it until it meets one of three limits: its longest line fills the column (the measure,
+   6–8% margins each side), the block reaches 20% of the frame height (one row of Meta's 5 x 5 text grid), or
+   it needs a 5th line. Never stop at the short-side size if a tall frame has room.
+2. **Size follows the room, not the format.** 9:16 has 78% more height than 1:1; its headline grows into it
+   (the 20% cap is 384 px on 1920, 270 on 1350, 216 on 1080).
+3. **Break for size.** A long word may sit on its own line if that lets the whole headline grow
+   (MOM / STOLE MY / MOISTURIZER / AGAIN.), as long as the breaks stay clean (no orphan, no "my" or "the"
+   at a line end).
+4. **One field of space, with a job.** Tight inside a block (headline lines, headline to sub: one line of
+   leading), generous around it. The largest empty area sits next to the hero and frames it; no second
+   empty band anywhere (the 15% band rule still holds).
+5. **Emphasis inside a line, the brand's way.** Mixed size, weight or colour in one headline is allowed when
+   the brand does it: Byoma sets one caps weight and changes size or colour for the key phrase
+   ("SAVE 25%" over "BUY MORE, SAVE MORE"). One emphasis per headline, never two.
+6. **Readable on the phone.** A 1080 frame shows at about 393 pt wide (x 0.36). Body text at least 38 px on
+   9:16 (about 14 pt on screen) ❌ (the 14 pt figure is from spec guides, not Meta's own page); never under 32 px.
+
 ## 3. Contrast and safe zones
 
 - Contrast comes from the layout: ink on the sheet colour, 4.5:1 or better. No scrims.
@@ -70,6 +97,7 @@ Example: `examples/driftpay/formats/` (the lock has no proof, so its proof forma
 - Headline room: ask for the subject in the lower half, or a low pose; image models ignore "empty upper third" (L013).
 - Garments: expect fake woven labels with letters; remove them with one edit of the kept frame (L014).
 - More wall for 9:16: tile clean wall only, blur, grain, colour-match the seam; stretch the floor downward to lift a low subject into the safe area (L015).
+- Extending a wall in code: `scripts/wall_extend.py` continues each edge's own colour and warns when the photo's rectangle would show as a band (L027). Look at the wall with the contrast boosted before delivery.
 
 ## 4. The judge rubric for statics
 

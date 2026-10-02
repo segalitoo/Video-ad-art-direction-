@@ -498,5 +498,21 @@ PY
 else
   echo "skip spec_check tests (ffmpeg not installed)"
 fi
+# Wall extension: on a wall with a light falloff, the push-pull fill leaves no band; a flat-colour fill does (L027).
+(cd scripts && python3 -c "
+import numpy as np
+from PIL import Image, ImageFilter
+from wall_extend import extend, seam_check
+y, x = np.mgrid[0:500, 0:400]
+wall = 150 + 12 * y / 500 - 8 * x / 400 + np.random.default_rng(1).normal(0, 2, (500, 400))
+im = Image.fromarray(np.clip(np.stack([wall, wall * 0.9, wall * 0.6], -1), 0, 255).astype(np.uint8))
+pads = (200, 200, 200, 0)
+out = extend(im, *pads)
+box = (200, 200, 600, 700)
+assert seam_check(out, box, pads) == [], 'push-pull fill shows a seam'
+flat = Image.new('RGB', out.size, tuple(int(v) for v in np.asarray(im).reshape(-1, 3).mean(0))).filter(ImageFilter.GaussianBlur(30))
+flat.paste(im, (200, 200))
+assert seam_check(flat, box, pads), 'flat fill not caught'
+" >/dev/null) && ok "wall extension leaves no seam; a flat fill is caught" || { echo "FAIL wall_extend"; exit 1; }
 rm -rf "$tmp"
 echo "all good"

@@ -136,3 +136,14 @@ Rules learned from real results. Each one names its evidence and where it is enf
 - **Evidence:** Byoma B02 and B03, 2026-10-02: the tube's shaded edge failed the pink test (green above blue from the butter bounce) and came out ragged; once fixed, a dark line still ran down its left edge and a teal fringe sat under the pump. Both showed only at full size
 - **Enforced in:** label/cutouts.py (per-pack colour test, 1 px erosion before the feather)
 - **Added:** 2026-10-02
+
+### L027 · When a photo is extended to fill a frame, its rectangle must never show. Continue each edge's own colour outward (push-pull fill), blur it, give it the photo's grain, and feather the photo in. Never fill with one average colour: walls have a light falloff, and a flat fill turns the photo's edge into a soft band or "shadow"
+- **Evidence:** Byoma, 2026-10-02: B07 (yellow) and B08 (teal) showed soft vertical and horizontal bands in the wall in 4:5 and 1:1, and B01, B05, B06 and B10 had the same band across the top of the 9:16 frame. The art director saw it ("shadow looks bad in the background"); none of the layout checks looked at the wall. Measured as a bend in the wall's luminance across the edge: 1.8 to 9.0 with the flat fill, 0.2 to 1.2 with the push-pull fill
+- **Also:** check the wall with the contrast boosted (autocontrast on a blurred greyscale copy): a band too faint to name at 100% is still felt as "something wrong"
+- **Enforced in:** scripts/wall_extend.py (`extend`, and `seam_check`, which warns above 1.5 on every extended edge); scripts/selftest.sh
+- **Added:** 2026-10-02
+
+### L028 · Size the headline from the room, not the format. In a tall frame, grow it until the longest line fills the column, the block reaches 20% of the frame height, or it needs a 5th line; a long word may take its own line to get there. For emphasis, use the brand's own move (Byoma: one caps weight, a size step on the key words), once per headline
+- **Evidence:** Byoma B06 and B07 9:16, 2026-10-02: the headlines kept their 4:5 size and left the top half of the story empty. The art director: "the text can fill more of the space ... using white space in a smart way." Research behind the rule: attention to text grows with its surface size (Pieters & Wedel 2004)
+- **Enforced in:** templates/static-design.md section 2b; directions/make7.py (`fill_head`, `stack_head`)
+- **Added:** 2026-10-02
