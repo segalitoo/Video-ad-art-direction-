@@ -103,3 +103,8 @@ Rules learned from real results. Each one names its evidence and where it is enf
 - **Also:** an image tool may ignore the asked aspect ratio (Flow returned 16:9 for a 9:16 ask). Check the size first; a landscape image runs as a full-width band, scaled down, rather than a portrait crop scaled up
 - **Enforced in:** scripts/static_render.py (ink_left); scripts/selftest.sh (optical margin test)
 - **Added:** 2026-10-02
+
+### L021 · Read the headline against the picture before anything else: every thing the line names (the jar, the hands, the shelf) must be in the frame. A beautiful image that doesn't show what the words point at reads as a mistake
+- **Evidence:** Byoma round 3, 2026-10-02: B08 "Science you can read on the jar." went to the board over a gel swipe with no jar. It passed every check (contrast, alignment, layout) because none of them reads meaning. The art director caught it; jar-b fixed it
+- **Enforced in:** the image pick at every plate and set gate: name the nouns in the headline, point to each one in the frame
+- **Added:** 2026-10-02
