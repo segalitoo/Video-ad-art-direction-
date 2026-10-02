@@ -108,3 +108,8 @@ Rules learned from real results. Each one names its evidence and where it is enf
 - **Evidence:** Byoma round 3, 2026-10-02: B08 "Science you can read on the jar." went to the board over a gel swipe with no jar. It passed every check (contrast, alignment, layout) because none of them reads meaning. The art director caught it; jar-b fixed it
 - **Enforced in:** the image pick at every plate and set gate: name the nouns in the headline, point to each one in the frame
 - **Added:** 2026-10-02
+
+### L022 · For a real brand, look at the real pack before writing any image prompt, and write the prompt as a spec: subject, pack (shape, proportions, colour), blank face for the label, pose, frame (where the empty space is, in % of the height), ground, light, camera, finish. Ask for the pack blank and print the label in the renderer, only on the pack's own pixels so hands stay in front
+- **Evidence:** Byoma, 2026-10-02: three rounds of images showed a hot-pink jar; the real Moisturizing Gel-Cream is a pastel pink tube and a square pump with a cube cap. The art director's screenshots of the brand's own banners showed it at once, along with caps headlines, dot callouts and a teal ground the set never used. Loose prompts ("a pink jar") had also let the model pick the aspect ratio and the composition
+- **Enforced in:** keyframes prompt template (bracketed fields); the lock's hero block names the real pack
+- **Added:** 2026-10-02
