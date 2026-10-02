@@ -113,3 +113,19 @@ Rules learned from real results. Each one names its evidence and where it is enf
 - **Evidence:** Byoma, 2026-10-02: three rounds of images showed a hot-pink jar; the real Moisturizing Gel-Cream is a pastel pink tube and a square pump with a cube cap. The art director's screenshots of the brand's own banners showed it at once, along with caps headlines, dot callouts and a teal ground the set never used. Loose prompts ("a pink jar") had also let the model pick the aspect ratio and the composition
 - **Enforced in:** keyframes prompt template (bracketed fields); the lock's hero block names the real pack
 - **Added:** 2026-10-02
+
+### L023 · Print on a pack follows the pack's own axes, not one rotation. Text lines run parallel to the pack's horizontal (a tube's crimp seal, a face's base edge); the column runs down its centre line. A tapered or turned pack has two different angles, so measure both, and check the baseline against the crimp by eye: ribbed edges fool an automatic fit
+- **Evidence:** Byoma round 4, 2026-10-02: the tube's label was rotated by its axis (16 deg) while its crimp ran at 10 deg, and the pump, seen corner-on, got level text on a face that recedes at 14 deg. The art director saw both at once ("text on the package is not aligned"). An automatic crimp fit read 2.9 deg off the seal's teeth
+- **Enforced in:** label/label.py (affine placement: `across` along the pack, column down its measured centre line)
+- **Added:** 2026-10-02
+
+### L024 · A button must never look like information. Give the CTA one shape and colour (the brand pill) and anything else (benefit tags, callouts) another (square-cornered tags, a different fill). Centre caps text on the cap height, then measure the space above and below the ink
+- **Evidence:** Byoma B08, 2026-10-02: the benefits sat in butter pills like the SHOP NOW pill, so the button read as one more benefit; and every all-caps label sat about 4 px high because the centring assumed lowercase (between x-height and caps). Measured after the fix: 31/33 px in the pill, 25/26 px in each tag
+- **Also:** callouts belong level with the body of the pack they point at, not crowded up under the CTA (B09: "the three points can go a bit down")
+- **Enforced in:** scripts/static_render.py (cta: caps centring, radius); directions/make4.py (tags vs pill)
+- **Added:** 2026-10-02
+
+### L025 · Two people in one image need cues that cannot be the same person: a clear age gap in the skin (veins, spots, creases vs smooth), different nails, different jewellery, and above all different sleeves entering from different sides. Without them a model draws one person's two hands
+- **Evidence:** Byoma B10, 2026-10-02: "a woman in her fifties" and "a woman in her twenties" came back as two hands that read as one person. The round-5 prompt adds a butter-yellow knit cuff vs a white shirt cuff, veins and age spots vs a pale-pink manicure, a gold bangle and band vs silver stacking rings
+- **Enforced in:** keyframes/r5/prompts.md ([MOTHER'S HAND] and [DAUGHTER'S HAND] as separate fields)
+- **Added:** 2026-10-02

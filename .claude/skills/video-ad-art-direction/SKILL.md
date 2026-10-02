@@ -56,7 +56,7 @@ Generations live on Higgsfield and appear in the chat widget. This cloud environ
 ## Design review and the taste library (every gate)
 
 - Before showing any creative at a gate, run `templates/design-review.md`: the brief wins; eyes first, machine second; evidence for every answer; one inspect round, one fix batch, one confirm.
-- Compare with the taste library: `python scripts/taste.py nearest <candidate> --medium ... --tags ...` and open the sheet; say which exemplar it is closest to and which anti-example it risks. Read `taste/lessons.md` once per session and apply it.
+- Compare with the taste library: `python scripts/taste.py nearest <candidate> --medium ... --tags ...` and open the sheet; say which exemplar it is closest to and which anti-example it risks. Read `taste/lessons.md` at the start of the session and again before writing any image prompt or building any layout, and apply it. Every correction the art director gives is a lesson: in the same turn as the fix, add it to `taste/lessons.md` (what went wrong, the evidence, where it is now enforced) so the same mistake is not made twice.
 - After the art director picks, file the verdicts with their reasons: `python scripts/taste.py from-judge <round.yml> --keep ID:"why" --reject ID:"why"`. When a result teaches a rule, add it with `taste.py lesson`. This is how the system learns their taste.
 - Skills to pull in: `taste-brandkit` and `staff-design` at the lock (strategy first, one core metaphor); `impeccable` (critique, typeset, layout) for statics, supers and any page; `canvas-design` for static direction. The Design plugin's critique and accessibility review, when it is enabled.
 
