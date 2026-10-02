@@ -22,7 +22,8 @@ name, w, h, bg and `items`, drawn in order:
   stack     x, y, gap, lines [{text, style, size, color, ls, lh}], accent {color, mode fill|underline};
             the part of a line between |bars| is the accent
   wordmark  x, y, size, ink, mark (colour), name
-  cta       label, size, x, y | below <id> + gap | bottom <px>, fill, ink, style (Bold), plain (text only)
+  cta       label, size, x, y | below <id> + gap | bottom <px>, fill, ink, style (Bold), plain (text only),
+            radius (default: a full pill); the label is centred on its caps when it is all caps
   chip      x, y, words [[text, style, color], ...], dot (colour)
   rect      x, y, w, h, fill, radius, shadow, stroke {color, width}: a card, a sticker, a column
   stars     x, y, size, count (5), filled (count), fill, empty
@@ -451,7 +452,9 @@ def render_frame(fr, ctx, layer=None):
             w, h = tw + 2.2 * s, s + 1.24 * s
             asc, desc = fnt.getmetrics()
             xb, cb = fnt.getbbox("x", anchor="ls"), fnt.getbbox("H", anchor="ls")
-            mid = (-xb[1] - cb[1]) / 4                                   # halfway between x-height and cap height
+            caps = it["label"] == it["label"].upper()
+            # mixed case: halfway between x-height and cap height; all caps: the middle of the caps
+            mid = -cb[1] / 2 if caps else (-xb[1] - cb[1]) / 4
             box_base = (s - (asc + desc)) / 2 + asc                      # where draw_line puts the baseline in its box
             if it.get("center"):
                 it = dict(it, x=(W - w) / 2)
@@ -461,7 +464,8 @@ def render_frame(fr, ctx, layer=None):
                 draw_line(canvas, ctx, x + 1.1 * s, y + 0.62 * s, it["label"], st, s, lambda _: ink, 4, 100)
                 ImageDraw.Draw(canvas).rectangle([x + 1.1 * s, y + 1.72 * s, x + 1.1 * s + tw, y + 1.72 * s + max(2, s * 0.06)], fill=ink)
             else:
-                ImageDraw.Draw(canvas).rounded_rectangle([x, y, x + w, y + h], radius=h / 2, fill=ctx.c(it.get("fill", "coral")))
+                ImageDraw.Draw(canvas).rounded_rectangle([x, y, x + w, y + h], radius=it.get("radius", h / 2),
+                                                         fill=ctx.c(it.get("fill", "coral")))
                 top = y + h / 2 + mid - box_base                         # optical centre of the label on the pill
                 draw_line(canvas, ctx, x + 1.1 * s, top, it["label"], st, s, lambda _: ink, cls, 100)
             box = (x, y, w, h)
