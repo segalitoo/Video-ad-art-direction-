@@ -771,7 +771,8 @@ def layout_checks(name, ctx, W, H):
                 out.append(f'{name}: "{label(it)}" is {c:.1f}:1 on the pixels behind it; needs {need_c}:1')
     if not plate:
         spans = sorted((bx[1], bx[1] + bx[3]) for k, bx, it, _ in d
-                       if k in TYPE_KINDS or k == "rect" or (k == "image" and it.get("fit") == "contain"))
+                       if k in TYPE_KINDS or k == "rect"
+                       or (k == "image" and (it.get("fit") == "contain" or it.get("w") == W)))   # a cut-out or a photo band
         if spans:
             merged = [list(spans[0])]
             for a0, a1 in spans[1:]:

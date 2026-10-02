@@ -97,3 +97,9 @@ Rules learned from real results. Each one names its evidence and where it is enf
 - **Also:** never let the words you don't want reach the main prompt. On the rerun (enhance off) the negative list was pasted into the prompt box, and Wan drew exactly those things: blinds, a crimson wall, darkening. Give a person running a model one prompt to paste, with no negative list next to it
 - **Enforced in:** scripts/loop.py (make --layout renders each clip frame through the static's own layout)
 - **Added:** 2026-10-01
+
+### L020 · Alignment is measured on the ink, never trusted from the code. Pillow's getbbox reports a glyph's box from the pen, so its left edge is 0 for every glyph: an optical margin built on it does nothing. Big round letters then start up to 11 px inside the margin, and no check notices
+- **Evidence:** Byoma round 3, 2026-10-02: a new alignment check (render each block alone, read its first ink) found "3-1-1" at 300 px starting 11 px right of the margin and every other block 1 to 3 px off, in the type system v1 work that called itself optically aligned. getmask2 gives the real side bearing
+- **Also:** an image tool may ignore the asked aspect ratio (Flow returned 16:9 for a 9:16 ask). Check the size first; a landscape image runs as a full-width band, scaled down, rather than a portrait crop scaled up
+- **Enforced in:** scripts/static_render.py (ink_left); scripts/selftest.sh (optical margin test)
+- **Added:** 2026-10-02

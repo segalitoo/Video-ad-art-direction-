@@ -87,6 +87,14 @@ def line_width(fnt, text, size, ls):
     return fnt.getlength(text) + max(0, tracked(text) - 1) * ls / 100 * size
 
 
+def ink_left(fnt, ch):
+    """Distance from the pen to the first inked pixel of ch: its real left side bearing. (getbbox can't
+    give this: Pillow reports the box from the pen, so its left edge is 0 for every glyph.)"""
+    mask, off = fnt.getmask2(ch, anchor="ls")
+    bb = mask.getbbox()
+    return max(0, off[0] + bb[0]) if bb else 0
+
+
 def draw_line(img, ctx, x, top, text, style, size, colors_at, ls=-2, lh=100):
     """One line of text; colors_at(i) gives the colour of character i. Returns (width, box height)."""
     fnt = ctx.f(style, size)
@@ -383,7 +391,7 @@ def render_frame(fr, ctx, layer=None):
                     if t[0] in "\u201c\u2018\"'":
                         lx -= fnt.getlength(t[0])                        # hanging punctuation
                     else:
-                        lx -= max(0, fnt.getbbox(t[0], anchor="ls")[0])  # the stem, not the side bearing, on the margin
+                        lx -= ink_left(fnt, t[0])                        # the stem, not the side bearing, on the margin
                 draw_line(canvas, ctx, lx, y + i * size * lh / 100, t, style, size, lambda _: col, ls, lh)
             box = (x, y, it.get("width") or tw, th)
         elif kind == "stack":

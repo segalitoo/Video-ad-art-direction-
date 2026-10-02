@@ -363,6 +363,21 @@ typ = render_frame(dict(base, items=[], grain=0.05), ctx, layer="type")
 assert typ.getextrema()[3] == (0, 0), "grain on the type layer"
 PY
 
+# Optical margin: big type hangs its first ink on the margin, not its side bearing (it once measured nothing).
+python3 - "$tmp" <<'PY' && ok "optical margin puts the first ink of big type on the margin" || { echo "FAIL optical margin"; exit 1; }
+import sys
+from pathlib import Path
+sys.path.insert(0, "scripts")
+from static_render import Ctx, render_frame
+ctx = Ctx({"fonts": {"Bold": str(Path("assets/fonts/space-grotesk/SpaceGrotesk-Bold.ttf").resolve())}, "colors": {}}, Path(sys.argv[1]))
+def ink_x(optical):
+    it = {"type": "text", "text": "Oh", "style": "Bold", "size": 240, "x": 100, "y": 40, "color": "#000000", "lh": 100, "ls": 0, "optical": optical}
+    im = render_frame({"w": 800, "h": 400, "bg": "#FFFFFF", "items": [it]}, ctx, layer="type")
+    return im.split()[-1].point(lambda v: 255 if v > 96 else 0).getbbox()[0]
+assert ink_x(False) >= 106, ink_x(False)          # the round O carries a real side bearing at this size
+assert abs(ink_x(True) - 100) <= 1, ink_x(True)
+PY
+
 # Score gate: totals, thresholds, the weakest dimension named.
 python3 scripts/score.py new "$tmp/score.yml" --kind script --ids A B C >/dev/null
 python3 - "$tmp/score.yml" <<'PY'
