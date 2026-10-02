@@ -334,6 +334,35 @@ for f in ("F1", "F6"):
     assert max(ImageStat.Stat(ImageChops.difference(plate.convert("RGB"), full)).mean) < 2.0, f   # JPEG noise on a photo
 PY
 
+# Finish items: a glow with no box edge, a contact shadow under a cut-out, and zero-mean grain kept off the type layer.
+python3 - "$tmp" <<'PY' && ok "glow has no hard edge, contact shadow sits under the cut-out, grain keeps the colour and skips the type layer" || { echo "FAIL finish items"; exit 1; }
+import sys
+from pathlib import Path
+from PIL import Image, ImageDraw, ImageStat
+sys.path.insert(0, "scripts")
+from static_render import Ctx, render_frame
+t = Path(sys.argv[1])
+cut = Image.new("RGBA", (200, 300), (0, 0, 0, 0)); ImageDraw.Draw(cut).rectangle([60, 40, 140, 299], fill=(230, 20, 140, 255))
+cut.save(t / "cut.png")
+ctx = Ctx({"fonts": {}, "colors": {}}, t)
+base = {"w": 600, "h": 600, "bg": "#FFEF8F"}
+glow = render_frame(dict(base, items=[{"type": "glow", "x": 100, "y": 100, "w": 400, "h": 400, "color": "#FFFFFF", "opacity": 0.6}]), ctx)
+px = lambda im, x, y: sum(im.getpixel((x, y)))
+assert px(glow, 300, 300) > px(glow, 50, 50) + 40, "glow does not lighten its centre"
+assert all(px(glow, x, y) == px(glow, 50, 50) for x, y in ((101, 300), (300, 101), (101, 101))), "glow reaches its box edge"
+item = {"type": "image", "src": "cut.png", "fit": "contain", "x": 200, "y": 100, "w": 200, "h": 300}
+plain = render_frame(dict(base, items=[item]), ctx)
+shad = render_frame(dict(base, items=[dict(item, contact={"opacity": 0.6, "height": 0.08})]), ctx)
+assert px(shad, 300, 401) < px(plain, 300, 401) - 30, "no contact shadow under the base"
+assert px(shad, 300, 200) == px(plain, 300, 200) and px(shad, 300, 560) == px(plain, 300, 560), "shadow spills"
+flat = render_frame(dict(base, items=[]), ctx); grain = render_frame(dict(base, items=[], grain=0.05), ctx)
+m0, m1 = ImageStat.Stat(flat).mean, ImageStat.Stat(grain).mean
+assert max(abs(a - b) for a, b in zip(m0, m1)) < 1.0, ("grain shifts the colour", m0, m1)
+assert max(ImageStat.Stat(grain).stddev) > 1.0, "grain not visible in the numbers"
+typ = render_frame(dict(base, items=[], grain=0.05), ctx, layer="type")
+assert typ.getextrema()[3] == (0, 0), "grain on the type layer"
+PY
+
 # Score gate: totals, thresholds, the weakest dimension named.
 python3 scripts/score.py new "$tmp/score.yml" --kind script --ids A B C >/dev/null
 python3 - "$tmp/score.yml" <<'PY'

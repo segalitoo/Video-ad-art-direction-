@@ -13,7 +13,9 @@ Layout file: `fonts` (style -> ttf), `colors` (name -> hex), `defaults`, `frames
 name, w, h, bg and `items`, drawn in order:
 
   image     src, x, y, w, h (cover-fit, focus [fx, fy], zoom; fit: contain keeps a cut-out whole,
-            anchor floor|center), shadow {y, blur, opacity}
+            anchor floor|center), shadow {y, blur, opacity}, contact {opacity, spread, height, blur,
+            color}: a soft ellipse where a cut-out stands, so it sits on the floor instead of floating
+  glow      x, y, w, h, color, opacity: soft light that fades to nothing at the box edge (no seam)
   fade      x, y, w, h, color, edge top|bottom|left (opaque at that edge, clear at the other)
   text      text, style, size, color, x, y, ls, lh, width (wraps with balanced, designed line breaks;
             \n forces a break), fit (fill w − 2·fit), center, align right
@@ -30,6 +32,8 @@ name, w, h, bg and `items`, drawn in order:
   line      x1, y1, x2, y2, color, width, dot (radius at x1,y1): a callout leader
 
 Any item can carry `id` (for `below`) and `bottom: N` (placed N px above the frame's bottom edge).
+A frame can carry `grain` (0.03 to 0.06): fine noise that joins photo and flat colour into one
+surface. It keeps the mean colour and stays off the type layer.
 """
 
 import argparse
@@ -222,6 +226,26 @@ def paste_with_shadow(canvas, im, x, y, shadow):
     canvas.alpha_composite(layer)
 
 
+def contact_shadow(canvas, im, x, y, spec):
+    """A soft, dark ellipse where the object stands: width of its base, a sliver tall, blurred.
+    spec: {opacity, spread (x the base width), height (x the base width), blur (px)}."""
+    a = im.getchannel("A")
+    bb = a.getbbox()
+    if not bb:
+        return
+    base = a.crop((bb[0], bb[3] - max(2, (bb[3] - bb[1]) // 12), bb[2], bb[3])).getbbox()
+    l, r = (bb[0] + base[0], bb[0] + base[2]) if base else (bb[0], bb[2])
+    w = (r - l) * spec.get("spread", 1.08)
+    h = w * spec.get("height", 0.07)
+    cx, cy = x + (l + r) / 2, y + bb[3] - h * 0.25
+    lay = Image.new("L", canvas.size, 0)
+    ImageDraw.Draw(lay).ellipse([cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2], fill=round(255 * spec.get("opacity", 0.45)))
+    lay = lay.filter(ImageFilter.GaussianBlur(spec.get("blur", max(4, h * 0.6))))
+    tint = Image.new("RGBA", canvas.size, tuple(spec.get("color", (40, 20, 10))) + (0,))
+    tint.putalpha(lay)
+    canvas.alpha_composite(tint)
+
+
 def cover(src, w, h, focus=None, zoom=1.0):
     """Fill w×h. focus [fx, fy] (0–1) is the point of the source kept in view; zoom > 1 crops tighter."""
     im = Image.open(src).convert("RGBA")
@@ -280,7 +304,7 @@ def place_y(it, h, fh, ctx):
     return it.get("y", 0)
 
 
-PLATE_ITEMS = {"image", "fade"}      # what a motion loop animates; everything else is the type layer
+PLATE_ITEMS = {"image", "fade", "glow"}      # what a motion loop animates; everything else is the type layer
 
 
 def render_frame(fr, ctx, layer=None):
@@ -303,10 +327,24 @@ def render_frame(fr, ctx, layer=None):
                 im = contain(ctx.base / it["src"], it["w"], it["h"], it.get("anchor", "floor"))
             else:
                 im = cover(ctx.base / it["src"], it["w"], it["h"], it.get("focus"), it.get("zoom", 1.0))
+            if it.get("contact") and im.mode == "RGBA":
+                contact_shadow(canvas, im, it["x"], it["y"], it["contact"])
             paste_with_shadow(canvas, im, it["x"], it["y"], it.get("shadow"))
             box = (it["x"], it["y"], it["w"], it["h"])
             vis = im.split()[-1].getbbox() if im.mode == "RGBA" else None
             ctx.drawn.append(("image", (it["x"] + vis[0], it["y"] + vis[1], vis[2] - vis[0], vis[3] - vis[1]) if vis else box, it, None))
+        elif kind == "glow":
+            gw, gh = round(it["w"]), round(it["h"])
+            op = it.get("opacity", 0.35)
+            # radial falloff that reaches 0 at the ellipse touching the box, with zero slope there (smoothstep):
+            # no seam at the box edge, which a blurred ellipse always leaves on a flat ground
+            lut = [round(255 * op * (lambda a: a * a * (3 - 2 * a))(max(0.0, 1 - v / 128))) for v in range(256)]
+            g = Image.radial_gradient("L").resize((gw, gh), Image.BILINEAR).point(lut)
+            col = ctx.c(it.get("color", "#FFFFFF"))
+            over = Image.new("RGBA", canvas.size, col + (0,))
+            over.paste(Image.new("RGBA", (gw, gh), col + (255,)), (round(it["x"]), round(it["y"])), g)
+            canvas.alpha_composite(over)
+            box = (it["x"], it["y"], gw, gh)
         elif kind == "fade":
             w, h = round(it["w"]), round(it["h"])
             col = ctx.c(it["color"])
@@ -503,6 +541,19 @@ def render_frame(fr, ctx, layer=None):
             fail(f"unknown item type {kind}")
         if it.get("id") and box:
             ctx.boxes[it["id"]] = box
+    if fr.get("grain") and layer != "type":
+        from PIL import ImageChops
+        k = float(fr["grain"])                            # 0.03 to 0.06: felt, not seen
+        n = Image.effect_noise(canvas.size, 40)
+        up = n.point(lambda v: round(max(0, v - 128) * k * 4))
+        down = n.point(lambda v: round(max(0, 128 - v) * k * 4))
+        room = lambda v: round(255 * min(1.0, min(v, 255 - v) / 24))   # less grain near 0 and 255, so clipping can't shift the colour
+
+        def grainy(ch):
+            h = ch.point(room)
+            return ImageChops.subtract(ImageChops.add(ch, ImageChops.multiply(up, h)), ImageChops.multiply(down, h))
+        r, g, b_, a = canvas.split()
+        canvas = Image.merge("RGBA", tuple(grainy(ch) for ch in (r, g, b_)) + (a,))
     return canvas if layer == "type" else canvas.convert("RGB")
 
 
