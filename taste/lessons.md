@@ -116,7 +116,8 @@ Rules learned from real results. Each one names its evidence and where it is enf
 
 ### L023 · Print on a pack follows the pack's own axes, not one rotation. Text lines run parallel to the pack's horizontal (a tube's crimp seal, a face's base edge); the column runs down its centre line. A tapered or turned pack has two different angles, so measure both, and check the baseline against the crimp by eye: ribbed edges fool an automatic fit
 - **Evidence:** Byoma round 4, 2026-10-02: the tube's label was rotated by its axis (16 deg) while its crimp ran at 10 deg, and the pump, seen corner-on, got level text on a face that recedes at 14 deg. The art director saw both at once ("text on the package is not aligned"). An automatic crimp fit read 2.9 deg off the seal's teeth
-- **Enforced in:** label/label.py (affine placement: `across` along the pack, column down its measured centre line)
+- **Also:** when a hand holds the pack, keep the product name readable: set it above the grip and move what follows below it, never half under a thumb ("OOSTED BARRIER" reads as a glitch). If fingers wrap the edges, give the centre line by hand (crimp middle, shoulder middle): measured rows drift with the fingers (B10, round 5)
+- **Enforced in:** label/label.py (affine placement: `across` along the pack, column down its measured centre line; `axis` and `compact` for a held pack)
 - **Added:** 2026-10-02
 
 ### L024 · A button must never look like information. Give the CTA one shape and colour (the brand pill) and anything else (benefit tags, callouts) another (square-cornered tags, a different fill). Centre caps text on the cap height, then measure the space above and below the ink
