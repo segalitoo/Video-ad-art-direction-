@@ -74,7 +74,8 @@ Rules learned from real results. Each one names its evidence and where it is enf
 
 ### L015 · To reach 9:16 or give type more room, extend a plain wall for free, but never mirror a strip that contains the subject: tile only clean wall, blur the symmetry away, add grain, and colour-match the seam; extend the floor downward to lift a low subject into the Reels safe area. Floors can't be mirrored sideways (the planks make a V)
 - **Evidence:** Same project: the first mirror copied her head upside down into the top; the second showed a seam line; the third (clean-wall tile, colour match) was invisible. The sofa frame sat in the bottom 35% of Stories until the floor was stretched
-- **Enforced in:** templates/static-design.md §3
+- **Also:** the fill under an extension is the wall's own border colour, never a stretched copy of the photo: that copy ghosts through the feather as a blurred double of the product (Byoma B07, 2026-10-02: a pink streak beside the tube, seen on the contact sheet, not in any check)
+- **Enforced in:** templates/static-design.md §3; local label/scene.py (extend)
 - **Added:** 2026-09-30
 
 ### L016 · Check the ink on the real wall, not on the lock colour: a photo wall is darker than its sampled swatch where the headline sits. Measure the pixels under the type box; the brand plum fell to 3.4:1 on the darker plaster, a deeper shade of it reached 4.8:1
