@@ -286,6 +286,19 @@ d = yaml.safe_load(open(f"{t}/fmt/all.yml")); d["sizes"] = ["1080x1920"]
 yaml.safe_dump(d, open(f"{t}/fmt/tall.yml", "w"))
 PY
 python3 scripts/static_formats.py "$tmp/fmt/tall.yml" -o "$tmp/fmt/tall_layout.yml" >/dev/null 2>&1 || true
+python3 - <<'PY' && ok "type system: tracking follows size, word spaces keep their width, real punctuation, a 32 px floor" || { echo "FAIL type system"; exit 1; }
+import sys
+sys.path.insert(0, "scripts")
+from static_formats import smart, track_for, MIN_TEXT
+from static_render import font, line_width, words_of
+t = [track_for(p) for p in (24, 32, 48, 96, 160)]
+assert t == sorted(t, reverse=True) and t[0] > 0 > t[-1], t
+f = font("assets/fonts/space-grotesk/SpaceGrotesk-Bold.ttf", 100)
+assert line_width(f, "a b", 100, -5) - line_width(f, "ab", 100, -5) == line_width(f, "a b", 100, 0) - line_width(f, "ab", 100, 0)
+assert smart("mom where's it") == "mom where\u2019s it" and smart('"hi"') == "\u201chi\u201d" and smart("a - b...") == "a \u2013 b\u2026"
+assert words_of(smart("3 parts here")) == ["3\u00a0parts", "here"]
+assert MIN_TEXT >= 32
+PY
 python3 - "$tmp/fmt/tall_layout.yml" <<'PY' && ok "9:16 statics: no drawn CTA, all type starts at or below 16% of the height" || { echo "FAIL 9:16 safe band"; exit 1; }
 import sys, yaml
 lay = yaml.safe_load(open(sys.argv[1]))

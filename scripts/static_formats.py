@@ -62,6 +62,68 @@ PRODUCT_SCALE = {"hero-headline": 1.0, "stat": 0.8, "review": 0.7, "testimonial"
                  "text-thread": 0.5, "premium": 1.4}
 
 
+# ---------- the type system
+# Sizes are px on a 1080-wide frame. A role names what a line does; the lock can override any field
+# under type.roles, and type.tracking shifts every role for a face that runs loose or tight.
+
+ROLES = {
+    "display": {"style": "Display", "steps": [64, 72, 80, 88, 96, 108, 120, 136, 152], "lh": 98},
+    "subhead": {"style": "Medium", "size": 44, "lh": 132},
+    "body": {"style": "Medium", "size": 40, "lh": 130},
+    "label": {"style": "Bold", "size": 40, "lh": 112},
+    "caption": {"style": "Medium", "size": 34, "lh": 128},
+    "cta": {"style": "Semi", "size": 38, "lh": 100},
+}
+# Tracking in % of the size: open at small sizes for legibility, tight at display sizes where the
+# face's own spacing reads loose. Interpolated on a log scale between these points.
+TRACK = [(24, 1.2), (32, 0.6), (40, 0.2), (48, 0.0), (64, -0.5), (88, -0.8), (120, -1.0), (160, -1.4)]
+MIN_TEXT = 32          # nothing smaller than this on a 1080 frame: 8 px at the 25% thumbnail
+FALLBACK = {"Display": "Bold", "Semi": "Bold", "Regular": "Medium"}
+
+
+def track_for(px):
+    import math
+    if px <= TRACK[0][0]:
+        return TRACK[0][1]
+    for (a, ta), (b, tb) in zip(TRACK, TRACK[1:]):
+        if px <= b:
+            t = (math.log(px) - math.log(a)) / (math.log(b) - math.log(a))
+            return ta + (tb - ta) * t
+    return TRACK[-1][1]
+
+
+def smart(text):
+    """Typographer's punctuation: curly quotes and apostrophes, an en dash for a spaced hyphen, an
+    ellipsis, and a no-break space after a number so "3 parts" never splits."""
+    import re
+    if not isinstance(text, str):
+        return text
+    t = text.replace("...", "\u2026").replace(" - ", " \u2013 ")
+    t = re.sub(r'(^|[\s(\[])"', "\\1\u201c", t)
+    t = t.replace('"', "\u201d")
+    t = re.sub(r"(^|[\s(\[])'", "\\1\u2018", t)
+    t = t.replace("'", "\u2019")
+    t = re.sub(r"(\d) (?=[A-Za-z])", "\\1\u00a0", t)
+    return t
+
+
+def smart_ad(ad):
+    keys = ("headline", "subhead", "them", "us", "compare", "season")
+    for k in keys:
+        if k in ad:
+            ad[k] = smart(ad[k])
+    for k in ("cons", "pros", "benefits"):
+        if k in ad:
+            ad[k] = [smart(x) for x in ad[k]]
+    for c in ad.get("callouts") or []:
+        for k in ("name", "benefit"):
+            if k in c:
+                c[k] = smart(c[k])
+    for msg in ad.get("messages") or []:
+        msg["text"] = smart(msg["text"])
+    return ad
+
+
 # ---------- colour
 
 def lum(hexv):
@@ -108,6 +170,66 @@ class Build:
         self.W, self.H, self.u = W, H, W / 1080
         self.fonts, self.pal, self.lock, self.product = fonts, pal, lock, product
         self.items, self.checks = [], []
+        ty = lock.get("type") or {}
+        self.roles = {k: dict(v, **((ty.get("roles") or {}).get(k) or {})) for k, v in ROLES.items()}
+        self.track_shift = float(ty.get("tracking", 0) or 0)
+
+    def st(self, style):
+        """A style the fonts block may not have falls back: Display and Semi to Bold, Regular to Medium."""
+        return style if style in self.fonts else FALLBACK.get(style, "Bold")
+
+    def role(self, name, size=None):
+        """style, size (px on this frame), leading %, tracking % for a role."""
+        r = self.roles[name]
+        px = size or r.get("size") or r["steps"][-1]
+        return {"style": self.st(r["style"]), "size": px * self.u, "lh": r["lh"],
+                "ls": round(track_for(px) + self.track_shift + r.get("ls_shift", 0), 2)}
+
+    def set_text(self, text, role, x, y, color, width, bg=None, size=None, center=False, **kw):
+        """A block of text in a role, with designed line breaks. Returns its height."""
+        r = self.role(role, size)
+        ls_ = self.lines(text, r["style"], r["size"], width, r["ls"])
+        it = self.text("\n".join(ls_), r["size"], x, y, color, r["style"], width=round(width), ls=r["ls"], lh=r["lh"],
+                       optical=True, **kw)
+        if center:
+            it["center"] = True
+        if bg is not None:
+            self.checks.append(("text", text, r["size"], color, bg))
+        return r["size"] * r["lh"] / 100 * len(ls_)
+
+    def display(self, text, x, y, color, bg, width, max_lines=3, max_h=None, center=False):
+        """The headline, sized to a step of the scale: the biggest step with clean line breaks, or a
+        step within 15% of it whose every break lands on punctuation."""
+        r0 = self.roles["display"]
+        found = []
+        for px in sorted(r0["steps"], reverse=True):
+            r = self.role("display", px)
+            ls_ = self.lines(text, r["style"], r["size"], width, r["ls"])
+            h = r["size"] * r["lh"] / 100 * len(ls_)
+            if len(ls_) <= max_lines and (not max_h or h <= max_h) and clean_breaks(ls_):
+                found.append((px, ls_, h))
+                if px < found[0][0] * 0.85:
+                    break
+        if not found:
+            px = r0["steps"][0]
+            r = self.role("display", px)
+            ls_ = self.lines(text, r["style"], r["size"], width, r["ls"])
+            found = [(px, ls_, r["size"] * r["lh"] / 100 * len(ls_))]
+        punct = [f for f in found if f[0] >= found[0][0] * 0.85 and len(f[1]) > 1
+                 and all(t.split(" ")[-1][-1] in ".?!:," for t in f[1][:-1])]
+        px, ls_, h = (punct or found)[0]
+        r = self.role("display", px)
+        it = self.text("\n".join(ls_), r["size"], x, y, color, r["style"], width=round(width), ls=r["ls"], lh=r["lh"],
+                       optical=True)
+        if center:
+            it["center"] = True
+        self.checks.append(("headline", text, r["size"], color, bg))
+        return h, r["size"]
+
+    def snap(self, y):
+        """On the 8 px baseline grid."""
+        g = 8 * self.u
+        return round(y / g) * g
 
     def tw(self, text, style, size, ls=-1):
         return line_width(font(self.fonts[style], size), text, size, ls)
@@ -151,8 +273,8 @@ class Build:
 
     def beside_cta(self, label):
         """Left edge for a product that sits beside a bottom-left CTA without touching it."""
-        size = 34 * self.u
-        return max(self.W * 0.3, 80 * self.u + self.tw(label, "Bold", size, -1) + 2.2 * size + 32 * self.u)
+        r = self.role("cta")
+        return max(self.W * 0.3, 80 * self.u + self.tw(label, r["style"], r["size"], r["ls"]) + 2.2 * r["size"] + 32 * self.u)
 
     def feed_product(self, y, label, scale=1.0):
         """Feed frames: the product either beside the CTA (down to its baseline) or above it (full width),
@@ -174,8 +296,9 @@ class Build:
     def cta(self, label, fill, ink, bottom=None, x=None, center=False, plain=False, y=None):
         if self.H / self.W >= 1.7:      # Stories and Reels: the platform draws its own CTA button
             return
-        size = 34 * self.u
-        it = self.add(type="cta", label=label, size=round(size), fill=fill, ink=ink, plain=plain,
+        r = self.role("cta")
+        size = r["size"]
+        it = self.add(type="cta", label=label, size=round(size), fill=fill, ink=ink, plain=plain, style=r["style"], ls=r["ls"],
                       **({"y": round(y)} if y is not None else {"bottom": round(bottom if bottom is not None else 80 * self.u)}))
         if center:
             it["center"] = True
@@ -199,11 +322,11 @@ class Build:
         """Where the content ends: above the CTA in the feed; above the reply bar on Stories and Reels."""
         return self.H * 0.82 if self.tall else self.H - 80 * self.u - 76 * self.u - 44 * self.u
 
-    def marks_h(self, items, size, width):
+    def marks_h(self, items, size, width, style="Medium", ls=-1, lh=115, gap=None):
         """Height of a ticked list as the renderer draws it."""
         m = size * 0.9
-        n = [len(self.lines(t, "Medium", size, width - m - size * 0.5, -1)) for t in items]
-        return sum(n) * size * 1.15 + size * 0.7 * (len(items) - 1)
+        n = [len(self.lines(t, style, size, width - m - size * 0.5, ls)) for t in items]
+        return sum(n) * size * lh / 100 + (size * 0.7 if gap is None else gap) * (len(items) - 1)
 
     def lines(self, text, style, size, width, ls=-2):
         fnt = font(self.fonts[style], size)
@@ -285,14 +408,11 @@ def build_ad(ad, W, H, fonts, lock, base):
 
     if fmt == "hero-headline":
         y = b.top
-        hh, _ = b.block(head, 150 * u, m, y, ink, bg, W - 2 * m, max_lines=3, max_h=H * (0.24 if b.tall else 0.30))
-        y += hh + 36 * u
+        hh, dsz = b.display(head, m, y, ink, bg, W - 2 * m, max_lines=3, max_h=H * (0.24 if b.tall else 0.30))
+        y = b.snap(y + hh + max(32 * u, dsz * 0.32))
         if ad.get("subhead"):
-            sz = (44 if b.tall else 40) * u
-            sh, _ = b.block(ad["subhead"], sz, m, y, ink, bg, W * 0.62, style="Medium", max_lines=3, lh=125, ls=-1,
-                            check=False, min_size=sz * 0.85)
-            y += sh
-        y += 44 * u
+            y = b.snap(y + b.set_text(ad["subhead"], "subhead", m, y, ink, W * 0.66, bg=bg))
+        y += 48 * u
         if b.tall:
             b.product_in(m, y, W - 2 * m, b.floor - y, "center", scale=scale)
         else:                                            # beside the CTA, down to its baseline
@@ -303,7 +423,7 @@ def build_ad(ad, W, H, fonts, lock, base):
         b.headline(f"{st['value']}*", 300 * u, m, 110 * u, accent, bg, ls=-5, lh=90)
         b.text(case(st["claim"], lock), 52 * u, m, 110 * u + 300 * u, ink, "Bold", width=round(W * 0.52), lh=105)
         b.product_img(W * 0.52, H * 0.42, W * 0.42, H * 0.44, scale * PRODUCT_SCALE["stat"])
-        b.text(f"*{st.get('source', '')}", 22 * u, m, 0, pal["on"](bg), "Medium", bottom=round(170 * u), width=round(W * 0.5), ls=0, lh=125)
+        b.text(f"*{st.get('source', '')}", MIN_TEXT * u, m, 0, pal["on"](bg), "Medium", bottom=round(170 * u), width=round(W * 0.5), ls=0, lh=125)
         b.cta(cta, cta_fill, cta_ink)
     elif fmt in ("review", "testimonial"):
         q = proof["quotes"][int(ad.get("quote", 0))]
@@ -342,29 +462,36 @@ def build_ad(ad, W, H, fonts, lock, base):
             b.headline(head, 56 * u, m, 120 * u, ink, bg, width=W - 2 * m, center=True)
         b.text(f"{proof['rating']} OUT OF 5", 120 * u, 0, 260 * u, accent, center=True, ls=-3)
         b.add(type="stars", x=0, y=round(420 * u), size=round(80 * u), filled=round(float(proof["rating"])), center=True)
-        b.text(f"BASED ON {proof['review_count']} REVIEWS", 30 * u, 0, 530 * u, ink, "Medium", center=True, ls=4)
+        b.text(f"BASED ON {proof['review_count']} REVIEWS", 34 * u, 0, 530 * u, ink, "Medium", center=True, ls=4)
         b.product_img(W * 0.3, H * 0.47, W * 0.4, H * 0.34, scale * PRODUCT_SCALE["rating"])
         b.cta(cta, cta_fill, cta_ink, center=True)
     elif fmt == "us-vs-them":
         y = b.top
-        hh, _ = b.block(head, (112 if b.tall else 96) * u, m, y, ink, bg, W - 2 * m, max_lines=2, max_h=H * 0.2)
-        top = y + hh + 52 * u
-        gut = 32 * u
+        hh, dsz = b.display(head, m, y, ink, bg, W - 2 * m, max_lines=2, max_h=H * 0.2)
+        top = b.snap(y + hh + max(40 * u, dsz * 0.4))
+        gut = 24 * u
         colw = (W - 2 * m - gut) / 2
-        fs, pad = (40 if b.tall else 34) * u, 36 * u
+        pad = 36 * u
+        lab = b.role("label", 38)
+        bod = b.role("body", 36 if not b.tall else 40)
         us = ad.get("us", (lock.get("meta") or {}).get("brand", ""))
         cols = [(ad["them"], ad["cons"][:5]), (us, ad["pros"][:5])]
-        title_h = max(len(b.lines(t, "Bold", fs, colw - 2 * pad, -1)) for t, _ in cols) * fs
-        ch = pad + title_h + fs * 1.1 + max(b.marks_h(ls_, fs, colw - 2 * pad) for _, ls_ in cols) + pad
+        inner = colw - 2 * pad
+        title_h = max(len(b.lines(t, lab["style"], lab["size"], inner, lab["ls"])) for t, _ in cols) * lab["size"] * lab["lh"] / 100
+        lgap = bod["size"] * 0.55
+        list_h = max(b.marks_h(ls_, bod["size"], inner, bod["style"], bod["ls"], bod["lh"], lgap) for _, ls_ in cols)
+        ch = b.snap(pad + title_h + bod["size"] * 0.7 + list_h + pad)
         on_hero = pal["on"](pal["hero"])
         for i, ((title, ls_), fill, tink, mark, mcol) in enumerate(zip(
-                cols, (pal["soft"], pal["hero"]), ("#555A63", on_hero), ("cross", "check"), ("#9AA0A8", on_hero))):
+                cols, (pal["soft"], pal["hero"]), ("#4A4F57", on_hero), ("cross", "check"), ("#9AA0A8", on_hero))):
             x = m + i * (colw + gut)
             b.add(type="rect", x=round(x), y=round(top), w=round(colw), h=round(ch), fill=fill, radius=round(28 * u))
-            b.text(title, fs, x + pad, top + pad, tink, "Bold", width=round(colw - 2 * pad), ls=-1)
-            b.add(type="marks", x=round(x + pad), y=round(top + pad + title_h + fs * 1.1), size=round(fs), mark=mark,
-                  color=mcol, ink=tink, width=round(colw - 2 * pad), lines=ls_)
-        y = top + ch + 44 * u
+            b.text(title, lab["size"], x + pad, top + pad, tink, lab["style"], width=round(inner), ls=lab["ls"], lh=lab["lh"])
+            b.add(type="marks", x=round(x + pad), y=round(top + pad + title_h + bod["size"] * 0.7), size=round(bod["size"]),
+                  mark=mark, color=mcol, ink=tink, width=round(inner), lines=ls_, style=bod["style"], ls=bod["ls"],
+                  lh=bod["lh"], gap=round(lgap))
+            b.checks.append(("text", title, lab["size"], tink, fill))
+        y = top + ch + 48 * u
         if b.tall:
             b.product_in(m, y, W - 2 * m, b.floor - y, "center", scale=scale)
         else:
@@ -372,51 +499,45 @@ def build_ad(ad, W, H, fonts, lock, base):
         b.cta(cta, cta_fill, cta_ink)
     elif fmt == "ingredients":
         y = b.top
-        hh, _ = b.block(head, (108 if b.tall else 96) * u, m, y, ink, bg, W - 2 * m, max_lines=2, max_h=H * 0.2)
-        y0 = y + hh + 64 * u
-        y1 = b.floor if b.tall else H - 80 * u - 76 * u - 48 * u
+        hh, dsz = b.display(head, m, y, ink, bg, W - 2 * m, max_lines=2, max_h=H * 0.2)
+        y0 = b.snap(y + hh + max(48 * u, dsz * 0.5))
+        y1 = b.floor if b.tall else H - 80 * u - 85 * u - 48 * u
         cols = ad["callouts"][:6]
-        fs, bs = (42 if b.tall else 38) * u, (30 if b.tall else 28) * u
+        lab, cap = b.role("label"), b.role("caption")
+        def callout(c, tx, ty, w):
+            b.text(c["name"], lab["size"], tx, ty, accent, lab["style"], width=round(w), ls=lab["ls"], lh=lab["lh"])
+            ny = ty + lab["size"] * lab["lh"] / 100 + 4 * u
+            bl = b.lines(c.get("benefit", ""), cap["style"], cap["size"], w, cap["ls"])
+            if c.get("benefit"):
+                b.text("\n".join(bl), cap["size"], tx, ny, ink, cap["style"], width=round(w), ls=cap["ls"], lh=cap["lh"])
+            b.checks.append(("text", c["name"], lab["size"], accent, bg))
+            return ny - ty + len(bl) * cap["size"] * cap["lh"] / 100, bl
         if b.tall:                                        # Stories: all type above 60%, so the callouts sit in a grid
-            colw = (W - 2 * m - 40 * u) / 2               # under the headline and point down at the product
-            rows = [cols[i:i + 2] for i in range(0, len(cols), 2)]
-            ty = y0
-            spots = []
-            for row in rows:
-                rh = 0
-                for j, c in enumerate(row):
-                    tx = m + j * (colw + 40 * u)
-                    b.text(c["name"], fs, tx, ty, accent, "Bold", width=round(colw), ls=-1)
-                    bl = b.lines(c.get("benefit", ""), "Medium", bs, colw, 0)
-                    b.text(c.get("benefit", ""), bs, tx, ty + fs + 10 * u, ink, "Medium", width=round(colw), ls=0, lh=125)
-                    h_ = fs + 10 * u + len(bl) * bs * 1.25
-                    spots.append((tx, ty + h_, j))
-                    rh = max(rh, h_)
-                ty += rh + 44 * u
+            colw = (W - 2 * m - 40 * u) / 2               # under the headline, the product below them
             b.add(type="line", x1=round(m), y1=round(y0 - 28 * u), x2=round(W - m), y2=round(y0 - 28 * u),
                   color=accent, width=max(2, round(3 * u)))         # a rule over the grid: reads as an ingredient panel
-            py = ty + 24 * u
-            b.product_in(m, py, W - 2 * m, y1 - py, "center", "center", scale)
+            ty = y0
+            for r0 in range(0, len(cols), 2):
+                rh = max(callout(c, m + jj * (colw + 40 * u), ty, colw)[0] for jj, c in enumerate(cols[r0:r0 + 2]))
+                ty = b.snap(ty + rh + 40 * u)
+            b.product_in(m, ty + 16 * u, W - 2 * m, y1 - ty - 16 * u, "center", "center", scale)
             cols = []
-        colw = W * 0.30                                   # the callouts stack on the left, the product fills the right
-        px = m + colw + 40 * u
+        colw = W * 0.32                                   # the callouts stack on the left, the product fills the right
+        px = m + colw + 32 * u
         if cols:
-            box = b.product_in(px, y0, W - m - px, y1 - y0, "center", "center", scale) or (px, y0, W - m - px, y1 - y0)
-            vx, vy, vw, vh = box
-            hs = [fs + 10 * u + len(b.lines(c.get("benefit", ""), "Medium", bs, colw, 0)) * bs * 1.25 for c in cols]
+            vx, vy, vw, vh = b.product_in(px, y0, W - m - px, y1 - y0, "center", "center", scale) or (px, y0, W - m - px, y1 - y0)
+            hs = [lab["size"] * lab["lh"] / 100 + 4 * u + len(b.lines(c.get("benefit", ""), cap["style"], cap["size"], colw, cap["ls"])) * cap["size"] * cap["lh"] / 100 for c in cols]
             span = max(vh, sum(hs) + 40 * u * (len(cols) - 1))
             gap = (span - sum(hs)) / max(1, len(cols) - 1)
             ty = vy + (vh - span) / 2
-        for i, c in enumerate(cols):
-            h_ = hs[i]
-            b.text(c["name"], fs, m, ty, accent, "Bold", width=round(colw), ls=-1)
-            b.text(c.get("benefit", ""), bs, m, ty + fs + 10 * u, ink, "Medium", width=round(colw), ls=0, lh=125)
-            tw_ = max(b.tw(c["name"], "Bold", fs), *(b.tw(t, "Medium", bs, 0) for t in b.lines(c.get("benefit", ""), "Medium", bs, colw, 0)))
-            tx = vx + vw * (0.2 + 0.12 * (i % 2))          # a point on the product
-            tyy = vy + vh * (0.25 + 0.55 * i / max(1, len(cols) - 1))
-            b.add(type="line", x1=round(tx), y1=round(tyy), x2=round(m + tw_ + 20 * u), y2=round(ty + fs * 0.55),
-                  color=accent, width=max(2, round(3 * u)), dot=round(7 * u))
-            ty += h_ + gap
+            for i, c in enumerate(cols):
+                h_, bl = callout(c, m, ty, colw)
+                tw_ = max(b.tw(c["name"], lab["style"], lab["size"], lab["ls"]), *(b.tw(t, cap["style"], cap["size"], cap["ls"]) for t in bl or [""]))
+                tx = vx + vw * (0.2 + 0.12 * (i % 2))          # a point on the product
+                tyy = vy + vh * (0.25 + 0.55 * i / max(1, len(cols) - 1))
+                b.add(type="line", x1=round(tx), y1=round(tyy), x2=round(m + tw_ + 20 * u), y2=round(ty + lab["size"] * 0.55),
+                      color=accent, width=max(2, round(3 * u)), dot=round(7 * u))
+                ty += h_ + gap
         b.cta(cta, cta_fill, cta_ink, center=True)
     elif fmt == "benefits":
         y = b.top
@@ -454,7 +575,7 @@ def build_ad(ad, W, H, fonts, lock, base):
         b.headline(head, 64 * u, m, 110 * u, ink, bg, width=W - 2 * m, center=True)
         b.product_img(W * 0.3, H * 0.24, W * 0.4, H * 0.4, scale)
         chips = proof["badges"][:6]
-        size, pad, gap = 28 * u, 26 * u, 18 * u
+        size, pad, gap = 32 * u, 26 * u, 18 * u
         rows, row, rw = [], [], 0
         for c in chips:
             w = b.tw(c, "Bold", size) + 2 * pad
@@ -543,7 +664,7 @@ def build_ad(ad, W, H, fonts, lock, base):
         hh, _ = b.block(head, (100 if b.tall else 88) * u, m, y, ink, bg, W - 2 * m, max_lines=2, max_h=H * 0.18,
                         center=True)
         brand = (lock.get("meta") or {}).get("brand", "")
-        bsz = 30 * u
+        bsz = 34 * u
         y0 = y + hh + 56 * u
         if b.tall:                                        # Stories: the brand line stays above 60%, under the headline
             b.text(brand, bsz, 0, y + hh + 32 * u, ink, "Bold", center=True, ls=12)
@@ -592,7 +713,7 @@ def thumbnail_checks(ad_id, checks):
             out.append(f"{ad_id}: \"{text}\" starts below 60% of the height, under the Stories and Reels UI")
             continue
         px = size * 0.25
-        minimum = 7 if kind == "CTA" else 12
+        minimum = {"CTA": 7, "text": 8}.get(kind, 12)
         if px < minimum:
             out.append(f"{ad_id}: {kind} is {px:.0f}px at 25% size; it needs {minimum}px to read in the feed")
         if bg:
@@ -635,6 +756,14 @@ def layout_checks(name, ctx, W, H):
             if hit_t is not None:
                 out.append(f'{name}: a callout line crosses "{label(hit_t)}"')
                 break
+    sizes = set()
+    for k, bx, it, _ in d:
+        if k in ("text", "marks", "bubble", "cta"):
+            sizes.add(round(it["size"] / u))
+            if it["size"] < MIN_TEXT * u - 0.5:
+                out.append(f'{name}: "{label(it)}" is {it["size"] / u:.0f}px; nothing goes under {MIN_TEXT}px on a 1080 frame')
+    if len(sizes) > 5:
+        out.append(f"{name}: {len(sizes)} type sizes in one ad ({', '.join(str(x) for x in sorted(sizes))}); keep to 5 or fewer")
     for k, bx, it, c in d:
         if k == "text" and c is not None:
             need_c = 3.0 if it["size"] >= 48 * u else 4.5
@@ -709,6 +838,11 @@ def main():
     spec = load_yaml(spec_path)
     base = spec_path.parent
     lock = load_lock((base / spec["lock"]).resolve())
+    if spec.get("type"):                                # a formats file may tune the type for a test
+        t = dict(lock.get("type") or {})
+        t.update({k: v for k, v in spec["type"].items() if k != "roles"})
+        t["roles"] = {**(t.get("roles") or {}), **(spec["type"].get("roles") or {})}
+        lock["type"] = t
     fonts = {k: (base / v).resolve() for k, v in (spec.get("fonts") or {}).items()} or DEFAULT_FONTS
     for k in ("Bold", "Medium"):
         if k not in fonts:
@@ -724,6 +858,7 @@ def main():
         fail("no ads in the formats file")
     errors = []
     for ad in ads:
+        smart_ad(ad)
         ad.setdefault("product", spec.get("product"))
         if spec.get("cta"):
             ad.setdefault("cta", spec["cta"])

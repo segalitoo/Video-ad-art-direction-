@@ -10,45 +10,49 @@ frames:
   - type: text
     text: 'Get paid like
 
-      it''s local.'
+      it’s local.'
     style: Bold
-    size: 150
+    size: 152
     x: 80
     y: 88
     color: '#1E2A44'
-    ls: -2
-    lh: 95
+    ls: -1.33
+    lh: 98
     width: 920
+    optical: true
   - type: text
     text: 'Invoices from abroad land
 
       the next business day.'
     style: Medium
-    size: 40
+    size: 44
     x: 80
-    y: 409
+    y: 432
     color: '#1E2A44'
-    ls: -1
-    lh: 125
-    width: 670
+    ls: 0.1
+    lh: 132
+    width: 713
+    optical: true
   - type: image
     src: ../statics-v2/cut/hero-plane.png
     fit: contain
     anchor: floor
-    x: 95
-    y: 553
-    w: 890
-    h: 601
+    x: 130
+    y: 600
+    w: 821
+    h: 554
     shadow:
       y: 30
       blur: 50
       opacity: 0.22
   - type: cta
     label: Open a free account
-    size: 34
+    size: 38
     fill: '#FF6B4A'
     ink: '#1E2A44'
     plain: false
+    style: Bold
+    ls: 0.29
     bottom: 80
     x: 80
   name: F1 hero-headline 1080x1350
@@ -62,89 +66,100 @@ frames:
 
       or Driftpay?'
     style: Bold
-    size: 96
+    size: 136
     x: 80
     y: 88
     color: '#1E2A44'
-    ls: -2
-    lh: 95
+    ls: -1.17
+    lh: 98
     width: 920
+    optical: true
   - type: rect
     x: 80
-    y: 322
-    w: 444
-    h: 347
+    y: 408
+    w: 448
+    h: 368
     fill: '#ECEDEF'
     radius: 28
   - type: text
     text: Bank transfer
     style: Bold
-    size: 34
+    size: 38
     x: 116
-    y: 358
-    color: '#555A63'
-    ls: -1
-    lh: 100
-    width: 372
+    y: 444
+    color: '#4A4F57'
+    ls: 0.29
+    lh: 112
+    width: 376
   - type: marks
     x: 116
-    y: 430
-    size: 34
+    y: 512
+    size: 36
     mark: cross
     color: '#9AA0A8'
-    ink: '#555A63'
-    width: 372
+    ink: '#4A4F57'
+    width: 376
     lines:
     - Days in transit
     - Hidden FX margin
     - A fee on every invoice
+    style: Medium
+    ls: 0.39
+    lh: 130
+    gap: 20
   - type: rect
-    x: 556
-    y: 322
-    w: 444
-    h: 347
+    x: 552
+    y: 408
+    w: 448
+    h: 368
     fill: '#FF6B4A'
     radius: 28
   - type: text
     text: Driftpay
     style: Bold
-    size: 34
-    x: 592
-    y: 358
+    size: 38
+    x: 588
+    y: 444
     color: '#1E2A44'
-    ls: -1
-    lh: 100
-    width: 372
+    ls: 0.29
+    lh: 112
+    width: 376
   - type: marks
-    x: 592
-    y: 430
-    size: 34
+    x: 588
+    y: 512
+    size: 36
     mark: check
     color: '#1E2A44'
     ink: '#1E2A44'
-    width: 372
+    width: 376
     lines:
     - Next business day
     - The real exchange rate
     - No monthly fee
+    style: Medium
+    ls: 0.39
+    lh: 130
+    gap: 20
   - type: image
     src: ../statics-v2/cut/hero-plane.png
     fit: contain
     anchor: floor
-    x: 279
-    y: 758
-    w: 522
-    h: 352
+    x: 344
+    y: 857
+    w: 391
+    h: 264
     shadow:
       y: 30
       blur: 50
       opacity: 0.22
   - type: cta
     label: Open a free account
-    size: 34
+    size: 38
     fill: '#FF6B4A'
     ink: '#1E2A44'
     plain: false
+    style: Bold
+    ls: 0.29
     bottom: 80
     x: 80
   name: F2 us-vs-them 1080x1350
@@ -192,10 +207,12 @@ frames:
       opacity: 0.22
   - type: cta
     label: Open a free account
-    size: 34
+    size: 38
     fill: '#1E2A44'
     ink: '#FFFFFF'
     plain: false
+    style: Bold
+    ls: 0.29
     bottom: 80
     x: 80
   name: F3 benefits 1080x1350
@@ -241,26 +258,28 @@ frames:
     fill: '#FF6B4A'
     ink: '#1E2A44'
   - type: rect
-    x: 523
+    x: 524
     y: 720
-    w: 477
-    h: 477
+    w: 476
+    h: 476
     fill: '#F1F1F3'
     radius: 45
   - type: image
     src: ../statics-v2/cut/hero-plane.png
     fit: contain
     anchor: floor
-    x: 571
+    x: 572
     y: 830
     w: 381
     h: 257
   - type: cta
     label: Open a free account
-    size: 34
+    size: 38
     fill: '#FF6B4A'
     ink: '#1E2A44'
     plain: false
+    style: Bold
+    ls: 0.29
     bottom: 80
     x: 80
   name: F4 text-thread 1080x1350
@@ -285,7 +304,7 @@ frames:
     fit: contain
     anchor: floor
     x: 108
-    y: 384
+    y: 382
     w: 864
     h: 583
     shadow:
@@ -295,19 +314,21 @@ frames:
   - type: text
     text: Driftpay
     style: Bold
-    size: 30
+    size: 34
     x: 0
-    y: 1007
+    y: 1005
     color: '#FFFFFF'
     ls: 12
     lh: 100
     center: true
   - type: cta
     label: Open a free account
-    size: 34
+    size: 38
     fill: null
     ink: '#FFFFFF'
     plain: true
+    style: Bold
+    ls: 0.29
     bottom: 80
     center: true
   name: F5 premium 1080x1350
@@ -332,7 +353,7 @@ frames:
   - type: text
     text: 'Your client is abroad.
 
-      Your money isn''t.'
+      Your money isn’t.'
     style: Bold
     size: 92
     x: 80
@@ -343,10 +364,12 @@ frames:
     width: 920
   - type: cta
     label: Open a free account
-    size: 34
+    size: 38
     fill: '#FF6B4A'
     ink: '#1E2A44'
     plain: false
+    style: Bold
+    ls: 0.29
     bottom: 80
     x: 80
   name: F6 lifestyle 1080x1350

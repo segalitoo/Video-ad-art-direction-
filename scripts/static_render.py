@@ -73,8 +73,14 @@ class Ctx:
         return rgb(v, self.colors)
 
 
+def tracked(text):
+    """Characters that take tracking: everything but word spaces, so a tight headline keeps its
+    word gaps (negative tracking on a space is what made words run together)."""
+    return sum(1 for c in text if c != " ")
+
+
 def line_width(fnt, text, size, ls):
-    return fnt.getlength(text) + max(0, len(text) - 1) * ls / 100 * size
+    return fnt.getlength(text) + max(0, tracked(text) - 1) * ls / 100 * size
 
 
 def draw_line(img, ctx, x, top, text, style, size, colors_at, ls=-2, lh=100):
@@ -88,13 +94,18 @@ def draw_line(img, ctx, x, top, text, style, size, colors_at, ls=-2, lh=100):
     for i, ch in enumerate(text):
         if ch == " ":
             continue
-        cx = x + fnt.getlength(text[:i]) + i * track
+        cx = x + fnt.getlength(text[:i]) + tracked(text[:i]) * track
         d.text((cx, base), ch, font=fnt, fill=colors_at(i), anchor="ls")
     return line_width(fnt, text, size, ls), box
 
 
 WEAK_ENDS = {"a", "an", "the", "to", "of", "my", "your", "our", "his", "her", "its", "their", "and", "or",
              "but", "on", "in", "for", "with", "at", "by", "from", "is", "are", "be", "no", "not"}
+
+
+def words_of(text):
+    """Words split on ordinary spaces only: a no-break space binds what it joins."""
+    return [w for w in str(text).split(" ") if w]
 
 
 def greedy(words, measure, width):
@@ -113,8 +124,8 @@ def split_sentences(lines):
     """Lines that end one sentence and start the next after a break inside the first."""
     n = 0
     for i, t in enumerate(lines):
-        starts = i == 0 or lines[i - 1].split()[-1][-1] in ".?!:"
-        if not starts and any(w[-1] in ".?!" for w in t.split()[:-1]):
+        starts = i == 0 or words_of(lines[i - 1])[-1][-1] in ".?!:"
+        if not starts and any(w[-1] in ".?!" for w in words_of(t)[:-1]):
             n += 1
     return n
 
@@ -129,13 +140,13 @@ def break_cost(lines, measure, width):
     cost = sum(((top - w) / width) ** 2 for w in ws[:-1])     # ragged right inside the block
     if len(lines) > 1:
         cost += 0.5 * max(0, 0.6 - ws[-1] / top)              # a short tail line
-        if len(lines[-1].split()) == 1:
+        if len(words_of(lines[-1])) == 1:
             cost += 2.0                                       # an orphan
-    if sum(len(t.split()) for t in lines) > 3:
-        cost += 1.0 * sum(len(t.split()) == 1 for t in lines[:-1])   # a lone word mid-block
+    if sum(len(words_of(t)) for t in lines) > 3:
+        cost += 1.0 * sum(len(words_of(t)) == 1 for t in lines[:-1])   # a lone word mid-block
     cost += 0.8 * split_sentences(lines)
     for t in lines[:-1]:
-        last = t.split()[-1]
+        last = words_of(t)[-1]
         if last[-1] in ".?!:":
             cost -= 0.6
         elif last[-1] in ",;":
@@ -147,11 +158,11 @@ def break_cost(lines, measure, width):
 
 def clean_breaks(lines):
     """True when no line ends on a weak word and no word stands alone on a line."""
-    if sum(len(t.split()) for t in lines) > 3 and any(len(t.split()) == 1 for t in lines):
+    if sum(len(words_of(t)) for t in lines) > 3 and any(len(words_of(t)) == 1 for t in lines):
         return False
     if split_sentences(lines):
         return False
-    return not any(t.split()[-1].lower() in WEAK_ENDS for t in lines[:-1])
+    return not any(words_of(t)[-1].lower() in WEAK_ENDS for t in lines[:-1])
 
 
 def balance(text, measure, width):
@@ -159,7 +170,7 @@ def balance(text, measure, width):
     lets every line end on a sentence or a clause. A \\n in the text is a forced break."""
     out = []
     for para in str(text).split("\n"):
-        words = para.split()
+        words = words_of(para)
         if not words:
             continue
         g = greedy(words, measure, width)
@@ -330,6 +341,11 @@ def render_frame(fr, ctx, layer=None):
             ctx.drawn.append(("text", (x, y, tw, th), it, behind(canvas, (x, y, tw, th), col)))
             for i, t in enumerate(lines):
                 lx = x + (tw - widths[i]) if it.get("align") == "right" else x
+                if it.get("optical") and t and not it.get("center") and it.get("align") != "right":
+                    if t[0] in "\u201c\u2018\"'":
+                        lx -= fnt.getlength(t[0])                        # hanging punctuation
+                    else:
+                        lx -= max(0, fnt.getbbox(t[0], anchor="ls")[0])  # the stem, not the side bearing, on the margin
                 draw_line(canvas, ctx, lx, y + i * size * lh / 100, t, style, size, lambda _: col, ls, lh)
             box = (x, y, it.get("width") or tw, th)
         elif kind == "stack":
@@ -370,10 +386,14 @@ def render_frame(fr, ctx, layer=None):
                              lambda _: ink, -3, 100)
             box = (x, y, tx + w - x, row_h)
         elif kind == "cta":
-            s, st = it["size"], it.get("style", "Bold")
+            s, st, cls = it["size"], it.get("style", "Bold"), it.get("ls", -1)
             fnt = ctx.f(st, s)
-            tw = line_width(fnt, it["label"], s, -1)
+            tw = line_width(fnt, it["label"], s, cls)
             w, h = tw + 2.2 * s, s + 1.24 * s
+            asc, desc = fnt.getmetrics()
+            xb, cb = fnt.getbbox("x", anchor="ls"), fnt.getbbox("H", anchor="ls")
+            mid = (-xb[1] - cb[1]) / 4                                   # halfway between x-height and cap height
+            box_base = (s - (asc + desc)) / 2 + asc                      # where draw_line puts the baseline in its box
             if it.get("center"):
                 it = dict(it, x=(W - w) / 2)
             x, y = it.get("x", 0), place_y(it, h, H, ctx)
@@ -383,7 +403,8 @@ def render_frame(fr, ctx, layer=None):
                 ImageDraw.Draw(canvas).rectangle([x + 1.1 * s, y + 1.72 * s, x + 1.1 * s + tw, y + 1.72 * s + max(2, s * 0.06)], fill=ink)
             else:
                 ImageDraw.Draw(canvas).rounded_rectangle([x, y, x + w, y + h], radius=h / 2, fill=ctx.c(it.get("fill", "coral")))
-                draw_line(canvas, ctx, x + 1.1 * s, y + 0.62 * s, it["label"], st, s, lambda _: ink, -1, 100)
+                top = y + h / 2 + mid - box_base                         # optical centre of the label on the pill
+                draw_line(canvas, ctx, x + 1.1 * s, top, it["label"], st, s, lambda _: ink, cls, 100)
             box = (x, y, w, h)
             ctx.drawn.append(("cta", box, it, None))
         elif kind == "chip":
@@ -433,8 +454,11 @@ def render_frame(fr, ctx, layer=None):
             col, ink = ctx.c(it.get("color", "#1FA463")), ctx.c(it.get("ink", "#111111"))
             m = sz * 0.9
             wmax = 0
+            mls, mlh = it.get("ls", -1), it.get("lh", 115)
             for text in it["lines"]:
-                cy = y + sz * 0.55
+                mf = ctx.f(style, sz)
+                masc, mdesc = mf.getmetrics()
+                cy = y + (sz * mlh / 100 - (masc + mdesc)) / 2 + masc + mf.getbbox("x", anchor="ls")[1] / 2   # centred on the x-height
                 d.ellipse([x, cy - m / 2, x + m, cy + m / 2], fill=col)
                 k, lw = m / 10, max(2, round(sz * 0.11))
                 if it.get("mark", "check") == "check":
@@ -442,11 +466,11 @@ def render_frame(fr, ctx, layer=None):
                 else:
                     d.line([(x + 3 * k, cy - 2 * k), (x + 7 * k, cy + 2 * k)], fill=(255, 255, 255), width=lw)
                     d.line([(x + 7 * k, cy - 2 * k), (x + 3 * k, cy + 2 * k)], fill=(255, 255, 255), width=lw)
-                lines = wrap(ctx, text, style, sz, -1, it["width"] - m - sz * 0.5) if it.get("width") else [text]
+                lines = wrap(ctx, text, style, sz, mls, it["width"] - m - sz * 0.5) if it.get("width") else [text]
                 for j, t in enumerate(lines):
-                    lw_ = draw_line(canvas, ctx, x + m + sz * 0.5, y + j * sz * 1.15, t, style, sz, lambda _: ink, -1, 115)[0]
+                    lw_ = draw_line(canvas, ctx, x + m + sz * 0.5, y + j * sz * mlh / 100, t, style, sz, lambda _: ink, mls, mlh)[0]
                     wmax = max(wmax, m + sz * 0.5 + lw_)
-                y += len(lines) * sz * 1.15 + gap
+                y += len(lines) * sz * mlh / 100 + gap
             box = (x, y0, wmax, y - gap - y0)
             ctx.drawn.append(("marks", box, it, None))
         elif kind == "bubble":
