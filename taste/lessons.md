@@ -152,3 +152,8 @@ Rules learned from real results. Each one names its evidence and where it is enf
 - **Evidence:** Byoma 9:16 rollout, 2026-10-02: the bigger B08 headline ran across the floating cube with 0 flags (the collision check only knows layout items, the contrast check averages the box), and B05 broke as "ONE SHELF. TWO / GENERATIONS. / SAME TUBE.". Both caught on the review sheet, not by a check. The same pass found "Y" lines hanging 2 px past the margin: the optical margin clamped Y's negative side bearing to 0
 - **Enforced in:** directions/typefill.py (`clean_display`, `break_penalty`, `type_over_product`, run on every photo frame); scripts/static_render.py (`ink_left` keeps negative bearings)
 - **Added:** 2026-10-02
+
+### L030 · Cut a pack out at the photo's full resolution, with a matte made for its ground, and unmix the ground's colour from the edge pixels. A mask made small and enlarged gives stair-step edges; a hard colour threshold chews the shaded side. Motion shows every edge a static thumbnail hides, so check a cut-out at 100% on the final ground before it moves
+- **Evidence:** Byoma B02 motion, 2026-10-03: the tube cut-out (mask built at half size, enlarged 2x, cut with a threshold) had a saw-tooth left edge, a torn shoulder above the nozzle and a ragged cap. It passed in the static at feed size; at 1080 x 1920 in motion the art director saw it at once ("the tube is looking bad"). Rebuilt at full size with a yellowness matte (wall about 86, pack under 15), a warm-orange term near the body for the undersides, and each edge pixel solved for its own colour against the local wall (C = aF + (1 - a)B)
+- **Enforced in:** label/cutouts.py (`cut_on_yellow`); the B09 motion uses the same matte
+- **Added:** 2026-10-03
